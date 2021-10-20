@@ -34,3 +34,5 @@ In total, this is 16 or 18 vectors per lattice and 52 vectors in total. Some fun
 `rhombic1.edgeToFaces[i]`
 
 The cubic code object will just have empty faceToVertices and vertexToFaces vectors. 
+
+I'm changing cells to have the same index as the vertex at their centre. This means cell indexing doesn't increase as 0,1,2,3... but 0,2,4,... and also switches between odd and even numbers every time we change rows. This is a bit less intuitive but saves lots of annoying cell <-> vertex index conversion. I need to actually remember to do this in all the existing code I copy over though so putting this here to remind myself. 
