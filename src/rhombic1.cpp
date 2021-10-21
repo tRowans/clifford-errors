@@ -34,21 +34,6 @@ coord indexToCoord(int i, int L)
     }
 }
 
-//This stuff is way too confusing.
-//I think cells should just be indexed by the index of the vertex at their centre
-//This means cell indices will not go 0,1,2... but instead 0,2,4,...
-//And also have jumps to odd numbers when we change row
-//But I think this is still less confusing overall than this cell index converstion stuff
-//Leaving this here for now so I remember I changed it and need to change it in later stuff
-/*
-coord cellToCoord(int cell, int L)
-{
-    coord cd = indexToCoord(2*cell, L);
-    if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 0) cd = indexToCoord(2*cell + 1, L);
-    return cd;
-}
-*/
-
 int neigh(int v, int dir, int sign, int L)
 {
     if (0 <= dir && dir < 4 && (sign == -1 || sign == 1))
@@ -230,7 +215,7 @@ void buildFaces(vvint &faceToVertices, vvint &faceToEdges, vpint &faceToCells, v
     }
 }
 
-int findFace(vint vertices, vvint &vertexToFaces, vvint &faceToVertices)
+int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices)
 {
     std::sort(vertices.begin(), vertices.end());
     auto v0Faces = vertexToFaces[vertices[0]];
@@ -388,45 +373,29 @@ void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVer
 vint buildQubitIndices(vvint &vertexToFaces, vvint &faceToVertices, int L)
 {
     vint qubitIndices;
-    for (int v = 0; v < L * L * L; v++)
-    {
-        coord cd = indexToCoord(v, L);
-        if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 1) continue;
-        vint faces;
-        if (cd.xi[0] < (L-3) && cd.xi[1] < (L-2) && cd.xi[2] < (L-2))
-        {
-            if (cd.xi[1] < (L-3) && cd.xi[2] < (L-3))
-            {
-                faces.push_back(findFace({v,v+L+L*L}, vertexToFaces, faceToVertices));
-            }
-        }
-    }
-}
-
-vint buildQubitIndices(vvint &vertexToFaces, vvint &faceToVertices, int L)
-{
-    vint qubitIndices;
     for (int f = 0; f < 3 * L * L * L; f++)
     {
         int v = faceToBaseVertex(f, L);
         int dir = f % 6;
         coord cd = indexToCoord(v, L);
-        if (cd.xi[0] > (L-4) || cd.xi[1] > (L-3) || cd.xi[2] > (L-3)) continue;
-        if (dir == 0) { if (cd.xi[1] == (L-3) || cd.xi[2] == (L-3)) continue; }
-        else if (dir == 1) { if (cd.xi[0] == (L-4)  
-                                 || cd.xi[1] == 0 || cd.xi[1] == (L-3) 
-                                 || cd.xi[2] == (L-3)) continue; }
-        else if (dir == 2) { if (cd.xi[0] == (L-4)
-                                 || cd.xi[1] == (L-3)
-                                 || cd.xi[2] == 0 || cd.xi[2] == (L-3)) continue; }
-        else if (dir == 3) { if (cd.xi[1] == (L-3) || cd.xi[2] == 0) continue; }
-        else if (dir == 4) { if (cd.xi[0] == (L-4)
-                                 || cd.xi[1] == 0 || cd.xi[1] == (L-3)
-                                 || cd.xi[2] == 0) continue; }
-        else { if (cd.xi[0] == (L-4)
-                   || cd.xi[1] == 0
-                   || cd.xi[2] == 0 || cd.xi[2] == (L-3)) continue; }
-        qubitIndices.push_back(f);
+
+        if (cd.xi[0] < (L-3) && cd.xi[1] < (L-2) && cd.xi[2] < (L-2))
+        {
+            if (dir == 0 && cd.xi[1] < (L-3) && cd.xi[2] < (L-3)) qubitInidces.push_back(f);
+            else if (dir == 1 && cd.xi[0] < (L-4)
+                              && cd.xi[1] > 0 && cd.xi[1] < (L-3)
+                              && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
+            else if (dir == 2 && cd.xi[0] < (L-4)
+                              && cd.xi[1] < (L-3)
+                              && cd.xi[2] > 0 && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
+            else if (dir == 3 && cd.xi[1] < (L-3) && cd.xi[2] > 0) qubitIndices.push_back(f);
+            else if (dir == 4 && cd.xi[0] < (L-4)
+                              && cd.xi[1] > 0 && cd.xi[1] < (L-3)
+                              && cd.xi[2] > 0) qubitIndices.push_back(f);
+            else if (dir == 5 && cd.xi[0] < (L-4)
+                              && cd.xi[1] > 0
+                              && cd.xi[2] > 0 && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
+        }
     }
     return qubitIndices;
 }
@@ -439,10 +408,12 @@ vint buildXSyndIndices(int L)
     for (int v = 0; v < L * L * L; v++)
     {
         coord cd = indexToCoord(v, L);
-        if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 1) continue;
-        if (cd.xi[0] <= (L-4)
-            && cd.xi[1] > 0 && cd.xi[1] < (L-3)
-            && cd.xi[2] <= (L-3)) { xSyndIndices.push_back(v); }
+        if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 1) 
+        {
+            if (cd.xi[0] < (L-3)
+                && cd.xi[1] > 0 && cd.xi[1] < (L-3)
+                && cd.xi[2] < (L-2)) xSyndIndices.push_back(v); 
+        }
     }
     return xSyndIndices;
 }
@@ -456,7 +427,7 @@ vint buildZSyndIndices(int L)
     {
         coord cd = indexToCoord(v, L);
         if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 1) continue;
-        if (cd.xi[2] == 0 || cd.xi[2] == (L-3)) continue;
+        if (cd.xi[0] > (L-4) || cd.xi[1] > (L-3) || cd.xi[2] == 0 || cd.xi[2] > (L-4)) continue;
         vint dirs;
         dirs.assign(8, 1); //xy, xz, yz, xyz, -xy, -xz, -yz, -xyz
         //set the ones we don't want to 0 for each boundary
@@ -501,7 +472,7 @@ vint buildZSyndIndices(int L)
 
 vint buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
 {
-    //Might as well do these together because the loops are the same 
+    //Do these together because the loops are the same 
     for (int q : qubitIndices)
     {
         vint vertices = faceToVertices[q];

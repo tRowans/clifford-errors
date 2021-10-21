@@ -197,10 +197,12 @@ vint buildQubitIndices(int L)
         int v = f / 3;
         int dir = f % 3;
         coord cd = indexToCoord(v, L);
-        if (cd.xi[0] >= (L-3) || cd.xi[1] >= (L-3) || cd.xi[2] >= (L-3)) continue;
-        if (dir == 0) { if (cd.xi[0] == (L-4) || cd.xi[2] == 0) continue; }
-        else if (dir == 1) { if (cd.xi[0] == (L-4) || cd.xi[1] == 0) continue; }
-        qubitIndices.push_back(f);
+        if (cd.xi[0] < (L-3) && cd.xi[1] < (L-3) && cd.xi[2] < (L-3))
+        {
+            if (dir == 0 && cd.xi[0] < (L-4) && cd.xi[2] > 0) qubitIndices.push_back(f);
+            else if (dir == 1 && cd.xi[0] < (L-4) && cd.xi[1] > 0) qubitIndices.push_back(f);
+            else if (dir == 2) qubitIndices.push_back(f);
+        }
     }
     return qubitIndices;
 }
@@ -227,10 +229,15 @@ vint buildZSyndIndices(int L)
         int v = e / 3;
         int dir = e % 3;
         coord cd = indexToCoord(v, L);
-        if (cd.xi[0] >= (L-3) || cd.xi[1] >= (L-3) || cd.xi[2] >= (L-3)) continue;
-        if (dir == 0) { if (cd.xi[0] == (L-4) || cd.xi[2] == 0) continue; }
-        else if (dir == 1) { if (cd.xi[2] == 0) continue; }
-        zSyndIndices.push_back(e);
+
+        if (cd.xi[0] < (L-3) && cd.xi[1] < (L-3) && cd.xi[2] < (L-3))
+        {
+            if (dir == 0 && cd.xi[0] < (L-4) 
+                         && cd.xi[1] > 0
+                         && cd.xi[2] > 0) zSyndIndices.push_back(e);
+            else if (dir == 1 && cd.xi[2] > 0) zSyndIndices.push_back(e);
+            else if (dir == 2 && cd.xi[1] > 0) zSyndIndices.push_back(e);
+        }
     }
     return zSyndIndices;
 }
