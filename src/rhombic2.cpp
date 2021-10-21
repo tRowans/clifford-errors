@@ -213,21 +213,6 @@ void buildFaces(vvint &faceToVertices, vvint &faceToEdges, vpint &faceToCells, v
     }
 }
 
-int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices)
-{
-    std::sort(vertices.begin(), vertices.end());
-    auto v0Faces = vertexToFaces[vertices[0]];
-    for (const auto &face : v0Faces)
-    {
-        //just the two w=0 vertices is enough to specify a face
-        if (faceToVertices[face][1] == vertices[1])
-        {
-            return face;
-        }
-    }
-    return -1; //no face contains both of these vertices
-}
-
 int faceToBaseVertex(int face, int L)
 {
     //Each w=0 vertex has six associated faces but the indexes don't always match 

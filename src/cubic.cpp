@@ -189,6 +189,30 @@ vpint buildFaceToCells(int L)
     return faceToCells;
 }
 
+vvint buildFaceToVertices(int L)
+{
+    vvint faceToVertices;
+    for (int f = 0; f < 3 * L * L * L; f++)
+    {
+        v = f / 3;
+        dir = f % 3;
+        vint vertices;
+        if (dir == 0)
+        {
+            vertices = {v, neigh(v,x,1,L), neigh(v,y,1,L), neigh(neigh(v,x,1,L),y,1,L)};
+        }
+        else if (dir == 1)
+        {
+            vertices = {v, neigh(v,x,1,L), neigh(v,z,1,L), neigh(neigh(v,x,1,L),z,1,L)};
+        }
+        else 
+        {
+            vertices = {v, neigh(v,y,1,L), neigh(v,z,1,L), neigh(neigh(v,y,1,L),z,1,L)};
+        }
+    }
+    return faceToVertices;
+}
+
 vint buildQubitIndices(int L)
 {
     vint qubitIndices;

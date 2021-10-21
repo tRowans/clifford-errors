@@ -32,6 +32,8 @@ vvint buildCellToFaces(int L);
 
 vpint buildFaceToCells(int L);
 
+vvint buildFaceToVertices(int L);
+
 vint buildQubitIndices(int L);
 
 vint buildXSyndIndices(int L);

@@ -14,13 +14,34 @@ typedef std::vector<std::vector<int>> vvint;
 typedef std::pair<int,int> pint;
 typedef std::vector<std::pair<int, int>> vpint;
 
-int latticeSwitchVertex(int i, int currentLattice, int newLattice, int L);
+class Lattice
+{
+    public:
+        vvint faceToVertices;   
+        vvint vertexToFaces;    //This one not used in cubic lattice
+        vvint faceToEdges;
+        vvint edgeToFaces;
+        vpint faceToCells;
+        vvint cellToFaces;
+        vvint vertexToEdges;
+        vpint edgeToVertices;
 
-std::pair<int,int> latticeSwitchCell(int i, int currentLattice, int L);
+        vint qubitIndices;
+        vint xSyndIndices;
+        vint zSyndIndices;
+        vint xLogical;
+        vint zLogical; 
 
-int findFace(vint vertices, vvint &vertexToFaces, vvint &faceToVertices);
+        vint qubitsX(3*L*L*L, 0);
+        vint qubitsZ(3*L*L*L, 0);
+        vint syndromesX(L*L*L, 0);   //X stabiliser syndromes
+        vint syndromesZ(8*L*L*L, 0); //This is bigger than cubic needs but doesn't matter
+        vint defects = {};
+}
 
-void buildOverlappingFaces(std::map<pint,std::pair<pint,pint>> &overlappingFaces, vvint &faceToEdgesT, vpint &edgeToVerticesT, vvint &vertexToFacesR1, vvint &faceToVerticesR1, vvint &vertexToFacesR2, vvint &faceToVerticesR2, int L);
+int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices);
+
+std::map<pint,std::pair<pint,pint>> buildOverlappingFaces(Lattice &cubic, Lattice &rhombic1, Lattice &rhombic2, int L);
 
 void randomiseStabs(vvint &xStabs,std::mt19937 &engine,std::uniform_real_distribution<double> &dist);
 
