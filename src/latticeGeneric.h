@@ -37,7 +37,7 @@ class Lattice
         vint syndromesX(L*L*L, 0);   //X stabiliser syndromes
         vint syndromesZ(8*L*L*L, 0); //This is bigger than cubic needs but doesn't matter
         vint defects = {};
-}
+};
 
 int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices);
 

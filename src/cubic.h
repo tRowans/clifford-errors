@@ -3,7 +3,7 @@
 
 #include "latticeGeneric.h"
 
-namespace toric {
+namespace cubic {
 
 struct coord
 {

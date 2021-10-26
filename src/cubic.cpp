@@ -1,6 +1,6 @@
-#include "toricCodeSlice.h"
+#include "cubic.h"
 
-namespace toric {
+namespace cubic {
 
 int coordToIndex(coord c, int L)
 {
@@ -163,9 +163,9 @@ vvint buildCellToFaces(int L)
         cellToFaces.push_back({3*v, 
                                3*v+1, 
                                3*v+2, 
-                               3*neigh(v,x,1,L)+2, 
-                               3*neigh(v,y,1,L)+1, 
-                               3*neigh(v,z,1,L)});
+                               3*neigh(v,z,1,L),
+                               3*neigh(v,y,1,L)+1,
+                               3*neigh(v,x,1,L)+2});
     }
     return cellToFaces;
 }
