@@ -24,7 +24,7 @@ int shortestPathLength(int v1, int v2, int L)
     std::sort(diff.begin(), diff.end());
     if ((diff[0] + diff[1]) > diff[2]) dist += 2*(diff[0] + diff[1]);
     else dist += 2*diff[2];
-    return abs(dist); //can be the same if both vertices have the same first 3 coords
+    return abs(dist); //can be -1 if both vertices have the same first 3 coords
 }
 
 vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L)
@@ -72,7 +72,9 @@ vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L
             turnAround = 0;
         }
         bestEdge = products.back().second;
-        
+        //I don't know if we need this here 
+        //because I don't remember what the problem cases were in the slices
+        //but probably best to just leave it in
         if (std::find(path.begin(), path.end(), edges[bestEdge]) != path.end())
         {
             //Sometimes gets stuck at a dead end and needs to turn around
@@ -102,8 +104,8 @@ vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L
 vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFaces, int L)
 {
     int originalCell = cell1;
-    coord cd1 = cellToCoord(cell1, L);
-    coord cd2 = cellToCoord(cell2, L);
+    coord cd1 = indexToCoord(cell1, L);
+    coord cd2 = indexToCoord(cell2, L);
 
     vint diff = {cd2.xi[0] - cd1.xi[0], 
                  cd2.xi[1] - cd1.xi[1],
@@ -135,9 +137,7 @@ vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFac
         }
         bestDir = products.back().second;
         bestFace = cellToFaces[cell1][bestDir];
-        
-        //I think we shouldn't get this problem in the dual lattice
-        //because there is an even distribution of edges at each vertex
+        //Once again, probably don't need this
         //but no harm in leaving it in just in case 
         if (std::find(path.begin(), path.end(), bestFace) != path.end())
         {
@@ -157,7 +157,7 @@ vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFac
         cd1.xi[0] += dirs[bestDir][0];
         cd1.xi[1] += dirs[bestDir][1];
         cd1.xi[2] += dirs[bestDir][2];
-        cell1 = coordToIndex(cd1, L)/2;
+        cell1 = coordToIndex(cd1, L);
         diff = {cd2.xi[0] - cd1.xi[0], 
                 cd2.xi[1] - cd1.xi[1], 
                 cd2.xi[2] - cd1.xi[2]};
@@ -165,317 +165,50 @@ vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFac
     return path;
 }
 
-void middleSweepRule(vint &qubits, vint &middleQubitIndices, vint &syndrome, vint &syndIndices, vint &bulkSweepVertices, vvint &faceToEdges, vvint &faceToVertices, vvint &vertexToFaces, int L)
-{
-    //Sweeping in the +xyz direction only
-    std::set<int> flipBits;
-    vint vertices;
-    //Bulk sweep in XYZ
-    for (int v : bulkSweepVertices)
-    {
-        int xyi = 4*v + xy;
-        int xzi = 4*v + xz;
-        int yzi = 4*v + yz;
-        int xyzi = 4*v + xyz;
-        coord c = indexToCoord(v, L);
-        
-        if (c.xi[3] == 0)
-        {
-            if (syndrome[xyi] == 1 && syndrome[xzi] == 1 && 
-                syndrome[yzi] == 1 && syndrome[xyzi] == 1)
-            {  
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, xyz, 1, L), v + 5*L + 1}; 
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-                vertices = {v, neigh(v, xz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-                vertices = {v, neigh(v, yz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 5*L};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[xyi] == 1 && syndrome[xyzi] == 1)
-            {
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, xyz, 1, L), v + 5*L + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[xzi] == 1 && syndrome[xyzi] == 1)
-            {
-                vertices = {v, neigh(v, xz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[yzi] == 1 && syndrome[xyzi] == 1)
-            {
-                vertices = {v, neigh(v, yz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 5*L};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[xyi] == 1 && syndrome[xzi] == 1)
-            {
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, xyz, 1, L), v + 5*L + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-                vertices = {v, neigh(v, xz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[xyi] == 1 && syndrome[yzi] == 1)
-            {   
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, xyz, 1, L), v + 5*L + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-                vertices = {v, neigh(v, yz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 5*L};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[xzi] == 1 && syndrome[yzi] == 1)
-            {
-                vertices = {v, neigh(v, xz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-                vertices = {v, neigh(v, yz, 1, L), neigh(v, xyz, 1, L), v + 5*L*L + 5*L};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-        }
-    }
-        
-    for (int i : middleQubitIndices)
-    {
-        if (std::find(flipBits.begin(), flipBits.end(), i) != flipBits.end())
-        {
-            qubits[i] = (qubits[i] + 1) % 2;
-            std::vector<int> edges = faceToEdges[i];
-            for (int j : edges)
-            {
-                if (std::find(syndIndices.begin(), syndIndices.end(), j) != syndIndices.end())
-                {
-                    syndrome[j] = (syndrome[j] + 1) % 2;
-                }
-            }
-        }
-    }
-}
-
-void middleBoundarySweepRule(vint &qubits, vint &middleQubitIndices, vint &syndrome, vint &syndIndices, vint &middleBoundarySweepVertices, vvint &faceToEdges, vvint &faceToVertices, vvint &vertexToFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist)
-{
-    //special boundary sweep for z=1 intermediate qubits which cannot be flipped by the normal rule
-    //only valid if called after normal middle sweep rule
-    std::set<int> flipBits;
-    vint vertices;
-    for (int v : middleBoundarySweepVertices)
-    {
-        coord c = indexToCoord(v, L);
-        if (syndrome[4*v + xyz] == 1)
-        {
-            if (c.xi[1] == L-3)
-            {
-                vertices = {v, neigh(v, yz, -1, L), neigh(v, xyz, 1, L), v + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else
-            {
-                if (dist(engine) < 0.5) 
-                {
-                    vertices = {v, neigh(v, yz, -1, L), neigh(v, xyz, 1, L), v + 1};
-                    flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-                }
-                else
-                {
-                    vertices = {v, neigh(v, xz, -1, L), neigh(v, xyz, 1, L), v + 5*L};
-                    flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-                }
-            }
-        }
-    }
-    
-    for (int i : middleQubitIndices)
-    {
-        if (std::find(flipBits.begin(), flipBits.end(), i) != flipBits.end())
-        {
-            qubits[i] = (qubits[i] + 1) % 2;
-            std::vector<int> edges = faceToEdges[i];
-            for (int j : edges)
-            {
-                if (std::find(syndIndices.begin(), syndIndices.end(), j) != syndIndices.end())
-                {
-                    syndrome[j] = (syndrome[j] + 1) % 2;
-                }
-            }
-        }
-    }
-}
-
-void upperSweepRule(vint &qubits, vint &upperQubitIndices, vint &syndrome, vint &syndIndices, vint &bulkSweepVertices, vvint &faceToEdges, vvint &faceToVertices, vvint &vertexToFaces, int L)
-{
-    //Sweeping in the +xyz direction only
-    //Requires both middle sweep rule functions to have been run to be valid
-    std::set<int> flipBits;
-    vint vertices;
-    for (int v : bulkSweepVertices)
-    {
-        int xyi = 4*v + xy;
-        int xzi = 4*v + xz;
-        int yzi = 4*v + yz;
-        int xyzi = 4*v + xyz;
-        coord c = indexToCoord(v, L);
-        
-        if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 0)
-        {
-            if (syndrome[xyi] == 1 && syndrome[xzi] == 1)
-            {
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, xz, 1, L), v + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[xyi] == 1 && syndrome[yzi] == 1)
-            {
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, yz, 1, L), v + 5*L};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else if (syndrome[xzi] == 1 && syndrome[yzi] == 1)
-            {
-                vertices = {v, neigh(v, xz, 1, L), neigh(v, yz, 1, L), v + 5*L*L};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-        }
-    }
-   
-    for (int i : upperQubitIndices)
-    {
-        if (std::find(flipBits.begin(), flipBits.end(), i) != flipBits.end())
-        {
-            qubits[i] = (qubits[i] + 1) % 2;
-            std::vector<int> edges = faceToEdges[i];
-            for (int j : edges)
-            {
-                if (std::find(syndIndices.begin(), syndIndices.end(), j) != syndIndices.end())
-                {
-                    syndrome[j] = (syndrome[j] + 1) % 2;
-                }
-            }
-        }
-    }
-}
-
-void upperBoundarySweepRule1(vint &qubits, vint &upperQubitIndices, vint &syndrome, vint &syndIndices, vint &upperBoundarySweepVertices1, vvint &faceToEdges, vvint &faceToVertices, vvint &vertexToFaces, int L)
-{
-    //y=L-2 boundary sweep in XZ 
-    //Only valid if called after all middle + normal top sweep rule
-    std::set<int> flipBits;
-    vint vertices;
-    for (int v : upperBoundarySweepVertices1)
-    {
-        int xyi = 4*neigh(v, xy, -1, L) + xy;
-        int xzi = 4*v + xz;
-        int yzi = 4*neigh(v, yz, -1, L) + yz;
-        coord c = indexToCoord(v, L);
-        if (syndrome[xyi] == 1 && syndrome[xzi] == 1)
-        {
-            vertices = {v, neigh(v, xy, -1, L), neigh(v, xz, 1, L), v - 5*L + 5*L*L};
-            flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-        }
-        if (syndrome[xzi] == 1 && syndrome[yzi] == 1)
-        {
-            vertices = {v, neigh(v, xz, 1, L), neigh(v, yz, -1, L), v + 1 - 5*L};
-            flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-        }
-        if (syndrome[xyi] == 1 && syndrome[yzi] == 1)
-        {
-            vertices = {v, neigh(v, xy, -1, L), neigh(v, xz, 1, L), v - 5*L + 5*L*L};
-            flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            vertices = {v, neigh(v, xz, 1, L), neigh(v, yz, -1, L), v + 1 - 5*L};
-            flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-        }
-    }
-
-    for (int i : upperQubitIndices)
-    {
-        if (std::find(flipBits.begin(), flipBits.end(), i) != flipBits.end())
-        {
-            qubits[i] = (qubits[i] + 1) % 2;
-            std::vector<int> edges = faceToEdges[i];
-            for (int j : edges)
-            {
-                if (std::find(syndIndices.begin(), syndIndices.end(), j) != syndIndices.end())
-                {
-                    syndrome[j] = (syndrome[j] + 1) % 2;
-                }
-            }
-        }
-    }
-}
-
-void upperBoundarySweepRule2(vint &qubits, vint &upperQubitIndices, vint &syndrome, vint &syndIndices, vint &upperBoundarySweepVertices2, vvint &faceToEdges, vvint &faceToVertices, vvint &vertexToFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist)
-{
-    //z=1 and z=L-3 boundary special sweep rules
-    //Only valid if called after all other sweep rules
-    std::set<int> flipBits;
-    vint vertices;
-    for (int v : upperBoundarySweepVertices2)
-    {
-        int xyi = 4*v + xy;
-        int xzi = 4*v + xz;
-        int yzi = 4*v + yz;
-        coord c = indexToCoord(v, L);
-        if (c.xi[2] == 1 && syndrome[xzi] == 1)
-        {
-            vertices = {v, neigh(v, xy, 1, L), neigh(v, xz, 1, L), v + 1};
-            flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-        }
-        else if (c.xi[2] == 1 && syndrome[yzi] == 1)
-        {
-            vertices = {v, neigh(v, xy, 1, L), neigh(v, yz, 1, L), v + 5*L};
-            flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-        }
-        else if (c.xi[2] == L-3 && syndrome[xyi] == 1)
-        {
-            if (dist(engine) < 0.5 )
-            {
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, xz, 1, L), v + 1};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-            else
-            {
-                vertices = {v, neigh(v, xy, 1, L), neigh(v, yz, 1, L), v + 5*L};
-                flipBits.insert(findFace(vertices, vertexToFaces, faceToVertices));
-            }
-        }
-    }
-    
-    for (int i : upperQubitIndices)
-    {
-        if (std::find(flipBits.begin(), flipBits.end(), i) != flipBits.end())
-        {
-            qubits[i] = (qubits[i] + 1) % 2;
-            std::vector<int> edges = faceToEdges[i];
-            for (int j : edges)
-            {
-                if (std::find(syndIndices.begin(), syndIndices.end(), j) != syndIndices.end())
-                {
-                    syndrome[j] = (syndrome[j] + 1) % 2;
-                }
-            }
-        }
-    }
-}
-
 std::vector<int> distanceToClosestXBoundary(int v, int L)
 {
-    coord c = indexToCoord(v, L);
-    vint distInfo;
-    int dPlus;  //distance to +z boundary
-    int dMinus;  //distance to -z boundary
-    
-    if (c.xi[3] == 0)
+    //strings of edges can terminate at w=0 vertices at +/- x and w=1 at +/- z
+    coord cd = indexToCoord(v, L);
+    int xDist, zDist;
+
+    if (cd.xi[3] == 0)
     {
-        dPlus = 2*(L - 3 - c.xi[2]) + 1;
-        dMinus = 2*(c.xi[2] - 1) - 1;
+        if (cd.xi[0] < (L-4)/2) xDist = -2*cd.xi[0];
+        else xDist = 2*((L-4)/2 - cd.xi[0]);
+
+        if (cd.xi[2] < (L-4)/2) zDist = -2*cd.xi[2] - 1;
+        else zDist = 2*((L-4)/2 - cd.xi[2]) + 1;
+    }
+
+    else
+    {
+        if (cd.xi[0] < (L-4)/2) xDist = -2*cd.xi[0] + 1;
+        else xDist = 2*((L-4)/2 - cd.xi[0]) - 1;
+
+        if (cd.xi[2] < (L-4)/2) zDist = -2*cd.xi[2];
+        else zDist = 2*((L-4)/2 - cd.xi[2]);
+    }
+
+    vint distInfo = {0,0,0}; //dir, sign, dist
+    if (abs(xDist) < abs(zDist))
+    {
+        distInfo[0] = 0;
+        distInfo[1] = (0 < xDist) - (0 > xDist);
+        distInfo[2] = abs(xDist);
     }
     else 
     {
-        dPlus = 2*(L - 3 - c.xi[2]);
-        dMinus = 2*(c.xi[2] - 1);
+        distInfo[0] = 2;
+        distInfo[1] = (0 < zDist) - (0 > zDist);
+        distInfo[2] = abs(zDist);
     }
-
-    if (dPlus > dMinus) distInfo = {-1, dMinus};
-    //goes to +z boundary if distances are equal
-    //but this choice is not important
-    else distInfo = {1, dPlus};
-
+    
     return distInfo;
 }
 
-std::vector<int> shortestPathToXB(int v, vint &syndIndices, int L)   //B = boundary
+//got to here
+    
+std::vector<int> shortestPathToXBoundary(int v, vint &syndIndices, int L)   
 {
     std::vector<int> distInfo = distanceToClosestXBoundary(v, L);
     int &sign = distInfo[0];
