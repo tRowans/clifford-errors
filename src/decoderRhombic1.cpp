@@ -206,91 +206,183 @@ std::vector<int> distanceToClosestXBoundary(int v, int L)
     return distInfo;
 }
 
-//got to here
-    
-std::vector<int> shortestPathToXBoundary(int v, vint &syndIndices, int L)   
+std::vector<int> shortestPathToXBoundary(int v, int L)   
 {
-    std::vector<int> distInfo = distanceToClosestXBoundary(v, L);
-    int &sign = distInfo[0];
-    int &dist = distInfo[1];
-    std::vector<int> path;
-    coord c = indexToCoord(v, L);
+    vint distInfo = distanceToClosestXBoundary(v, L);
+    int &dir = distInfo[0];
+    int &sign = distInfo[1];
+    int &dist = distInfo[2];
+    vint path;
+    coord cd = indexToCoord(v, L);
 
-    if (c.xi[3] == 0)
+    vint moveDir1 = {0,0};   //dir, sign
+    vint moveDir2 = {0,0};
+    
+    if (dir == 0)
     {
-        //if upper defect
-        if (std::find(syndIndices.begin(), syndIndices.end(), 4*v + xyz) == syndIndices.end())
+        if (cd.xi[3] == 1)
         {
-            if (sign == 1)
+            if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 0)
             {
-                v = neigh(v, xy, -1, L);
-                path.push_back(4*v + xy);
-            }
-            else
-            {
-                v = neigh(v, yz, -1, L);
-                path.push_back(4*v + yz);
-            }
-        }
-        //if lower defect
-        else
-        {
-            if (sign == 1)
-            {
-                path.push_back(4*v + yz);
-                v = neigh(v, yz, 1, L);
+                if (sign == 1)
+                {
+                    if (cd.xi[1] == 0) moveDir1 = {xy,1};
+                    else moveDir1 = {xz,1};
+                }
+                else 
+                {
+                    if (cd.xi[1] == 0) moveDir1 == {yz,1};
+                    else moveDir1 = {xyz,-1};
+                }
             }
             else 
             {
-                path.push_back(4*v + xy);
-                v = neigh(v, xy, 1, L);
+                if (sign == 1)
+                {
+                    if (cd.xi[1] == 0) moveDir1 = {xyz,1};
+                    else moveDir1 = {yz,-1};
+                }
+                else 
+                {
+                    if (cd.xi[1] == 0) moveDir1 = {xz,-1};
+                    else moveDir1 = {xy,-1};
+                }
             }
+            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L);
+            v = neigh(v, moveDir1[0], moveDir1[1], L);
+            cd = indexToCoord(v, L);
+            dist -= 1;
         }
-        dist -= 1;
-        c = indexToCoord(v, L);
+
+        int zigzag = 0;
+        if (cd.xi[1] == 0 && sign == 1) zigzag = 1;
+        else if (cd.xi[1] == L-4 && sign == -1) zigzag = 1;
+        while (dist > 0)
+        {
+            if (zigzag == 0)
+            {
+                if (sign == 1)
+                {
+                    moveDir1 = {yz, -1};
+                    moveDir2 = {xz, 1};
+                }
+                else 
+                {
+                    moveDir1 = {xz, -1};
+                    moveDir2 = {yz, 1};
+                }
+            }
+            else 
+            {
+                if (sign == 1)
+                {
+                    moveDir1 = {xy, 1};
+                    moveDir2 = {xyz, 1};
+                }
+                else 
+                {
+                    moveDir1 = {xyz, -1};
+                    moveDir2 = {xy, -1};
+                }
+            }
+
+            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L);
+            v = neigh(v, moveDir1[0], moveDir1[1], L);
+            path.push_back(edgeIndex(v, moveDir2[0], moveDir2[1], L);
+            v = neigh(v, moveDir2[0], moveDir2[1], L);
+            zigzag = (zigzag + 1) % 2;
+            dist -= 2;
+        }
     }
 
-    if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 0 && sign == 1)
+    else
     {
-        while (dist > 0)
+        if (cd.xi[3] == 0)
         {
-            path.push_back(4*v + yz);
-            v = neigh(v, yz, 1, L);
-            v = neigh(v, xy, -1, L);
-            path.push_back(4*v + xy);
-            dist -= 2;
+            if (sign == 1) 
+            {
+                if (cd.xi[1] == 0) moveDir = {xyz, 1};
+                else moveDir = {xz, 1};
+            }
+            else 
+            {
+                if (cd.xi[1] == 0) moveDir = {xy, 1};
+                else moveDir = {yz, -1};
+            }
+
+            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L));
+            v = neigh(v, moveDir1[0], moveDir1[1], L);
+            cd = indexToCoord(v, L);
+            dist -= 1;
         }
-    }
-    else if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 0 && sign == -1)
-    {
+
         while (dist > 0)
         {
-            path.push_back(4*v + xy);
-            v = neigh(v, xy, 1, L);
-            v = neigh(v, yz, -1, L);
-            path.push_back(4*v + yz);
-            dist -= 2;
-        }
-    }
-    else if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 1 && sign == 1)
-    {
-        while (dist > 0)
-        {
-            v = neigh(v, xy, -1, L);
-            path.push_back(4*v + xy);
-            path.push_back(4*v + yz);
-            v = neigh(v, yz, 1, L);
-            dist -= 2;
-        }
-    }
-    else if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 1 && sign == -1)
-    {
-        while (dist > 0)
-        {
-            v = neigh(v, yz, -1, L);
-            path.push_back(4*v + yz);
-            path.push_back(4*v + xy);
-            v = neigh(v, xy, 1, L);
+            if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 0)
+            {
+                if (sign == 1)
+                {
+                    if (cd.xi[1] == 0)
+                    {
+                        moveDir1 = {yz, 1};
+                        moveDir2 = {xz, 1};
+                    }
+                    else 
+                    {
+                        moveDir1 = {xz, 1};
+                        moveDir2 = {yz, 1};
+                    }
+                }
+                else 
+                {
+                    if (cd.xi[1] == 0)
+                    {
+                        moveDir1 = {xy, 1};
+                        moveDir2 = {xyz, -1};
+                    }
+                    else 
+                    {
+                        moveDir1 = {xyz, -1};
+                        moveDir2 = {xy, 1};
+                    }
+                }
+            }
+
+            else 
+            {
+                if (sign == 1)
+                {
+                    if (cd.xi[1] == 0)
+                    {
+                        moveDir1 = {xyz, 1};
+                        moveDir2 = {xy, -1};
+                    }
+                    else 
+                    {
+                        moveDir1 = {xy, -1};
+                        moveDir2 = {xyz, 1};
+                    }
+                }
+                else
+                {
+                    if (cd.xi[1] == 0)
+                    {
+                        moveDir1 = {xz, -1};
+                        moveDir2 = {yz, -1};
+                    }
+                    else 
+                    {
+                        moveDir1 = {yz, -1};
+                        moveDir2 = {xz, -1};
+                    }
+                }
+            }
+            
+            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L);
+            v = neigh(v, moveDir1[0], moveDir1[1], L);
+            path.push_back(edgeIndex(v, moveDir2[0], moveDir2[1], L);
+            v = neigh(v, moveDir2[0], moveDir2[1], L);
+            cd = indexToCoord(v, L);
             dist -= 2;
         }
     }
@@ -301,199 +393,96 @@ std::vector<int> shortestPathToXBoundary(int v, vint &syndIndices, int L)
 vint distanceToClosestZBoundary(int cell, int L)
 {
     coord cd = cellToCoord(cell, L);
-    vint distInfo;
-    int dPlus;  //distance to +y boundary
-    int dMinus;  //distance to -y boundary
-   
-    //-z boundary +x edge 
-    if ((cd.xi[0] + cd.xi[1] + cd.xi[2] == (2*L-5) + (3*L+2)) && cd.xi[2] == 1)
-    {
-        if (cd.xi[1] == (L-3)) dPlus = 1;
-        else dPlus = (L-1) - cd.xi[1];
-    }
-    //+x boundary
-    else if (cd.xi[0] + cd.xi[1] + cd.xi[2] == (2*L-5) + (3*L+4))
-    {
-        if (cd.xi[2] == 2)
-        {
-            if (cd.xi[1] == (L-3)) dPlus = 2;
-            else dPlus = L - cd.xi[1];
-        }
-        else dPlus = (L-1) - cd.xi[1];
-    }
-    else dPlus = (L-2) - cd.xi[1];
-    //+z boundary -x edge
-    if ((cd.xi[0] + cd.xi[1] + cd.xi[2] == (2*L-5) + 2) && cd.xi[2] == L-2)
-    {
-        if (cd.xi[1] == 2) dMinus = 1;
-        else dMinus = cd.xi[1];
-    }
-    //-x boundary
-    else if (cd.xi[0] + cd.xi[1] + cd.xi[2] == 2*L-5)
-    {
-        if (cd.xi[2] == L-3)
-        {
-            if (cd.xi[1] == 2) dMinus = 2;
-            else dMinus = cd.xi[1] + 1;
-        }
-        else dMinus = cd.xi[1];
-    }
-    else dMinus = cd.xi[1] - 1;
+    int dist;
 
-    if (dPlus > dMinus) distInfo = {-1, dMinus};
-    //goes to +y boundary if distances are equal
-    //but this choice is not important
-    else distInfo = {1, dPlus};
+    if (cd.xi[1] > (L-3)/2) dist = (L-3) - cd.xi[1];
+    else dist = -cd.xi[1];
 
-    return distInfo;
+    return dist;
 }
 
-vint shortestPathToZB(int cell, vvint &cellToFaces, int L)
+vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
 {
-    vint distInfo = distanceToClosestZBoundary(cell, L);
-    int &sign = distInfo[0];
-    int &dist = distInfo[1];
-    coord cd = cellToCoord(cell, L);
+    int dist = distanceToClosestZBoundary(cell, L);
+    int sign = (0 < dist) - (0 > dist);
+    int dist = abs(dist);
+    coord cd = indexToCoord(cell, L);
     vint path;
-    
+
     if (sign == 1)
     {
-        //+x boundary
-        if (cd.xi[0] + cd.xi[1] + cd.xi[2] == (2*L-5) + (3*L+4))
+        if (cd.xi[2] == 0)
         {
-            path.push_back(cellToFaces[cell][9]);
-            cd.xi[0] -= 1;
-            cd.xi[2] -= 1;
-            cell = coordToIndex(cd, L)/2;
+            path.push_back(cellToFaces[cell][6]);
+            cell = cell + L + L*L;
             dist -= 1;
         }
+        else if (cd.xi[2] == L-3)
+        {
+            path.push_back(cellToFaces[cell][8]);
+            cell = cell + L - L*L;
+            dist -= 1;
+        }
+        if (dist == 0) return path;
         
-        //-z boundary 
-        if (cd.xi[2] == 1)
-        {
-            //+x edge (except +y corner)
-            if ((cd.xi[0] + cd.xi[1] + cd.xi[2] == (2*L-5) + (3*L+2)) && cd.xi[1] != (L-3))
-            {
-                path.push_back(cellToFaces[cell][5]);
-                cd.xi[0] -= 1;
-                cd.xi[2] += 1;
-                cell = coordToIndex(cd, L)/2;
-                dist -= 1;
-            }
-            else
-            {
-                path.push_back(cellToFaces[cell][6]);
-                cd.xi[1] += 1;
-                cd.xi[2] += 1;
-                cell = coordToIndex(cd, L)/2;
-                dist -= 1;
-            }
-        }
-
-        //-x boundary
-        //This would not work for -z edge of this boundary 
-        //but these have already been addressed by the previous if statement
-        if (cd.xi[0] + cd.xi[1] + cd.xi[2] == 2*L-5)
-        {
-            path.push_back(cellToFaces[cell][0]);
-            cd.xi[0] += 1;
-            cd.xi[1] += 1;
-            cell = coordToIndex(cd, L)/2;
-            dist -= 1;
-        }
-
-        //+z boundary
-        //This would not work for +z edge of +x boundary
-        //but this boundary has been dealt with by the first if statement
-        else if (cd.xi[2] == L-2)
-        {
-            path.push_back(cellToFaces[cell][10]);
-            cd.xi[1] += 1;
-            cd.xi[2] -= 1;
-            cell = coordToIndex(cd, L)/2;
-            dist -= 1;
-        }
-
+        int zigzag = 0;
+        if (cd.xi[0] == L-4) zigzag = 1; 
         while (dist > 0)
         {
-            path.push_back(cellToFaces[cell][2]);
-            cd.xi[0] -= 1;
-            cd.xi[1] += 1;
-            cell = coordToIndex(cd, L)/2;
+            if (zigzag = 0)
+            {
+                path.push_back(cellToFaces[cell][0]);
+                cell = cell + 1 + L;
+            }
+            else 
+            {
+                path.push_back(cellToFaces[cell][2]);
+                cell = cell - 1 + L;
+            }
+            zigzag = (zigzag + 1) % 2;
             dist -= 1;
         }
     }
-    else
+
+    else 
     {
-        //-x boundary
-        if (cd.xi[0] + cd.xi[1] + cd.xi[2] == 2*L-5)
+        if (cd.xi[2] == 0)
         {
-            path.push_back(cellToFaces[cell][4]);
-            cd.xi[0] += 1;
-            cd.xi[2] += 1;
-            cell = coordToIndex(cd, L)/2;
+            path.push_back(cellToFaces[cell][7]);
+            cell = cell - L + L*L;
             dist -= 1;
         }
-    
-        //+z boundary 
-        if (cd.xi[2] == L-2)
+        else if (cd.xi[2] == L-3)
         {
-            //-x edge (except -y corner)
-            if ((cd.xi[0] + cd.xi[1] + cd.xi[2] == (2*L-5) + 2) && cd.xi[1] != 2)
+            path.push_back(cellToFaces[cell][11]);
+            cell = cell - L - L*L;
+            dist -= 1;
+        }
+        if (dist == 0) return path;
+
+        int zigzag = 0;
+        if (cd.xi[0] == L-4) zigzag = 1;
+        while (dist > 0)
+        {
+            if (zigzag = 0)
             {
-                path.push_back(cellToFaces[cell][8]);
-                cd.xi[0] += 1;
-                cd.xi[2] -= 1;
-                cell = coordToIndex(cd, L)/2;
-                dist -= 1;
+                path.push_back(cellToFaces[cell][1]);
+                cell = cell + 1 - L;
             }
             else
             {
-                path.push_back(cellToFaces[cell][11]);
-                cd.xi[1] -= 1;
-                cd.xi[2] -= 1;
-                cell = coordToIndex(cd, L)/2;
-                dist -= 1;
+                path.push_back(cellToFaces[cell][3]);
+                cell = cell - 1 - L;
             }
-        }
-
-        //+x boundary
-        ////This would not work for +z edge of this boundary 
-        //but these have already been addressed by the previous if statement
-        if (cd.xi[0] + cd.xi[1] + cd.xi[2] == (2*L-5) + (3*L+4))
-        {
-            path.push_back(cellToFaces[cell][3]);
-            cd.xi[0] -= 1;
-            cd.xi[1] -= 1;
-            cell = coordToIndex(cd, L)/2;
-            dist -= 1;
-        }
-    
-        //-z boundary
-        //This would not work for -z edge of -x boundary
-        //but this boundary has been dealt with by the first if statement
-        if (cd.xi[2] == 1)
-        {
-           path.push_back(cellToFaces[cell][7]);
-           cd.xi[1] -= 1;
-           cd.xi[2] += 1;
-           cell = coordToIndex(cd, L)/2;
-           dist -= 1;
-        }
-        
-        while (dist > 0)
-        {
-            path.push_back(cellToFaces[cell][1]);
-            cd.xi[0] += 1;
-            cd.xi[1] -= 1;
-            cell = coordToIndex(cd, L)/2;
+            zigzag = (zigzag + 1) % 2;
             dist -= 1;
         }
     }
+
     return path;
 }
 
-vpint mwpm(vint &defects, std::map<std::pair<int, int>, int> &defectPairDistances, int L, int dual)
+vpint mwpm(vint &defects, int L, int dual)
 {
     std::vector<int> edges;
     std::vector<int> weights;
@@ -504,21 +493,8 @@ vpint mwpm(vint &defects, std::map<std::pair<int, int>, int> &defectPairDistance
         {
             edges.push_back(i);
             edges.push_back(j);
-            if (defectPairDistances.count({defects[i],defects[j]}))
-            {
-                weights.push_back(defectPairDistances[{defects[i],defects[j]}]);
-            }
-            else
-            {
-                if (dual == 0) weights.push_back(shortestPathLength(defects[i], defects[j], L));
-                else 
-                {
-                    //this is so dumb, should have just kept cell and vertex indices the same
-                    int v1 = coordToIndex(cellToCoord(defects[i], L), L);
-                    int v2 = coordToIndex(cellToCoord(defects[j], L), L);
-                    weights.push_back(shortestPathLength(v1, v2, L)/2);
-                }
-            }
+            if (dual == 0) weights.push_back(shortestPathLength(defects[i], defects[j], L));
+            else weights.push_back(shortestPathLength(defects[i], defects[j], L)/2);
             // Add boundary node edges with wt = 0 so they can be matched for no cost
             edges.push_back(nodeNum + i);
             edges.push_back(nodeNum + j);
@@ -527,15 +503,8 @@ vpint mwpm(vint &defects, std::map<std::pair<int, int>, int> &defectPairDistance
         // Add edge to boundary node
         edges.push_back(i);
         edges.push_back(nodeNum + i);
-        if (defectPairDistances.count({defects[i], -1}))
-        {
-            weights.push_back(defectPairDistances[{defects[i], -1}]);
-        }
-        else
-        {
-            if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L)[1]);
-            else weights.push_back(distanceToClosestZBoundary(defects[i], L)[1]);
-        }
+        if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L)[2]);
+        else weights.push_back(abs(distanceToClosestZBoundary(defects[i], L)));
     }
     int edgeNum = edges.size() / 2;
     struct PerfectMatching::Options options;
@@ -570,44 +539,11 @@ vpint mwpm(vint &defects, std::map<std::pair<int, int>, int> &defectPairDistance
     return defectPairs;
 }
 
-void updatePairing(std::map<std::pair<int, int>, int> &defectPairDistances, std::vector<int> &defects, int L)
-{
-    std::sort(defects.begin(), defects.end()); //need a standard ordering for pairs
-    std::vector<std::pair<int, int>> defectPairs = mwpm(defects, defectPairDistances, L, 0); 
-    std::vector<std::pair<int, int>> removeThese;
-    for (auto &p : defectPairDistances)
-    {
-        if (std::find(defectPairs.begin(), defectPairs.end(), p.first) == defectPairs.end())
-        {
-            removeThese.push_back(p.first);
-        }
-    }
-    for (std::pair<int, int> p : removeThese) defectPairDistances.erase(p);
-    
-    int distance;
-
-    for (std::pair<int, int> &q : defectPairs)
-    {
-        if (!defectPairDistances.count(q))
-        {
-            if (q.second == -1)
-            {
-                distance = distanceToClosestXBoundary(q.first, L)[1];
-            }
-            else
-            {
-                distance = shortestPathLength(q.first, q.second, L);
-            }
-            defectPairDistances[q] = distance; 
-        }
-    }
-}
-
 void joinPair(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, vint &syndrome, int L)
 {
     vint path;
     //If matched to boundary
-    if (v2 == -1) path = shortestPathToXB(v1, syndIndices, L);
+    if (v2 == -1) path = shortestPathToXBoundary(v1, L);
     else path = shortestPath(v1, v2, syndIndices, vertexToEdges, L);
     for (int i : path) syndrome[i] = (syndrome[i] + 1) % 2;
 }
@@ -615,202 +551,24 @@ void joinPair(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, vint &syn
 void joinDualPair(int cell1, int cell2, vint &qubitIndices, vvint &cellToFaces, vint &qubits, int L)
 {
     vint path;
-    if (cell2 == -1) path = shortestPathToZB(cell1, cellToFaces, L);
+    if (cell2 == -1) path = shortestPathToZBoundary(cell1, cellToFaces, L);
     else path = shortestDualPath(cell1, cell2, qubitIndices, cellToFaces, L);
     for (int i : path) qubits[i] = (qubits[i] + 1) % 2;
 }
 
-vint pathToTop(int v, int L)
-{
-    vint path;
-    if (v == -1)
-    {
-        //no deferral for boundaries
-        return path;
-    }
-    coord c = indexToCoord(v, L);
-    if (c.xi[3] == 0)
-    {
-        if (c.xi[1] == L-2)
-        {
-            v = neigh(v, yz, -1, L);
-            path.push_back(4*v + yz);
-        }
-        else
-        {
-            path.push_back(4*v + xy);
-            v = neigh(v, xy, 1, L);
-        }
-        c = indexToCoord(v, L);
-    }
-    if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 1)
-    {
-        path.push_back(4*v + xyz);
-        v = neigh(v, xyz, 1, L);
-        v = neigh(v, yz, -1, L);
-        path.push_back(4*v + yz);
-        c = indexToCoord(v, L);
-    }
-    if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 0)
-    {
-        path.push_back(4*v + xz);
-    }
-    return path;
-}
-
-void syndromeRepair(vint &syndrome, vint &syndIndices, vvint &vertexToEdges, vpint &edgeToVertices, std::map<std::pair<int, int>, int> &defectPairDistances, int L, int cutoff, int reduction)
-{
-    std::map<std::pair<int, int>, int> newDefectPairDistances;
-    for (std::pair<const std::pair<int, int>, int> &p : defectPairDistances)
-    {
-        std::pair<int, int> newPair;
-        vint path1 = pathToTop(p.first.first, L);
-        vint path2 = pathToTop(p.first.second, L);
-        int joinRange;
-        if (cutoff == 0) joinRange = (path1.size() + path2.size());
-        else joinRange = cutoff;
-        int reduceBy;
-        if (reduction == 0) reduceBy = (path1.size() + path2.size());
-        else reduceBy = reduction;
-
-        if (p.second <= joinRange)
-        {
-            joinPair(p.first.first, p.first.second, syndIndices, vertexToEdges, syndrome, L);
-        }
-        else
-        {
-            for (int i : path1) syndrome[i] = (syndrome[i] + 1) % 2;
-            //smaller index is first in edgeToVertices pair so will be w=0 vertex
-            //w=0 vertex of final edge in path is where we end
-            newPair.first = edgeToVertices[path1.back()].first;
-            if (p.first.second != -1)
-            {
-                for (int i : path2) syndrome[i] = (syndrome[i] + 1) % 2;
-                newPair.second = edgeToVertices[path2.back()].first;
-            }
-            else newPair.second = -1;
-            newDefectPairDistances[newPair] = p.second - reduceBy;
-        }
-    }
-    defectPairDistances = newDefectPairDistances;
-}
-
 void zErrorDecoder(vint &qubits, vint &qubitIndices, vvint &cellToFaces, vint &xStabs, int L)
 {
-    std::map<std::pair<int,int>,int> empty;
     vint violatedXStabs;
     vpint xStabPairs;
     for (int j = 0; j < xStabs.size(); j++)
     {
         if (xStabs[j] == 1) violatedXStabs.push_back(j);
     }
-    xStabPairs = mwpm(violatedXStabs, empty, L, 1);
+    xStabPairs = mwpm(violatedXStabs, L, 1);
     for (auto &pair : xStabPairs)
     {
         joinDualPair(pair.first, pair.second, qubitIndices, cellToFaces, qubits, L);
     }
 }
-
-//Currently unused 
-/*
-//No references on lattice index vectors because we want copies of these
-//so that the positions are reset at the start of each run
-int oneRun(int L, double p, double q, vvint &faceToEdges, vvint &edgeToFaces, vvint &faceToVertices, vvint &vertexToFaces, vvint &vertexToEdges, vpint &edgeToVertices, vint lowerQubitIndices, vint middleQubitIndices, vint upperQubitIndices, vint syndIndices, vint defectIndices, vint bulkSweepVertices, vint middleBoundarySweepVertices, vint upperBoundarySweepVertices1, vint upperBoundarySweepVertices2, vint zLogical, int run, int cutoff, int reduction)
-{
-    std::vector<int> qubits(3*5*L*L*L, 0);
-    std::vector<int> syndrome(8*5*L*L*L, 0);
-    std::vector<int> defects = {};
-
-    std::map<std::pair<int, int>, int> defectPairDistances;
-    
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-    
-    for (int i=0; i < (3*L)/2; i++)
-    {
-        calcSynd(syndrome, qubits, lowerQubitIndices, middleQubitIndices, upperQubitIndices, faceToEdges, syndIndices);
-        measError(syndrome, q, engine, dist, syndIndices);
-        findDefects(syndrome, vertexToEdges, edgeToVertices, defects, defectIndices);
-        updatePairing(defectPairDistances, defects, L);
-        syndromeRepair(syndrome, syndIndices, vertexToEdges, edgeToVertices, 
-                        defectPairDistances, L, cutoff, reduction);
-        findDefects(syndrome, vertexToEdges, edgeToVertices, defects, defectIndices);
-        if (defects.size() != 0)
-        {
-            std::cout << "syndrome repair failed on run " << run << '\n';
-            return 2;
-        }
-        middleSweepRule(qubits, middleQubitIndices, syndrome, syndIndices, bulkSweepVertices, 
-                            faceToEdges, faceToVertices, vertexToFaces, L);
-        middleBoundarySweepRule(qubits, middleQubitIndices, syndrome, syndIndices, 
-                                    middleBoundarySweepVertices, faceToEdges, faceToVertices, 
-                                    vertexToFaces, L, engine, dist);
-        upperSweepRule(qubits, upperQubitIndices, syndrome, syndIndices, bulkSweepVertices, 
-                            faceToEdges, faceToVertices, vertexToFaces, L);
-        upperBoundarySweepRule1(qubits, upperQubitIndices, syndrome, syndIndices, 
-                                    upperBoundarySweepVertices1, faceToEdges, faceToVertices, 
-                                    vertexToFaces, L);
-        upperBoundarySweepRule2(qubits, upperQubitIndices, syndrome, syndIndices, 
-                                    upperBoundarySweepVertices2, faceToEdges, faceToVertices, 
-                                    vertexToFaces, L, engine, dist);
-        dataError(qubits, p, engine, dist, upperQubitIndices);
-        moveIndices(lowerQubitIndices, middleQubitIndices, upperQubitIndices, syndIndices, defectIndices, bulkSweepVertices, middleBoundarySweepVertices, upperBoundarySweepVertices1, upperBoundarySweepVertices2, zLogical, vertexToFaces, faceToVertices, L);
-    }
-
-    calcSynd(syndrome, qubits, lowerQubitIndices, middleQubitIndices, upperQubitIndices, faceToEdges, syndIndices);
-    findDefects(syndrome, vertexToEdges, edgeToVertices, defects, defectIndices);
-    updatePairing(defectPairDistances, defects, L);
-    for (auto &p : defectPairDistances)
-    {
-        joinPair(p.first.first, p.first.second, syndIndices, vertexToEdges, syndrome, L);
-    }
-    findDefects(syndrome, vertexToEdges, edgeToVertices, defects, defectIndices);
-    middleSweepRule(qubits, middleQubitIndices, syndrome, syndIndices, bulkSweepVertices, 
-                            faceToEdges, faceToVertices, vertexToFaces, L);
-    middleBoundarySweepRule(qubits, middleQubitIndices, syndrome, syndIndices, 
-                                middleBoundarySweepVertices, faceToEdges, faceToVertices, 
-                                vertexToFaces, L, engine, dist);
-    upperSweepRule(qubits, upperQubitIndices, syndrome, syndIndices, bulkSweepVertices, 
-                        faceToEdges, faceToVertices, vertexToFaces, L);
-    upperBoundarySweepRule1(qubits, upperQubitIndices, syndrome, syndIndices, 
-                                upperBoundarySweepVertices1, faceToEdges, faceToVertices, 
-                                vertexToFaces, L);
-    upperBoundarySweepRule2(qubits, upperQubitIndices, syndrome, syndIndices, 
-                                upperBoundarySweepVertices2, faceToEdges, faceToVertices, 
-                                vertexToFaces, L, engine, dist);
-
-    //Check return to codespace
-    *//*
-    std::set<int> upperStabs = {};
-    for (int f : upperQubitIndices)
-    {
-        vint edges = faceToEdges[f];
-        for (int e : edges)
-        {
-            if (std::find(syndIndices.begin(), syndIndices.end(), e) != syndIndices.end())
-            {
-                upperStabs.insert(e);
-            }
-        }
-    }
-    calcSynd(syndrome, qubits, lowerQubitIndices, middleQubitIndices, upperQubitIndices, faceToEdges, syndIndices);
-    int notEmpty = 0;
-    for (int stab : upperStabs)
-    {
-        if (syndrome[stab] == 1) notEmpty += 1;
-    }
-    if (notEmpty != 0) std::cout << "Return to codespace failed" << '\n';
-    *//*
-    if (checkCorrection(qubits, zLogical))
-    {
-       return 1;
-    }
-    else
-    {
-       return 0;
-    } 
-}
-*/
 
 }
