@@ -106,7 +106,6 @@ vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFac
     int originalCell = cell1;
     coord cd1 = indexToCoord(cell1, L);
     coord cd2 = indexToCoord(cell2, L);
-
     vint diff = {cd2.xi[0] - cd1.xi[0], 
                  cd2.xi[1] - cd1.xi[1],
                  cd2.xi[2] - cd1.xi[2]};
@@ -224,31 +223,15 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
         {
             if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 0)
             {
-                if (sign == 1)
-                {
-                    if (cd.xi[1] == 0) moveDir1 = {xy,1};
-                    else moveDir1 = {xz,1};
-                }
-                else 
-                {
-                    if (cd.xi[1] == 0) moveDir1 == {yz,1};
-                    else moveDir1 = {xyz,-1};
-                }
+                if (sign == 1) moveDir1 = {xy,1};
+                else moveDir1 == {xyz,-1};
             }
             else 
             {
-                if (sign == 1)
-                {
-                    if (cd.xi[1] == 0) moveDir1 = {xyz,1};
-                    else moveDir1 = {yz,-1};
-                }
-                else 
-                {
-                    if (cd.xi[1] == 0) moveDir1 = {xz,-1};
-                    else moveDir1 = {xy,-1};
-                }
+                if (sign == 1) moveDir1 = {xyz,1};
+                else moveDir1 = {xy,-1};
             }
-            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L);
+            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L));
             v = neigh(v, moveDir1[0], moveDir1[1], L);
             cd = indexToCoord(v, L);
             dist -= 1;
@@ -301,13 +284,13 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
         {
             if (sign == 1) 
             {
-                if (cd.xi[1] == 0) moveDir = {xyz, 1};
-                else moveDir = {xz, 1};
+                if (cd.xi[1] == 0) moveDir1 = {xyz, 1};
+                else moveDir1 = {xz, 1};
             }
             else 
             {
-                if (cd.xi[1] == 0) moveDir = {xy, 1};
-                else moveDir = {yz, -1};
+                if (cd.xi[1] == 0) moveDir1 = {xy, 1};
+                else moveDir1 = {yz, -1};
             }
 
             path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L));
@@ -322,29 +305,12 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
             {
                 if (sign == 1)
                 {
-                    if (cd.xi[1] == 0)
-                    {
-                        moveDir1 = {yz, 1};
-                        moveDir2 = {xz, 1};
-                    }
-                    else 
-                    {
-                        moveDir1 = {xz, 1};
-                        moveDir2 = {yz, 1};
-                    }
-                }
+                    moveDir1 = {xz, 1};
+                    moveDir2 = {yz, 1};
                 else 
                 {
-                    if (cd.xi[1] == 0)
-                    {
-                        moveDir1 = {xy, 1};
-                        moveDir2 = {xyz, -1};
-                    }
-                    else 
-                    {
-                        moveDir1 = {xyz, -1};
-                        moveDir2 = {xy, 1};
-                    }
+                    moveDir1 = {xyz, -1};
+                    moveDir2 = {xy, 1};
                 }
             }
 
@@ -352,29 +318,13 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
             {
                 if (sign == 1)
                 {
-                    if (cd.xi[1] == 0)
-                    {
-                        moveDir1 = {xyz, 1};
-                        moveDir2 = {xy, -1};
-                    }
-                    else 
-                    {
-                        moveDir1 = {xy, -1};
-                        moveDir2 = {xyz, 1};
-                    }
+                    moveDir1 = {xy, -1};
+                    moveDir2 = {xyz, 1};
                 }
                 else
                 {
-                    if (cd.xi[1] == 0)
-                    {
-                        moveDir1 = {xz, -1};
-                        moveDir2 = {yz, -1};
-                    }
-                    else 
-                    {
-                        moveDir1 = {yz, -1};
-                        moveDir2 = {xz, -1};
-                    }
+                    moveDir1 = {yz, -1};
+                    moveDir2 = {xz, -1};
                 }
             }
             
@@ -392,7 +342,7 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
 
 vint distanceToClosestZBoundary(int cell, int L)
 {
-    coord cd = cellToCoord(cell, L);
+    coord cd = IndexToCoord(cell, L);
     int dist;
 
     if (cd.xi[1] > (L-3)/2) dist = (L-3) - cd.xi[1];
@@ -423,7 +373,6 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
             cell = cell + L - L*L;
             dist -= 1;
         }
-        if (dist == 0) return path;
         
         int zigzag = 0;
         if (cd.xi[0] == L-4) zigzag = 1; 
@@ -458,7 +407,6 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
             cell = cell - L - L*L;
             dist -= 1;
         }
-        if (dist == 0) return path;
 
         int zigzag = 0;
         if (cd.xi[0] == L-4) zigzag = 1;

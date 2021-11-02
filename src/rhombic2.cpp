@@ -335,18 +335,18 @@ vvint buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVe
         int zPlus = neighXYZ(v,2,1,L);
         int zMinus = neighXYZ(v,2,-1,L);
         
-        faces.push_back(findFace({xPlus,yPlus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({xPlus,yMinus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({xMinus,yPlus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({xMinus,yMinus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({xPlus,zPlus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({xMinus,zPlus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({yPlus,zPlus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({yMinus,zPlus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({xPlus,zMinus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({xMinus,zMinus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({yPlus,zMinus}, vertexToFaces, faceToVertices));
-        faces.push_back(findFace({yMinus,zMinus}, vertexToFaces, faceToVertices));
+        faces.push_back(findFace({xPlus,yPlus}, vertexToFaces, faceToVertices));   //0
+        faces.push_back(findFace({xPlus,yMinus}, vertexToFaces, faceToVertices));  //1
+        faces.push_back(findFace({xMinus,yPlus}, vertexToFaces, faceToVertices));  //2
+        faces.push_back(findFace({xMinus,yMinus}, vertexToFaces, faceToVertices)); //3 
+        faces.push_back(findFace({xPlus,zPlus}, vertexToFaces, faceToVertices));   //4
+        faces.push_back(findFace({xMinus,zPlus}, vertexToFaces, faceToVertices));  //5
+        faces.push_back(findFace({yPlus,zPlus}, vertexToFaces, faceToVertices));   //6
+        faces.push_back(findFace({yMinus,zPlus}, vertexToFaces, faceToVertices));  //7
+        faces.push_back(findFace({xPlus,zMinus}, vertexToFaces, faceToVertices));  //8
+        faces.push_back(findFace({xMinus,zMinus}, vertexToFaces, faceToVertices)); //9
+        faces.push_back(findFace({yPlus,zMinus}, vertexToFaces, faceToVertices));  //10
+        faces.push_back(findFace({yMinus,zMinus}, vertexToFaces, faceToVertices)); //11
 
         cellToFaces[v] = faces;
     }
