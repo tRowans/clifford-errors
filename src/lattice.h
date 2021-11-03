@@ -1,5 +1,5 @@
-#ifndef LATTICEGENERIC_H
-#define LATTICEGENERIC_H
+#ifndef LATTICE_H
+#define LATTICE_H
 
 #include <vector>
 #include <set>
@@ -29,14 +29,27 @@ class Lattice
         vint qubitIndices;
         vint xSyndIndices;
         vint zSyndIndices;
+        vint defectIndices;
         vint xLogical;
         vint zLogical; 
 
         vint qubitsX(3*L*L*L, 0);
         vint qubitsZ(3*L*L*L, 0);
-        vint syndromesX(L*L*L, 0);   //X stabiliser syndromes
-        vint syndromesZ(8*L*L*L, 0); //This is bigger than cubic needs but doesn't matter
+        vint syndromeX(L*L*L, 0);   //X stabiliser syndromes
+        vint syndromeZ(8*L*L*L, 0); //This is bigger than cubic needs but doesn't matter
         vint defects = {};
+
+        void depolarisingError(double p, std::mt19937& engine, 
+                                std::uniform_real_distribution<double>& dist);
+        void biasedError(double p, std::mt19937& engine, 
+                                std::uniform_real_distribution<double>& dist, char pauli);
+        void measError(double q, std::mt19937& engine, 
+                                std::uniform_real_distribution<double>& dist, char pauli);
+        void calcSynd(char pauli);
+        void findDefects();
+        void checkInBounds();
+        void checkInCodespace();
+        bool checkLogicalError(char pauli);
 };
 
 int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices);
