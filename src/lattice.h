@@ -2,6 +2,7 @@
 #define LATTICE_H
 
 #include <vector>
+#include <string>
 #include <set>
 #include <random>
 #include <stdexcept>
@@ -51,11 +52,5 @@ class Lattice
         void checkInCodespace();
         bool checkLogicalError(char pauli);
 };
-
-int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices);
-
-std::map<pint,std::pair<pint,pint>> buildOverlappingFaces(Lattice &cubic, Lattice &rhombic1, Lattice &rhombic2, int L);
-
-void randomiseStabs(vvint &xStabs,std::mt19937 &engine,std::uniform_real_distribution<double> &dist);
 
 #endif

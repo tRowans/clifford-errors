@@ -27,21 +27,6 @@ std::map<pint,std::pair<pint,pint>> buildOverlappingFaces(std::vector<Lattice> &
     return overlappingFaces;
 }
 
-//Do I need this? See how it goes. 
-void randomiseStabs(vvint &xStabs, std::mt19937 &engine, std::uniform_real_distribution<double> &dist)
-{
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < xStabs[i].size(); j++)
-        {
-            if (dist(engine) < 0.5)
-            {
-                xStabs[i][j] = 1;
-            }
-        }
-    }
-}
-
 vvint getSyndromeVertices(std::vector<Lattice> &lattices)
 {
     std::vector<std::set<int>> syndromeVerticesSets = {{},{},{}};
@@ -89,121 +74,63 @@ int latticeWhereCell(int v, int latticeA, int L)
     return latticeC;
 }
 
-//STILL WORKING ON THIS ONE !!
-
-void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,std::pair<pint,pint>> &overlappingFaces, int L)
+void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,std::pair<pint,pint>> &overlappingFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, bool link)
 {
+    //membrane boundary errors
     vvint syndromeVertices = getSyndromeVertices(lattices);
     for (int i = 0; i < 3; i++)
     {
         for (int v : syndromeVertices[i])
         {
             std::pair<int,int> cell = {latticeWhereCell(v,i,L), v};
-            if (xStabs[cell.first][cell.second] == 1)
+            if (dist(engine) < 0.5)
             {
-                vint faces;
-                if (cell.first == 0) faces = cellToFacesT[cell.second];
-                else if (cell.first == 1) faces = cellToFacesR1[cell.second];
-                else faces = cellToFacesR2[cell.second];
+                vint faces = lattices[cell.first].cellToFaces[cell.second];
                 for (int face : faces)
                 {
                     auto overlap = overlappingFaces[{cell.first,face}];
-
-                    if (overlap.first.first == i && 
-                        qubitsX[overlap.first.first][overlap.first.second] == 1)
+                    std::pair<int,int> &xFace;
+                    std::pair<int,int> &zFace;
+                    if (overlap.first.first == i)
                     {
-                        qubitsZ[overlap.second.first][overlap.second.second] = (
-                                qubitsZ[overlap.second.first][overlap.second.second] + 1) % 2;
+                        xFace = overlap.first;
+                        zFace = overlap.second;
                     }
-                    else if (overlap.second.first == i &&
-                             qubitsX[overlap.second.first][overlap.second.second] == 1)
+                    else 
                     {
-                        qubitsZ[overlap.first.first][overlap.first.second] = (
-                                qubitsZ[overlap.first.first][overlap.first.second] + 1) % 2;
+                        xFace = overlap.second;
+                        zFace = overlap.first;
+                    }
+
+                    if (lattices[xFace.first].qubitsX[xFace.second] == 1)
+                    {
+                        lattices[zFace.first].qubitsZ[zFace.second] = (
+                                lattices[zFace.first].qubitsZ[zFace.second] + 1) % 2;
                     }
                 }
             }
         }
     }
-}
-
-//------------------------------Z ERROR VISUALISER------------------------------
-
-std::vector<int> getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector)
-{
-    std::vector<int> nonZeroElements = {};
-    for (int i : indexVector)
+    //linking charge
+    if (link)
     {
-        if (elements[i] == 1)
+        for (int fC = 0; fC < 3*L*L*L; fC++)
         {
-            nonZeroElements.push_back(i);
+            auto overlap = overlappingFaces[{0,fC}];
+            int fR1 = overlap.first.second;
+            int fR2 = overlap.second.second;
+            if (lattices[0].qubitsX[fC] == 1 && lattices[1].qubitsX[fR1] == 1)
+            {
+                lattices[2].qubitsZ[fR2] = (lattices[2].qubitsZ[fR2] + 1) % 2;
+            }
+            if (lattices[0].qubitsX[fC] == 1 && lattices[2].qubitsX[fR2] == 1)
+            {
+                lattices[1].qubitsZ[fR1] = (lattices[1].qubitsZ[fR1] + 1) % 2;
+            }
+            if (lattices[1].qubitsX[fR1] == 1 && lattices[2].qubitsX[fR2] == 1)
+            {
+                lattices[0].qubitsZ[fC] = (lattices[0].qubitsZ[fC] + 1) % 2;
+            }
         }
     }
-    return nonZeroElements;
 }
-
-void writeCSV(std::ofstream &file, std::vector<int> &indices)
-{
-    if (indices.size())
-    {
-        file << indices[0];
-        for (int i = 1; i < indices.size(); i++)
-        {
-            file << ',' << indices[i];
-        }
-    }
-    file << '\n';
-}
-
-void openFiles(std::ofstream& qubitsOut, std::ofstream& xStabsOut, std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, int i, bool decoded)
-{
-    if (i == 0 && decoded == 0)
-    {
-        qubitsOut.open("qubits.csv");
-        xStabsOut.open("xStabs.csv");
-    }
-    if (decoded)
-    {
-        zErrorsOut.open("zErrors_" + std::to_string(i) + "_decoded.csv");
-        violatedXStabsOut.open("violatedXStabs_" + std::to_string(i) + "_decoded.csv");
-    }
-    else 
-    {
-        zErrorsOut.open("zErrors_" + std::to_string(i) + "_undecoded.csv");
-        violatedXStabsOut.open("violatedXStabs_" + std::to_string(i) + "_undecoded.csv");
-    }
-}
-
-void writeLatticeInfo(std::ofstream& qubitsOut, std::ofstream& xStabsOut, vint& qubitIndices, vpint& faceToCells, vint& stabIndices)
-{
-    for (int qubit : qubitIndices)
-    {
-        pint cells = faceToCells[qubit];
-        qubitsOut << cells.first << ',' << cells.second << '\n';
-    }
-    writeCSV(xStabsOut, stabIndices);
-}
-
-void writeErrorInfo(std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, vint& qubits, vint& stabs, vint& qubitIndices, vpint& faceToCells, vint& stabIndices)
-{
-    vint nonZeroQubits = getNonZeroElements(qubits, qubitIndices);
-    vint nonZeroStabs = getNonZeroElements(stabs, stabIndices);
-    for (int qubit : nonZeroQubits)
-    {
-        pint cells = faceToCells[qubit];
-        zErrorsOut << cells.first << ',' << cells.second << '\n';
-    }
-    writeCSV(violatedXStabsOut, nonZeroStabs);
-}
-
-void closeFiles(std::ofstream& qubitsOut, std::ofstream& xStabsOut, std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, int i, bool decoded)
-{
-    if (i == 0 && decoded == 0)
-    {
-        qubitsOut.close();
-        xStabsOut.close();
-    }
-    zErrorsOut.close();
-    violatedXStabsOut.close();
-}
-

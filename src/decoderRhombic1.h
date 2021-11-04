@@ -2,9 +2,7 @@
 #define DECODERRHOMBIC1_H
 
 #include "rhombic1.h"
-#include "decoderGeneric.h"
 #include "PerfectMatching.h"
-#include <iostream>
 
 namespace rhombic1 {
 

@@ -2,9 +2,7 @@
 #define DECODER_H
 
 #include "cubic.h"
-#include "decoderGeneric.h"
 #include "PerfectMatching.h"
-#include <iostream>
 
 namespace cubic {
 

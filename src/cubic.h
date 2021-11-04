@@ -1,7 +1,7 @@
 #ifndef TORICCODESLICE_H
 #define TORICCODESLICE_H
 
-#include "latticeGeneric.h"
+#include "lattice.h"
 
 namespace cubic {
 
