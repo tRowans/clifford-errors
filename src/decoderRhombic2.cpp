@@ -2,168 +2,6 @@
 
 namespace rhombic2 {
 
-int shortestPathLength(int v1, int v2, int L)
-{
-    coord c1 = indexToCoord(v1, L);
-    coord c2 = indexToCoord(v2, L);
-    int dist = 0;
-    vint diff = {c2.xi[0] - c1.xi[0],
-                 c2.xi[1] - c1.xi[1],
-                 c2.xi[2] - c1.xi[2]};
-    if (c1.xi[3] == 1)
-    {
-        if ((diff[0] + diff[1] + diff[2]) > 0) dist -= 1;
-        else dist += 1;
-    }
-    if (c2.xi[3] == 1)
-    {
-        if((diff[0] + diff[1] + diff[2]) > 0) dist += 1;
-        else dist -= 1;
-    }
-    for (int &i : diff) i = abs(i);
-    std::sort(diff.begin(), diff.end());
-    if ((diff[0] + diff[1]) > diff[2]) dist += 2*(diff[0] + diff[1]);
-    else dist += 2*diff[2];
-    return abs(dist); //Can be -1 if both vertices have the same first 3 coords
-}
-
-vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L)
-{
-    int originalVertex = v1;
-    coord c1 = indexToCoord(v1, L);
-    coord c2 = indexToCoord(v2, L);
-    std::vector<float> diff = {c2.xi[0] - c1.xi[0] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2), 
-                               c2.xi[1] - c1.xi[1] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
-                               c2.xi[2] - c1.xi[2] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2)};
-    vint path = {};
-    //Need to add 1 to each or xy and -xy look the same
-    vint dirs1 = {xy+1, xz+1, yz+1, xyz+1, -1*(xy+1), -1*(xz+1), -1*(yz+1), -1*(xyz+1)};
-    vint dirs2 = {xy+1, xz+1, yz+1, -1*(xyz+1)};
-    vint dirs3 = {xyz+1, -1*(xy+1), -1*(xz+1), -1*(yz+1)};
-    int turnAround = 0;
-    while (abs(diff[0]) + abs(diff[1]) + abs(diff[2]) > 0)
-    {
-        int bestEdge;
-        int bestProduct;
-        vpint products;
-        vint dirs;
-        if (c1.xi[3] == 0) dirs = dirs1;
-        else 
-        {
-            if ((c1.xi[0] + c1.xi[1] + c1.xi[2]) % 2 == 1) dirs = dirs2;
-            else dirs = dirs3;
-        }
-        vint edges;
-        for (int i = 0; i < dirs.size(); i++)
-        {
-            int edge;
-            if (dirs[i] > 0) edge = edgeIndex(v1, dirs[i]-1, 1, L);
-            else edge = edgeIndex(v1, -1*dirs[i]-1, -1, L);
-            edges.push_back(edge);
-            if (std::find(syndIndices.begin(), syndIndices.end(), edge) != syndIndices.end())
-            {
-                products.push_back({scalarProduct(diff, dirs[i]), i});
-            }
-        }
-        std::sort(products.begin(), products.end());
-        if (turnAround == 1) 
-        {
-            products.pop_back();
-            turnAround = 0;
-        }
-        bestEdge = products.back().second;
-        //I don't know if we need this here
-        //because I don't remember what the problem cases were in the slices
-        //but probably beset to just leave it in        
-        if (std::find(path.begin(), path.end(), edges[bestEdge]) != path.end())
-        {
-            //Sometimes gets stuck at a dead end and needs to turn around
-            //we go back to the previous vertex and rerun then choose the second best edge 
-            if (path.back() == edges[bestEdge]) turnAround = 1;
-            //If we have gone in a larger loop just abort
-            //but I don't think this should happen
-            else
-            {
-                std::string errorMsg = "Loop occurred while building path between vertices " + std::to_string(v1) + " and " + std::to_string(v2) + '\n'+ " (vertices passed to function were " + std::to_string(originalVertex) + " and " + std::to_string(v2) + ")\n";
-                throw std::runtime_error(errorMsg);
-            }
-        }
-        if (turnAround == 0) path.push_back(edges[bestEdge]);
-        else path.pop_back();
-        if (dirs[bestEdge] > 0) v1 = neigh(v1, dirs[bestEdge]-1, 1, L);
-        else v1 = neigh(v1, -1*dirs[bestEdge]-1, -1, L);
-        c1 = indexToCoord(v1, L);
-        diff = {c2.xi[0] - c1.xi[0] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2), 
-                c2.xi[1] - c1.xi[1] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
-                c2.xi[2] - c1.xi[2] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2)};
-    }
-
-    return path;
-}
-
-vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFaces, int L)
-{
-    int originalCell = cell1;
-    coord cd1 = indexToCoord(cell1, L);
-    coord cd2 = indexToCoord(cell2, L);
-    vint diff = {cd2.xi[0] - cd1.xi[0], 
-                 cd2.xi[1] - cd1.xi[1],
-                 cd2.xi[2] - cd1.xi[2]};
-    vint path = {};
-    vvint dirs = {{1,1,0},{1,-1,0},{-1,1,0},{-1,-1,0},
-                  {1,0,1},{-1,0,1},{0,1,1},{0,-1,1},
-                  {1,0,-1},{-1,0,-1},{0,1,-1},{0,-1,-1}};
-    int turnAround = 0;
-    while (abs(diff[0]) + abs(diff[1]) + abs(diff[2]) > 0)
-    {
-        int bestDir;
-        int bestFace;
-        vpint products;
-        for (int i = 0; i < 12; i++)
-        {
-            if (std::find(qubitIndices.begin(), qubitIndices.end(), cellToFaces[cell1][i]) 
-                        != qubitIndices.end())
-            {
-                int product = dirs[i][0]*diff[0] + dirs[i][1]*diff[1] + dirs[i][2]*diff[2];
-                products.push_back({product, i});
-            }
-        }
-        std::sort(products.begin(), products.end());
-        if (turnAround == 1) 
-        {
-            products.pop_back();
-            turnAround = 0;
-        }
-        bestDir = products.back().second;
-        bestFace = cellToFaces[cell1][bestDir];
-        //Once again, probably don't need this
-        //but no harm in leaving it in just in case
-        if (std::find(path.begin(), path.end(), bestFace) != path.end())
-        {
-            //Sometimes gets stuck at a dead end and needs to turn around
-            //we go back to the previous vertex and rerun then choose the second best edge 
-            if (path.back() == bestFace) turnAround = 1;
-            //If we have gone in a larger loop just abort
-            //but I don't think this should happen
-            else
-            {
-                std::string errorMsg = "Loop occurred while building path between cells " + std::to_string(cell1) + " and " + std::to_string(cell2) + '\n'+ " (cells passed to function were " + std::to_string(originalCell) + " and " + std::to_string(cell2) + ")\n";
-                throw std::runtime_error(errorMsg);
-            }
-        }
-        if (turnAround == 0) path.push_back(bestFace);
-        else path.pop_back();
-        cd1.xi[0] += dirs[bestDir][0];
-        cd1.xi[1] += dirs[bestDir][1];
-        cd1.xi[2] += dirs[bestDir][2];
-        cell1 = coordToIndex(cd1, L);
-        diff = {cd2.xi[0] - cd1.xi[0], 
-                cd2.xi[1] - cd1.xi[1], 
-                cd2.xi[2] - cd1.xi[2]};
-    }
-    return path;
-}
-
 std::vector<int> distanceToClosestXBoundary(int v, int L)
 {
     //strings of edges can terminate at w=0 vertices at +/- x and w=1 at +/- y
@@ -430,6 +268,17 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
     return path;
 }
 
+//!!!--------------------!!!
+//||LOOP DECODER GOES HERE||
+//!!!--------------------!!!
+
+
+//From here is technically the same code in both rhombic1 and 2
+//but they use different path to boundary functions as defined above
+//could merge the two from this point by adding an argument for rhombic1 or 2
+//and then functions from rhombic1 or 2 namespace as needed
+//but I'm not sure it's worth it as all the extra if statements would slow things down
+
 vpint mwpm(vint &defects, int L, int dual)
 {
     std::vector<int> edges;
@@ -492,7 +341,7 @@ void joinPair(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, vint &syn
     std::vector<int> path;
     //If matched to boundary
     if (v2 == -1) path = shortestPathToXBoundary(v1, L);
-    else path = shortestPath(v1, v2, syndIndices, vertexToEdges, L);
+    else path = shortestPath(v1, v2, syndIndices, vertexToEdges, L, 2);
     for (int i : path) syndrome[i] = (syndrome[i] + 1) % 2;
 }
 
@@ -516,6 +365,15 @@ void zErrorDecoder(vint &qubits, vint &qubitIndices, vvint &cellToFaces, vint &x
     for (auto &pair : xStabPairs)
     {
         joinDualPair(pair.first, pair.second, qubitIndices, cellToFaces, qubits, L);
+    }
+}
+
+void measErrorDecoder(vint &syndromeZ, vint &zSyndIndices, vvint &vertexToEdges, vint &defects, int L)
+{
+    vpint defectPairs = mwpm(defects, L, 0);
+    for (auto& pair : defectPairs)
+    {
+        joinPair(pair.first, pair.second, zSyndIndices, vertexToEdges, syndromeZ, L);
     }
 }
 

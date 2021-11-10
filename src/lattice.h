@@ -27,7 +27,8 @@ class Lattice
         vvint vertexToEdges;
         vpint edgeToVertices;
 
-        vint qubitIndices;
+        vint outerQubitIndices; //2D code
+        vint innerQubitIndices; //3D code minus 2D code
         vint xSyndIndices;
         vint zSyndIndices;
         vint defectIndices;
@@ -46,11 +47,15 @@ class Lattice
                                 std::uniform_real_distribution<double>& dist, char pauli);
         void measError(double q, std::mt19937& engine, 
                                 std::uniform_real_distribution<double>& dist, char pauli);
+        void applyZStab(int edge);
+        void zStabPattern(std::mt19937& engine, 
+                            std::uniform_real_distribution<double>& dist)
         void calcSynd(char pauli);
         void findDefects();
         void checkInBounds();
         void checkInCodespace();
         bool checkLogicalError(char pauli);
+        void wipe(); //clears error and syndrome info
 };
 
 #endif

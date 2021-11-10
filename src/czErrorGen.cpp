@@ -74,7 +74,7 @@ int latticeWhereCell(int v, int latticeA, int L)
     return latticeC;
 }
 
-void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,std::pair<pint,pint>> &overlappingFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, bool link)
+void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,std::pair<pint,pint>> &overlappingFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, int link)
 {
     //membrane boundary errors
     vvint syndromeVertices = getSyndromeVertices(lattices);

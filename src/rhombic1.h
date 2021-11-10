@@ -9,19 +9,19 @@ void buildFaces(vvint &faceToVertices, vvint &faceToEdges, vpint &faceToCells, v
 
 int faceToBaseVertex(int face, int L);
 
-vvint buildVertexToEdges(int L);
+void buildVertexToEdges(vvint &vertexToEdges, int L);
 
-vpint buildEdgeToVertices(int L);
+void buildEdgeToVertices(vpint &edgeToVertices, int L);
 
-vvint buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVertices, int L);
+void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVertices, int L);
 
-vint buildQubitIndices(vvint &vertexToFaces, vvint &faceToVertices, int L);
+void buildQubitIndices(vint &qubitIndices, vvint &vertexToFaces, vvint &faceToVertices, int L);
 
-vint buildXSyndIndices(int L);
+void buildXSyndIndices(vint &xSyndIndices, int L);
 
-vint buildZSyndIndices(int L);
+void buildZSyndIndices(vint &zSyndIndices, int L);
 
-vint buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L);
+void buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L);
 
 }
 

@@ -66,9 +66,8 @@ int edgeIndex(int v, int dir, int sign, int L)
         throw std::invalid_argument("Invalid direction");
 }
 
-vvint buildFaceToEdges(int L)
+void buildFaceToEdges(vvint &faceToEdges, int L)
 {
-    vvint faceToEdges;
     for (int f = 0; f < 3 * L * L * L; ++f)
     {
         int v = f / 3;
@@ -86,12 +85,10 @@ vvint buildFaceToEdges(int L)
             faceToEdges.push_back({edgeIndex(v, y, 1, L), edgeIndex(v, z, 1, L), edgeIndex(neigh(v, y, 1, L), z, 1, L), edgeIndex(neigh(v, z, 1, L), y, 1, L)});
         }
     }
-    return faceToEdges;
 }
 
-vvint buildEdgeToFaces(int L)
+void buildEdgeToFaces(vvint &edgeToFaces, int L)
 {
-    vvint edgeToFaces;
     for (int e = 0; e < 3 * L * L * L; ++e)
     {
         vint faces;
@@ -122,12 +119,10 @@ vvint buildEdgeToFaces(int L)
 
         edgeToFaces.push_back(faces);
     }
-    return edgeToFaces;
 }
 
-vvint buildVertexToEdges(int L)
+void buildVertexToEdges(vvint &vertexToEdges, int L)
 {
-    vvint vertexToEdges;
     for (int v = 0; v < L * L * L; ++v)
     {
         vint edges;
@@ -139,12 +134,10 @@ vvint buildVertexToEdges(int L)
         edges.push_back(edgeIndex(v, z, -1, L));
         vertexToEdges.push_back(edges);
     }
-    return vertexToEdges;
 }
 
-vpint buildEdgeToVertices(int L)
+void buildEdgeToVertices(vpint &edgeToVertices, int L)
 {
-    vpint edgeToVertices;
     for (int e = 0; e < 3 * L * L * L; ++e)
     {
         int v1 = e / 3;
@@ -152,12 +145,10 @@ vpint buildEdgeToVertices(int L)
         int v2 = neigh(v1, dir, 1, L);
         edgeToVertices.push_back({v1, v2});
     }
-    return edgeToVertices;
 }
 
-vvint buildCellToFaces(int L)
+void buildCellToFaces(vvint &cellToFaces, int L)
 {
-    vvint cellToFaces;
     for (int v = 0; v < L * L * L; v++)
     {
         cellToFaces.push_back({3*v, 
@@ -167,12 +158,10 @@ vvint buildCellToFaces(int L)
                                3*neigh(v,y,1,L)+1,
                                3*neigh(v,x,1,L)+2});
     }
-    return cellToFaces;
 }
 
-vpint buildFaceToCells(int L)
+void buildFaceToCells(vpint &faceToCells, int L)
 {
-    vpint faceToCells;
     for (int f = 0; f < 3 * L * L * L; f++)
     {
         std::pair<int,int> cells;
@@ -186,12 +175,10 @@ vpint buildFaceToCells(int L)
         else cells = {cell2, cell1};
         faceToCells.push_back(cells);
     }
-    return faceToCells;
 }
 
-vvint buildFaceToVertices(int L)
+void buildFaceToVertices(vvint &faceToVertices, int L)
 {
-    vvint faceToVertices;
     for (int f = 0; f < 3 * L * L * L; f++)
     {
         v = f / 3;
@@ -210,12 +197,10 @@ vvint buildFaceToVertices(int L)
             vertices = {v, neigh(v,y,1,L), neigh(v,z,1,L), neigh(neigh(v,y,1,L),z,1,L)};
         }
     }
-    return faceToVertices;
 }
 
-vint buildQubitIndices(int L)
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L)
 {
-    vint qubitIndices;
     for (int f = 0; f < 3 * L * L * L; f++)
     {
         int v = f / 3;
@@ -223,17 +208,23 @@ vint buildQubitIndices(int L)
         coord cd = indexToCoord(v, L);
         if (cd.xi[0] < (L-3) && cd.xi[1] < (L-3) && cd.xi[2] < (L-3))
         {
-            if (dir == 0 && cd.xi[0] < (L-4) && cd.xi[2] > 0) qubitIndices.push_back(f);
-            else if (dir == 1 && cd.xi[0] < (L-4) && cd.xi[1] > 0) qubitIndices.push_back(f);
-            else if (dir == 2) qubitIndices.push_back(f);
+            if (dir == 0 && cd.xi[0] < (L-4) && cd.xi[2] > 0) innerQubitIndices.push_back(f);
+            else if (dir == 1 && cd.xi[0] < (L-4) && cd.xi[1] > 0) 
+            {
+                if (cd.xi[2] == 0) outerQubitIndices.push_back(f);
+                else innerQubitIndices.push_back(f);
+            }
+            else if (dir == 2)
+            {
+               if (cd.xi[2] == 0) outerQubitIndices.push_back(f);
+               else innerQubitIndices.push_back(f);
+            }
         }
     }
-    return qubitIndices;
 }
 
-vint buildXSyndIndices(int L)
+void buildXSyndIndices(vint &xSyndIndices, int L)
 {
-    vint xSyndIndices;
     for (int v = 0; v < L * L * L; v++)
     {
         coord cd = indexToCoord(v, L);
@@ -242,12 +233,10 @@ vint buildXSyndIndices(int L)
             xSyndIndices.push_back(v);
         }
     }
-    return xSyndIndices;
 }
 
-vint buildZSyndIndices(int L)
+void buildZSyndIndices(vint &zSyndIndices, int L)
 {
-    vint zSyndIndices;
     for (int e = 0; e < 3 * L * L * L; e++)
     {
         int v = e / 3;
@@ -263,12 +252,10 @@ vint buildZSyndIndices(int L)
             else if (dir == 2 && cd.xi[1] > 0) zSyndIndices.push_back(e);
         }
     }
-    return zSyndIndices;
 }
 
-vint buildXLogical(int L)
+void buildXLogical(vint &xLogical, int L)
 {
-    vint xLogical;
     for (int z; z < (L-3); z++)
     {
         for (int y; y < (L-3); y++)
@@ -277,18 +264,29 @@ vint buildXLogical(int L)
             xLogical.push_back(f);
         }
     }
-    return xLogical;
 }
 
-vint buildZLogical(int L)
+void buildZLogical(vint &zLogical, int L)
 {
-    vint zLogical;
     for (int x; x < (L-3); x++)
     {
         f = 3*x + 2;
         zLogical.push_back(f);
     }
-    return zLogical;
 }
 
+void buildLattice(Lattice &lattice, int L)
+{
+    buildFaceToEdges(lattice.faceToEdges, L);
+    buildEdgeToFaces(lattice.edgeToFaces, L);
+    buildVertexToEdges(lattice.vertexToEdges, L);
+    buildEdgeToVertices(lattice.edgeToVertices, L);
+    buildCellToFaces(lattice.cellToFaces, L);
+    buildFaceToCells(lattice.faceToCells, L);
+    buildFaceToVertices(lattice.faceToVertices, L);
+    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, L);
+    buildXSyndIndices(lattice.xSyndIndices, L);
+    buildZSyndIndices(lattice.zSyndIndices, L);
+    buildXLogical(lattice.xLogical, L);
+    buildZLogical(lattice.zLogical, L);
 }

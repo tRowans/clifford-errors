@@ -2,17 +2,20 @@
 
 void Lattice::depolarisingError(double p, std::mt19937& engine, std::uniform_real_distribution<double>& dist)
 {
-    for (int i : qubitIndices)
+    for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
     {
-        if (dist(engine) < p)
+        for (int i : qubitIndices)
         {
-            double x = dist(engine);
-            if (0 <= x  && x < 1/3) qubitsX[i] = (qubitsX[i] + 1) % 2; 
-            else if (1/3 <= x && x < 2/3) qubitsZ[i]  = (qubitsZ[i] + 1) % 2; 
-            else if (2/3 <= x && x < 1) //Y error
+            if (dist(engine) < p)
             {
-                lattice.qubitsX[i] = (lattice.qubitsX[i] + 1) % 2;
-                lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
+                double x = dist(engine);
+                if (0 <= x  && x < 1/3) qubitsX[i] = (qubitsX[i] + 1) % 2; 
+                else if (1/3 <= x && x < 2/3) qubitsZ[i]  = (qubitsZ[i] + 1) % 2; 
+                else if (2/3 <= x && x < 1) //Y error
+                {
+                    lattice.qubitsX[i] = (lattice.qubitsX[i] + 1) % 2;
+                    lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
+                }
             }
         }
     }
@@ -20,13 +23,16 @@ void Lattice::depolarisingError(double p, std::mt19937& engine, std::uniform_rea
 
 void Lattice::biasedError(double p, std::mt19937& engine, std::uniform_real_distribution<double>& dist, char pauli)
 {
-    for (int i : qubitIndices)
+    for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
     {
-        if (dist(engine) < p)
+        for (int i : qubitIndices)
         {
-            if (pauli == 'x' || pauli == 'X') qubitsX[i] = (qubitsX[i] + 1) % 2;
-            else if (pauli == 'z' || pauli = 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
-            else throw std::invalid_argument("Invalid Pauli given for biased error");
+            if (dist(engine) < p)
+            {
+                if (pauli == 'x' || pauli == 'X') qubitsX[i] = (qubitsX[i] + 1) % 2;
+                else if (pauli == 'z' || pauli = 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
+                else throw std::invalid_argument("Invalid Pauli given for biased error");
+            }
         }
     }
 }
@@ -44,13 +50,36 @@ void Lattice::measError(double q, std::mt19937& engine, std::uniform_real_distri
     }
 }
 
+void Lattice::applyZStab(int edge)
+{
+    vint &stabQubits = edgeToFaces[edge];
+    for (int q : stabQubits)
+    {
+        if (std::find(outerQubitIndices.begin(), outerQubitIndices.end(), q) 
+              != outerQubitIndices.end() ||
+            std::find(innerQubitIndices.begin(), innerQubitIndices.end(), q)
+              != innerQubitIndices.end())
+        {
+            qubitsZ[q] = (qubits[Z] + 1) % 2;
+        }
+    }
+}
+
+void Lattice::zStabPattern(std::mt19937& engine, std::uniform_real_distribution<double>& dist)
+{
+    for (int stab : zSyndIndices)
+    {
+        if (dist(engine < 0.5)) applyZStab(stab);
+    }
+}
+
 void Lattice::calcSynd(char pauli)
 {
     //X stabilisers/Z errors
     if (pauli == 'x' || pauli == 'X')
     {
         std::fill(syndromeX.begin(), syndromeX.end(), 0);
-        for (int i : qubitIndices)
+        for (int i : innerQubitIndices)  //Don't use outer code qubits for this
         {
             if (qubitsZ[i] == 1)
             {
@@ -68,16 +97,19 @@ void Lattice::calcSynd(char pauli)
     else if (pauli == 'z' || pauli == 'Z')
     {
         std::fill(syndromeZ.begin(), syndromeZ.end(), 0);
-        for (int i : qubitIndices)
+        for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
         {
-            if (qubitsX[i] == 1)
+            for (int i : qubitIndices)
             {
-                std::vector<int> &edges = faceToEdges[i];
-                for (auto edgeIndex : edges)
+                if (qubitsX[i] == 1)
                 {
-                    if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edgeIndex)
-                            == zSyndIndices.end()) continue;
-                    syndromeZ[edgeIndex] = (syndrome[edgeIndex] + 1) % 2;
+                    std::vector<int> &edges = faceToEdges[i];
+                    for (auto edgeIndex : edges)
+                    {
+                        if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edgeIndex)
+                                == zSyndIndices.end()) continue;
+                        syndromeZ[edgeIndex] = (syndrome[edgeIndex] + 1) % 2;
+                    }
                 }
             }
         }
@@ -120,15 +152,19 @@ void Lattice::checkInBounds()
                 }
             }
             if (qubitsX[i] == 1 && 
-                    std::find(qubitIndices.begin(), qubitIndices.end(), i) 
-                    == qubitIndices.end())
+                    std::find(outerQubitIndices.begin(), outerQubitIndices.end(), i) 
+                    == outerQubitIndices.end() &&
+                    std::find(innerQubitIndices.begin(), innerQubitIndices.end(), i)
+                    == innerQubitIndices.end())
             {
                 throw std::runtime_error("qubit out of bounds (qubitsX[" 
                                                 + std::to_string(i) + "]\n");
             }
             if (qubitsZ[i] == 1 &&
-                    std::find(qubitIndices.begin(), qubitIndices.end(), i) 
-                    == qubitIndices.end())
+                    std::find(outerQubitIndices.begin(), outerQubitIndices.end(), i) 
+                    == outerQubitIndices.end() &&
+                    std::find(innerQubitIndices.begin(), innerQubitIndices.end(), i)
+                    == innerQubitIndices.end())
             {
                 throw std::runtime_error("qubit out of bounds (qubitsZ["
                                                 + std::to_string(i) + "]\n");
@@ -190,3 +226,19 @@ bool Lattice::checkLogicalError(char pauli)
     if (parity) return true;
     else return false;
 }
+
+void Lattice::wipe()
+{
+    for (int i = 0; i < 8*L*L*L; i++)
+    {
+        if (i < 3*L*L*L)
+        {
+            if (i < L*L*L) syndromeX[i] = 0;
+            qubitsX[i] = 0;
+            qubitsZ[i] = 0;
+        }
+        syndromeZ[i] = 0;
+    }
+    defects.clear();
+}
+

@@ -20,29 +20,31 @@ int neigh(int v, int dir, int sign, int L);
 
 int edgeIndex(int v, int dir, int sign, int L);
 
-vvint buildFaceToEdges(int L);
+void buildFaceToEdges(vvint &faceToEdges, int L);
 
-vvint buildEdgeToFaces(int L);
+void buildEdgeToFaces(vvint &edgeToFaces, int L);
 
-vvint buildVertexToEdges(int L);
+void buildVertexToEdges(vvint &vertexToEdges, int L);
 
-vpint buildEdgeToVertices(int L);
+void buildEdgeToVertices(vpint &edgeToVertices, int L);
 
-vvint buildCellToFaces(int L);
+void buildCellToFaces(vvint &cellToFaces, int L);
 
-vpint buildFaceToCells(int L);
+void buildFaceToCells(vpint &faceToCells, int L);
 
-vvint buildFaceToVertices(int L);
+void buildFaceToVertices(vvint &faceToVertices, int L);
 
-vint buildQubitIndices(int L);
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L);
 
-vint buildXSyndIndices(int L);
+void buildXSyndIndices(vint &xSyndIndices, int L);
 
-vint buildZSyndIndices(int L);
+void buildZSyndIndices(vint &zSyndIndices, int L);
 
-vint buildXLogical(int L);
+void buildXLogical(vint &xLogical, int L);
 
-vint buildZLogical(int L);
+void buildZLogical(vint &zLogical, int L);
+
+void buildLattice(Lattice &lattice, int L);
 
 }
 

@@ -57,9 +57,8 @@ int faceToBaseVertex(int face, int L)
     return v;
 }
 
-vvint buildVertexToEdges(int L)
+void buildVertexToEdges(vvint &vertexToEdges, int L)
 {
-    vvint vertexToEdges;
     vertexToEdges.assign(2 * L * L * L, {});
     for (int v = 0; v < 2 * L * L * L; ++v)
     {
@@ -106,7 +105,7 @@ vvint buildVertexToEdges(int L)
     return vertexToEdges;
 }
 
-vpint buildEdgeToVertices(int L)
+void buildEdgeToVertices(vpint &edgeToVertices, int L)
 {
     vpint edgeToVertices;
     edgeToVertices.assign(8 * L * L * L, {});
@@ -178,12 +177,12 @@ void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVer
 
         cellToFaces[v] = faces;
     }
-    return cellToFaces;
 }
 
-vint buildQubitIndices(vvint &vertexToFaces, vvint &faceToVertices, int L)
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, vvint &vertexToFaces, vvint &faceToVertices, int L)
 {
-    vint qubitIndices;
+    //NEED TO ADD OUTER AND INNER QUBIT INDICES HERE
+    //DEPENDS WHERE WE PUT BOUNDARY CODES
     for (int f = 0; f < 3 * L * L * L; f++)
     {
         int v = faceToBaseVertex(f, L);
@@ -208,12 +207,11 @@ vint buildQubitIndices(vvint &vertexToFaces, vvint &faceToVertices, int L)
                               && cd.xi[2] > 0 && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
         }
     }
-    return qubitIndices;
 }
 
 //X boundary stabilisers on +z and -z boundaries
 
-vint buildXSyndIndices(int L)
+void buildXSyndIndices(vint &xSyndIndices, int L)
 {
     vint xSyndIndices;
     for (int v = 0; v < L * L * L; v++)
@@ -231,7 +229,7 @@ vint buildXSyndIndices(int L)
 
 //Z boundary stabilisers on +y and -y boundaries
 
-vint buildZSyndIndices(int L)
+void buildZSyndIndices(vint &zSyndIndices, int L)
 {
     vint zSyndIndices;
     for (int v = 0; v < L * L * L; v++)
@@ -281,7 +279,7 @@ vint buildZSyndIndices(int L)
     return zSyndIndices;
 }
 
-vint buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
+void buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
 {
     //Do these together because the loops are the same 
     for (int q : qubitIndices)
@@ -296,4 +294,15 @@ vint buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
     }
 }
 
+void buildLattice(Lattice &lattice, int L)
+{
+    buildFaces(lattice.faceToVertices, lattice.faceToEdges, lattice.faceToCells, 
+                lattice.vertexToFaces, lattice.edgeToFaces, int L);
+    buildVertexToEdges(lattice.vertexToEdges, L);
+    buildEdgeToVertices(lattice.edgeToVertices, L);
+    buildCellToFaces(lattice.cellToFaces, lattice.vertexToFaces, lattice.faceToVertices, L);
+    buildQubitIndices(lattice.qubitIndices, lattice.vertexToFaces, lattice.faceToVertices, L);
+    buildXSyndIndices(lattice.xSyndIndices, L);
+    buildZSyndIndices(lattice.zSyndIndices, L);
+    buildLogicals(lattice.xLogical, lattice.zLogical, lattice.qubitIndices, L);
 }

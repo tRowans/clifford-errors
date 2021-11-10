@@ -27,4 +27,11 @@ int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices);
 
 int scalarProduct(std::vector<float> vec, int dir);
 
+int shortestPathLength(int v1, int v2, int L);
+
+vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L, int r);
+
+vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFaces, int L);
+
+
 #endif

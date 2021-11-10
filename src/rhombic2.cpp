@@ -57,7 +57,7 @@ int faceToBaseVertex(int face, int L)
     return v;
 }
 
-vvint buildVertexToEdges(int L)
+void buildVertexToEdges(vvint &vertexToEdges, int L)
 {
     vvint vertexToEdges;
     vertexToEdges.assign(2 * L * L * L, {});
@@ -106,7 +106,7 @@ vvint buildVertexToEdges(int L)
     return vertexToEdges;
 }
 
-vpint buildEdgeToVertices(int L)
+void buildEdgeToVertices(vpint &edgeToVertices, int L)
 {
     vpint edgeToVertices;
     edgeToVertices.assign(8 * L * L * L, {});
@@ -144,7 +144,7 @@ vpint buildEdgeToVertices(int L)
     return edgeToVertices;
 }
 
-vvint buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVertices, int L)
+void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVertices, int L)
 {
     //One cell for each even vertex in the w=0 lattice
     //I do these separately and not as part of buildFaces because I want them to be in a specific order
@@ -179,10 +179,9 @@ vvint buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVe
 
         cellToFaces[v] = faces;
     }
-    return cellToFaces;
 }
 
-vint buildQubitIndices(vvint &vertexToFaces, vvint &faceToVertices, int L)
+void buildQubitIndices(vint &qubitIndices, vvint &vertexToFaces, vvint &faceToVertices, int L)
 {
     vint qubitIndices;
     for (int f = 0; f < 3 * L * L * L; f++)
@@ -214,7 +213,7 @@ vint buildQubitIndices(vvint &vertexToFaces, vvint &faceToVertices, int L)
 
 // X boundary stabilisers on +y and -y boundaries
 
-vint buildXSyndIndices(int L)
+void buildXSyndIndices(vint &xSyndIndices, int L)
 {
     vint xSyndIndices;
     for (int v = 0; v < L * L * L; v++)
@@ -232,7 +231,7 @@ vint buildXSyndIndices(int L)
 
 //Z boundary stabilisers on +z and -z boundaries
 
-vint buildZSyndIndices(int L)
+void buildZSyndIndices(vint &zSyndIndices, int L)
 {
     vint zSyndIndices;
     for (int v = 0; v < L * L * L; v++)
@@ -282,7 +281,7 @@ vint buildZSyndIndices(int L)
     return zSyndIndices;
 }
 
-vint buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
+void buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
 {
     //Do these together because the loops are the same
     for (int q : qubitIndices)
@@ -295,4 +294,19 @@ vint buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
             if (cd.xi[0] == 0 && cd.xi[1] == 0 && cd.xi[3] == 0) zLogical.push_back(q);
         }
     }
+}
+
+void buildLattice(Lattice &lattice, int L)
+{
+    buildFaces(lattice.faceToVertices, lattice.faceToEdges, lattice.faceToCells, 
+                lattice.vertexToFaces, lattice.edgeToFaces, L);
+    buildVertexToEdges(lattice.vertexToEdges, L);
+    buildEdgeToVertices(lattice.edgeToVertices, L);
+    buildCellToFaces(lattice.cellToFaces, lattice.vertexToFaces, lattice.faceToVertices, L);
+    buildQubitIndices(lattice.qubitIndices, lattice.vertexToFaces, lattice.faceToVertices, L);
+    buildXSyndIndices(lattice.xSyndIndices, L);
+    buildZSyndIndices(lattice.zSyndIndices, L);
+    buildLogicals(lattice.xLogical, lattice.zLogical, lattice.qubitIndices, L);
+}
+
 }

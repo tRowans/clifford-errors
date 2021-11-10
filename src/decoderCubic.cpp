@@ -223,7 +223,7 @@ void joinDualPair(int cell1, int cell2, vint &qubits, int L)
     for (int i : path) qubits[i] = (qubits[i] + 1) % 2;
 }
 
-void zErrorDecoder(vint &qubits, vint &qubitIndices, vvint &cellToFaces, vint &xStabs, int L)
+void zErrorDecoder(vint &qubits, vvint &cellToFaces, vint &xStabs, int L)
 {
     vint violatedXStabs;
     vpint xStabPairs;
@@ -235,6 +235,40 @@ void zErrorDecoder(vint &qubits, vint &qubitIndices, vvint &cellToFaces, vint &x
     for (auto &pair : xStabPairs) 
     {
         joinDualPair(pair.first, pair.second, qubits, L);
+    }
+}
+
+void measErrorDecoder(vint &syndromeZ, vint &defects, int L)
+{
+    vpint defectPairs = mwpm(defects, L, 0);
+    for (auto &pair : defectPairs)
+    {
+        joinPair(pair.first, pair.second, syndromeZ, L);
+    }
+}
+
+void jumpCorrection(Lattice &lattice, int L)
+{
+    for (int z = L-4; z > 0; z--)
+    {
+        for (int x = 0; x < L-4; x++)
+        {
+            for (int y = 0; y < L-4; y++)
+            {
+                faceXZ = 3*(x + y*L + z*L*L) + 1;
+                faceYZ = 3*(x + y*L + z*L*L) + 2;
+                for (int &face : {faceXZ, faceYZ})
+                {
+                    if (lattice.qubitsZ[face] == 1)
+                    {
+                        //this just happens to work 
+                        //because 3*v is the edge on the bottom of face 3*v + 1
+                        //and 3*v + 1 is the edge on the bottom of face 3*v + 2
+                        lattice.applyZStab(face-1);
+                    }
+                }
+            }
+        }
     }
 }
 
