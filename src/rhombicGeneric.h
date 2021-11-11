@@ -33,5 +33,7 @@ vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L
 
 vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFaces, int L);
 
+void rhombicJumpCorrection(Lattice &lattice, std::mt19937& engine, 
+                        std::uniform_real_distribution<double>& dist, int L, int r);
 
 #endif

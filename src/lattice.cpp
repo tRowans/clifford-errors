@@ -1,4 +1,4 @@
-#include "latticeGeneric.h"
+#include "lattice.h"
 
 void Lattice::depolarisingError(double p, std::mt19937& engine, std::uniform_real_distribution<double>& dist)
 {
@@ -21,11 +21,11 @@ void Lattice::depolarisingError(double p, std::mt19937& engine, std::uniform_rea
     }
 }
 
-void Lattice::biasedError(double p, std::mt19937& engine, std::uniform_real_distribution<double>& dist, char pauli)
+void Lattice::biasedError(double p, std::mt19937& engine, std::uniform_real_distribution<double>& dist, char pauli, int innerOnly)
 {
-    for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
+    if (innerOnly == 0)
     {
-        for (int i : qubitIndices)
+        for (int i : outerQubitIndices)
         {
             if (dist(engine) < p)
             {
@@ -33,6 +33,15 @@ void Lattice::biasedError(double p, std::mt19937& engine, std::uniform_real_dist
                 else if (pauli == 'z' || pauli = 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
                 else throw std::invalid_argument("Invalid Pauli given for biased error");
             }
+        }
+    }
+    for (int i : innerQubitIndices)
+    {
+        if (dist(engine) < p)
+        {
+            if (pauli == 'x' || pauli == 'X') qubitsX[i] = (qubitsX[i] + 1) % 2;
+            else if (pauli == 'z' || pauli = 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
+            else throw std::invalid_argument("Invalid Pauli given for biased error");
         }
     }
 }
@@ -52,6 +61,10 @@ void Lattice::measError(double q, std::mt19937& engine, std::uniform_real_distri
 
 void Lattice::applyZStab(int edge)
 {
+    if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edge) == zSyndIndices.end())
+    {
+        throw std::invalid_argument("Non-stabiliser edge passed to applyZStab");
+    }
     vint &stabQubits = edgeToFaces[edge];
     for (int q : stabQubits)
     {
@@ -206,7 +219,7 @@ void Lattice::checkInCodespace()
     }
 }
 
-bool Lattice::checkLogicalError(char pauli)
+int Lattice::checkLogicalError(char pauli)
 {
     int parity = 0;
     if (pauli == 'x' || pauli == 'X')
@@ -223,8 +236,7 @@ bool Lattice::checkLogicalError(char pauli)
             if (qubitsZ[i] == 1) parity = (parity + 1) % 2;
         }
     }
-    if (parity) return true;
-    else return false;
+    return parity;
 }
 
 void Lattice::wipe()

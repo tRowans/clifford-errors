@@ -377,4 +377,117 @@ vint shortestDualPath(int cell1, int cell2, vint &outerQubitIndices, vint &inner
     }
     return path;
 }
-
+//Need to run a bounds check before running this function 
+void rhombicJumpCorrection(Lattice &lattice, std::mt19937& engine, 
+                        std::uniform_real_distribution<double>& dist, int L, int r)
+{
+    for (int x = L-4; x > 0; x--)
+    {
+        for (int cycle = 0; cycle < 2; cycle++)
+        {
+            for (int z = 0; z < L-2; z++)
+            {
+                for (int y = 0; y < L-2; y++)
+                {
+                    if (r == 1 && (x + y + z) % 2 == 1) continue;
+                    else if (r == 2 && (x + y + z) % 2 == 0) continue;
+                    int v = x + y*L + z*L*L;
+                    if (cycle == 0)
+                    {
+                        vint faces(4);
+                        vvint edges(4);
+                        faces[0] = findFace({v,neigh(neigh(v,xyz,1,L),xz,1,L)},
+                                        lattice.vertexToFaces, lattice.faceToVertices);
+                        faces[1] = findFace({v,neigh(neigh(v,xyz,1,L),xy,1,L)},
+                                        lattice.vertexToFaces, lattice.faceToVertices);
+                        faces[2] = findFace({v,neigh(neigh(v,xy,1,L),yz,-1,L)},
+                                        lattice.vertexToFaces, lattice.faceToVertices);
+                        faces[3] = findFace({v,neigh(neigh(v,yz,-1,L),xz,1,L)},
+                                        lattice.vertexToFaces, lattice.faceToVertices);
+                        edges[0] = {edgeIndex(v,xz,1,L), edgeIndex(v,xyz,1,L)};
+                        edges[1] = {edgeIndex(v,xyz,1,L), edgeIndex(v,xy,1,L)};
+                        edges[2] = {edgeIndex(v,xy,1,L), edgeIndex(v,yz,-1,L)};
+                        edges[3] = {edgeIndex(v,yz,-1,L), edgeIndex(v,xz,1,L)};
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if (lattice.qubitsZ[faces[i]] == 1) //assumes bounds check
+                            {
+                                if (lattice.qubitsZ[faces[(i-1+4)%4]] == 1 
+                                        && lattice.qubitsZ[faces[(i+1)%4]] == 0)
+                                {
+                                    lattice.applyZStab(edges[i][0]);
+                                }
+                                else if (lattice.qubitsZ[faces[(i-1+4)%4]] == 0 
+                                            && lattice.qubitsZ[faces[(i+1)%4]] == 1)
+                                {
+                                    lattice.applyZStab(edges[i][1]);
+                                }
+                                else
+                                {
+                                    if (dist(engine) < 0.5)
+                                    {
+                                        if (std::find(lattice.zSyndIndices.begin(),
+                                                      lattice.zSyndIndices.end(),edges[i][0]) 
+                                                      != lattice.zSyndIndices.end())
+                                        {
+                                            lattice.applyZStab(edges[i][0]);
+                                        }
+                                        else lattice.applyZStab(edges[i][1]);
+                                    }
+                                    else 
+                                    {
+                                        if (std::find(lattice.zSyndIndices.begin(),
+                                                      lattice.zSyndIndices.end(),edges[i][1]) 
+                                                      != lattice.zSyndIndices.end())
+                                        {
+                                            lattice.applyZStab(edges[i][1]);
+                                        }
+                                        else lattice.applyZStab(edges[i][0]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        vint faces(2);
+                        vvint edges(2);
+                        faces[0] = findFace({v,neigh(neigh(v,xyz,1,L),yz,1,L)},
+                                        lattice.vertexToFaces, lattice.faceToVertices);
+                        faces[1] = findFace({v,neigh(neigh(v,xy,1,L),xz,-1,L)},
+                                        lattice.vertexToFaces, lattice.faceToVertices);
+                        edges[0] = {edgeIndex(v,yz,1,L), edgeIndex(neigh(v,yz,1,L),xyz,1,L)};
+                        edges[1] = {edgeIndex(v,xz,-1,L), edgeIndex(neigh(v,xz,-1,L),xy,1,L)};
+                        for (int i = 0; i < 2; i++)
+                        {
+                            if (lattice.qubitsZ[faces[i]] == 1) //assumes bounds check 
+                            {
+                                if (dist(engine) < 0.5)
+                                {
+                                    if (std::find(lattice.zSyndIndices.begin(), 
+                                                  lattice.zSyndIndices.end(), 
+                                                  edges[i][0]) != lattice.zSyndIndices.end())
+                                    {
+                                        lattice.applyZStab(edges[i][0]);
+                                    }
+                                    else lattice.applyZStab(edges[i][1]);
+                                }
+                                else
+                                {
+                                    if (std::find(lattice.zSyndIndices.begin(), 
+                                                  lattice.zSyndIndices.end(), 
+                                                  edges[i][1]) != lattice.zSyndIndices.end())
+                                    {
+                                        lattice.applyZStab(edges[i][1]);
+                                    }
+                                    else lattice.applyZStab(edges[i][0]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+ 

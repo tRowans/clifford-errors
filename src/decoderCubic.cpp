@@ -223,18 +223,18 @@ void joinDualPair(int cell1, int cell2, vint &qubits, int L)
     for (int i : path) qubits[i] = (qubits[i] + 1) % 2;
 }
 
-void zErrorDecoder(vint &qubits, vvint &cellToFaces, vint &xStabs, int L)
+void zErrorDecoder(Lattice &lattice, int L)
 {
     vint violatedXStabs;
     vpint xStabPairs;
-    for (int j = 0; j < xStabs.size(); j++)
+    for (int j = 0; j < L*L*L; j++)
     {
-        if (xStabs[j] == 1) violatedXStabs.push_back(j);
+        if (lattice.syndromeX[j] == 1) violatedXStabs.push_back(j);
     }
     xStabPairs = mwpm(violatedXStabs, L, 1);
     for (auto &pair : xStabPairs) 
     {
-        joinDualPair(pair.first, pair.second, qubits, L);
+        joinDualPair(pair.first, pair.second, lattice.qubitsZ, L);
     }
 }
 
@@ -259,7 +259,7 @@ void jumpCorrection(Lattice &lattice, int L)
                 faceYZ = 3*(x + y*L + z*L*L) + 2;
                 for (int &face : {faceXZ, faceYZ})
                 {
-                    if (lattice.qubitsZ[face] == 1)
+                    if (lattice.qubitsZ[face] == 1) //run a bounds check before this func
                     {
                         //this just happens to work 
                         //because 3*v is the edge on the bottom of face 3*v + 1

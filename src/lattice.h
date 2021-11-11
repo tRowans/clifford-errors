@@ -44,7 +44,8 @@ class Lattice
         void depolarisingError(double p, std::mt19937& engine, 
                                 std::uniform_real_distribution<double>& dist);
         void biasedError(double p, std::mt19937& engine, 
-                                std::uniform_real_distribution<double>& dist, char pauli);
+                                std::uniform_real_distribution<double>& dist, 
+                                char pauli, int innerOnly);
         void measError(double q, std::mt19937& engine, 
                                 std::uniform_real_distribution<double>& dist, char pauli);
         void applyZStab(int edge);
@@ -52,9 +53,9 @@ class Lattice
                             std::uniform_real_distribution<double>& dist)
         void calcSynd(char pauli);
         void findDefects();
-        void checkInBounds();
-        void checkInCodespace();
-        bool checkLogicalError(char pauli);
+        void checkInBounds(char pauli);
+        void checkInCodespace(char pauli);
+        int checkLogicalError(char pauli);
         void wipe(); //clears error and syndrome info
 };
 

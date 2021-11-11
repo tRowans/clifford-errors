@@ -30,9 +30,11 @@ void joinDualPair(int cell1, int cell2, vint &qubits, int L);
 
 //void xErrorDecoder(...)
 
-void zErrorDecoder(vint &qubits, vvint &cellToFaces, vint &xStabs, int L);
+void zErrorDecoder(Lattice &lattice, int L);
 
 void measErrorDecoder(vint &syndromeZ, vint &defects, int L);
+
+void jumpCorrection(Lattice &lattice, int L);
 
 }
 

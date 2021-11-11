@@ -29,6 +29,10 @@ int main(int argc, char *argv[])
 
     std::map<pint,std::pair<pint,pint>> overlappingFaces = buildOverlappingFaces(lattices, L);
 
+    vint cFailures = {0,0};
+    vint r1Failures = {0,0};
+    vint r2Failures = {0,0};
+
     for (int i = 0; i < runs; i++)
     {
         //reset error info
@@ -42,9 +46,9 @@ int main(int argc, char *argv[])
         std::uniform_real_distribution<double> dist(0,1);
 
         //qubits start in |+> --> measure Z stabilisers = random X error distribution
-        cubic.biasedError(0.5, engine, dist, 'x');
-        rhombic1.biasedError(0.5, engine, dist, 'x');
-        rhombic2.biasedError(0.5, engine, dist, 'x');
+        cubic.biasedError(0.5, engine, dist, 'x', 0);
+        rhombic1.biasedError(0.5, engine, dist, 'x', 0);
+        rhombic2.biasedError(0.5, engine, dist, 'x', 0);
 
         //Z stabiliser syndrome + measurement errors
         cubic.calcSynd('z');
@@ -67,14 +71,67 @@ int main(int argc, char *argv[])
         rhombic1::xErrorDecoder(...);
         rhombic2::xErrorDecoder(...);
 
+        //Check everything working as expected (debugging step)
+        cubic.checkInBounds('x');
+        cubic.checkInCodespace('x');
+        rhombic1.checkInBounds('x');
+        rhombic1.checkInCodespace('x');
+        rhombic2.checkInBounds('x');
+        rhombic2.checkInCodespace('x');
+
+        //Check X logical errors
+        cFailures[0] += cubic.checkLogicalError('x');
+        r1Failures[0] += rhombic1.checkLogicalError('x');
+        r2Failures[0] += rhombic2.checkLogicalError('x');
+
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         applyCCZ(lattices, overlappingFaces, L, engine, dist, link);
         cubic.depolarisingError(p, engine, dist);
         rhombic1.depolarisingError(p, engine, dist);
         rhombic2.depolarisingError(p, engine, dist);
 
+        //Project to stabiliser distribution + random bit flips from measurement error
+        cubic.zStabPattern(engine, dist);
+        cubic.biasedError(q, engine, dist, 'z', 1);
+        rhombic1.zStabPattern(engine, dist);
+        rhombic1.biasedError(q, engine, dist, 'z', 1);
+        rhombic2.zStabPattern(engine, dist);
+        rhombic2.biasedError(q, engine, dist, 'z', 1);
 
+        //Z error decoding from single-qubit measurements
+        cubic.calcSynd('x');
+        cubic::zErrorDecoder(cubic, L);
+        rhombic1.calcSynd('x');
+        rhombic1::zErrorDecoder(rhombic1, L);
+        rhombic2.calcSynd('x');
+        rhombic2::zErrorDecoder(rhombic2, L);
 
-        
+        //Check everything working as expected (debugging step)
+        cubic.checkInBounds('z');
+        cubic.checkInCodespace('z');
+        rhombic1.checkInBounds('z');
+        rhombic1.checkInCodespace('z');
+        rhombic2.checkInBounds('z');
+        rhombic2.checkInCodespace('z');
 
+        //Find 2D code corrections
+        cubic::jumpCorrection(cubic, L);
+        rhombicJumpCorrection(rhombic1, engine, dist, L, 1);
+        rhombicJumpCorrection(rhombic2, engine, dist, L, 2);
+
+        //Need a measurement-error free 2D code decoder here
+        cubic::decoder2D(...);
+        rhombic1::decoder2D(...);
+        rhombic2::decoder2D(...);
+
+        //Check Z logical errors (need to make sure logical Zs I chose are in 2D codes)
+        cFailuers += cubic.checkLogicalError('z');
+        r1Failures += rhombic1.checkLogicalError('z');
+        r2Failures += rhombic2.checkLogicalError('z');
+    }
+    
+    std::cout << OUTPUTS << '\n';
+
+    return 0;
+}
 
