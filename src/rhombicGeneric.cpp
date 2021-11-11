@@ -312,7 +312,7 @@ vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L
     return path;
 }
 
-vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFaces, int L)
+vint shortestDualPath(int cell1, int cell2, vint &outerQubitIndices, vint &innerQubitIndices, vvint &cellToFaces, int L)
 {
     int originalCell = cell1;
     coord cd1 = indexToCoord(cell1, L);
@@ -332,8 +332,11 @@ vint shortestDualPath(int cell1, int cell2, vint &qubitIndices, vvint &cellToFac
         vpint products;
         for (int i = 0; i < 12; i++)
         {
-            if (std::find(qubitIndices.begin(), qubitIndices.end(), cellToFaces[cell1][i]) 
-                        != qubitIndices.end())
+            int q = cellToFaces[cell1][i];
+            if (std::find(outerQubitIndices.begin(), outerQubitIndices.end(), q) 
+                    != outerQubitIndices.end() ||
+                std::find(innerQubitIndices.begin(), innerQubitIndices.end(), q) 
+                    != innerQubitIndices.end())
             {
                 int product = dirs[i][0]*diff[0] + dirs[i][1]*diff[1] + dirs[i][2]*diff[2];
                 products.push_back({product, i});

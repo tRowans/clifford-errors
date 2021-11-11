@@ -345,15 +345,16 @@ void joinPair(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, vint &syn
     for (int i : path) syndrome[i] = (syndrome[i] + 1) % 2;
 }
 
-void joinDualPair(int cell1, int cell2, vint &qubitIndices, vvint &cellToFaces, vint &qubits, int L)
+void joinDualPair(int cell1, int cell2, vint &outerQubitIndices, vint &innerQubitIndices, vvint &cellToFaces, vint &qubits, int L)
 {
     vint path;
     if (cell2 == -1) path = shortestPathToZBoundary(cell1, cellToFaces, L);
-    else path = shortestDualPath(cell1, cell2, qubitIndices, cellToFaces, L);
+    else path = shortestDualPath(cell1, cell2, outerQubitIndices, 
+                                    innerQubitIndices, cellToFaces, L);
     for (int i : path) qubits[i] = (qubits[i] + 1) % 2;
 }
 
-void zErrorDecoder(vint &qubits, vint &qubitIndices, vvint &cellToFaces, vint &xStabs, int L)
+void zErrorDecoder(vint &qubits, vint &outerQubitIndices, &innerQubitIndices, vvint &cellToFaces, vint &xStabs, int L)
 {
     vint violatedXStabs;
     vpint xStabPairs;
@@ -364,7 +365,8 @@ void zErrorDecoder(vint &qubits, vint &qubitIndices, vvint &cellToFaces, vint &x
     xStabPairs = mwpm(violatedXStabs, L, 1);
     for (auto &pair : xStabPairs)
     {
-        joinDualPair(pair.first, pair.second, qubitIndices, cellToFaces, qubits, L);
+        joinDualPair(pair.first, pair.second, outerQubitIndices, 
+                        innerQubitIndices, cellToFaces, qubits, L);
     }
 }
 

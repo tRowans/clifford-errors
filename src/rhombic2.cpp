@@ -181,9 +181,8 @@ void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVer
     }
 }
 
-void buildQubitIndices(vint &qubitIndices, vvint &vertexToFaces, vvint &faceToVertices, int L)
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, vvint &vertexToFaces, vvint &faceToVertices, int L)
 {
-    vint qubitIndices;
     for (int f = 0; f < 3 * L * L * L; f++)
     {
         int v = faceToBaseVertex(f, L);
@@ -192,23 +191,30 @@ void buildQubitIndices(vint &qubitIndices, vvint &vertexToFaces, vvint &faceToVe
 
         if (cd.xi[0] < (L-3) && cd.xi[1] < (L-2) && cd.xi[2] < (L-2))
         {
-            if (dir == 0 && cd.xi[1] < (L-3) && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
+            if (dir == 0 && cd.xi[1] < (L-3) && cd.xi[2] < (L-3)) 
+            {
+                if (cd.xi[0] == 0) outerQubitIndices.push_back(f);
+                else innerQubitIndices.push_back(f);
+            }
             else if (dir == 1 && cd.xi[0] < (L-4)
                               && cd.xi[1] > 0 && cd.xi[1] < (L-3)
-                              && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
+                              && cd.xi[2] < (L-3)) innerQubitIndices.push_back(f);
             else if (dir == 2 && cd.xi[0] < (L-4)
-                              && cd.xi[1] < (L-3)
-                              && cd.xi[2] > 0 && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
-            else if (dir == 3 && cd.xi[1] < (L-3) && cd.xi[2] > 0) qubitIndices.push_back(f);
+                              && cd.xi[1] < (L-3) && cd.xi[2] > 0 
+                              && cd.xi[2] < (L-3)) innerQubitIndices.push_back(f);
+            else if (dir == 3 && cd.xi[1] < (L-3) && cd.xi[2] > 0) 
+            {
+                if (cd.xi[0] == 0) outerQubitIndices.push_back(f);
+                else innerQubitIndices.push_back(f);
+            }
             else if (dir == 4 && cd.xi[0] < (L-4)
                               && cd.xi[1] > 0 && cd.xi[1] < (L-3)
-                              && cd.xi[2] > 0) qubitIndices.push_back(f);
+                              && cd.xi[2] > 0) innerQubitIndices.push_back(f);
             else if (dir == 5 && cd.xi[0] < (L-4)
-                              && cd.xi[1] > 0
-                              && cd.xi[2] > 0 && cd.xi[2] < (L-3)) qubitIndices.push_back(f);
+                              && cd.xi[1] > 0 && cd.xi[2] > 0 
+                              && cd.xi[2] < (L-3)) innerQubitIndices.push_back(f);
         }
     }
-    return qubitIndices;
 }
 
 // X boundary stabilisers on +y and -y boundaries
@@ -281,14 +287,14 @@ void buildZSyndIndices(vint &zSyndIndices, int L)
     return zSyndIndices;
 }
 
-void buildLogicals(vint &xLogical, vint &zLogical, vint &qubitIndices, int L)
+void buildLogicals(vint &xLogical, vint &zLogical, vint &outerQubitIndices, vint &innerQubitIndices, int L)
 {
     //Do these together because the loops are the same
-    for (int q : qubitIndices)
+    for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
     {
-        vint vertices = faceToVertices[q];
-        for (int v : vertices)
+        for (int q : qubitIndices)
         {
+            int v = faceToBaseVertex(q, L);
             coord cd = indexToCoord(v, L);
             if (cd.xi[2] == 0 && cd.xi[3] == 0) xLogical.push_back(q);
             if (cd.xi[0] == 0 && cd.xi[1] == 0 && cd.xi[3] == 0) zLogical.push_back(q);
@@ -303,10 +309,12 @@ void buildLattice(Lattice &lattice, int L)
     buildVertexToEdges(lattice.vertexToEdges, L);
     buildEdgeToVertices(lattice.edgeToVertices, L);
     buildCellToFaces(lattice.cellToFaces, lattice.vertexToFaces, lattice.faceToVertices, L);
-    buildQubitIndices(lattice.qubitIndices, lattice.vertexToFaces, lattice.faceToVertices, L);
+    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, 
+                        lattice.vertexToFaces, lattice.faceToVertices, L);
     buildXSyndIndices(lattice.xSyndIndices, L);
     buildZSyndIndices(lattice.zSyndIndices, L);
-    buildLogicals(lattice.xLogical, lattice.zLogical, lattice.qubitIndices, L);
+    buildLogicals(lattice.xLogical, lattice.zLogical, 
+                    lattice.outerQubitIndices, lattice.innerQubitIndices, L);
 }
 
 }
