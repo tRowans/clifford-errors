@@ -197,68 +197,40 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
     coord cd = indexToCoord(cell, L);
     vint path;
 
+    int zigzag = 0;
     if (sign == 1)
     {
-        if (cd.xi[2] == 0)
-        {
-            path.push_back(cellToFaces[cell][6]);
-            cell = cell + L + L*L;
-            dist -= 1;
-        }
-        else if (cd.xi[2] == L-3)
-        {
-            path.push_back(cellToFaces[cell][8]);
-            cell = cell + L - L*L;
-            dist -= 1;
-        }
-        
-        int zigzag = 0;
-        if (cd.xi[0] == L-4) zigzag = 1; 
+        if (cd.xi[2] == L-3) zigzag = 1;
         while (dist > 0)
         {
             if (zigzag = 0)
             {
-                path.push_back(cellToFaces[cell][0]);
-                cell = cell + 1 + L;
+                path.push_back(cellToFaces[cell][6]);
+                cell = cell + L + L*L;
             }
             else 
             {
-                path.push_back(cellToFaces[cell][2]);
-                cell = cell - 1 + L;
+                path.push_back(cellToFaces[cell][10]);
+                cell = cell + L - L*L;
             }
             zigzag = (zigzag + 1) % 2;
             dist -= 1;
         }
     }
-
     else 
     {
-        if (cd.xi[2] == 0)
-        {
-            path.push_back(cellToFaces[cell][7]);
-            cell = cell - L + L*L;
-            dist -= 1;
-        }
-        else if (cd.xi[2] == L-3)
-        {
-            path.push_back(cellToFaces[cell][11]);
-            cell = cell - L - L*L;
-            dist -= 1;
-        }
-
-        int zigzag = 0;
-        if (cd.xi[0] == L-4) zigzag = 1;
+        if (cd.xi[2] == L-3) zigzag = 1;
         while (dist > 0)
         {
             if (zigzag = 0)
             {
-                path.push_back(cellToFaces[cell][1]);
-                cell = cell + 1 - L;
+                path.push_back(cellToFaces[cell][7]);
+                cell = cell - L + L*L;
             }
-            else
+            else 
             {
-                path.push_back(cellToFaces[cell][3]);
-                cell = cell - 1 - L;
+                path.push_back(cellToFaces[cell][11]);
+                cell = cell - L - L*L;
             }
             zigzag = (zigzag + 1) % 2;
             dist -= 1;
@@ -336,46 +308,44 @@ vpint mwpm(vint &defects, int L, int dual)
     return defectPairs;
 }
 
-void joinPair(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, vint &syndrome, int L)
+void joinPair(int v1, int v2, Lattice &lattice, int L)
 {
     vint path;
     //If matched to boundary
     if (v2 == -1) path = shortestPathToXBoundary(v1, L);
-    else path = shortestPath(v1, v2, syndIndices, vertexToEdges, L, 1);
-    for (int i : path) syndrome[i] = (syndrome[i] + 1) % 2;
+    else path = shortestPath(v1, v2, lattice, L);
+    for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
 
-void joinDualPair(int cell1, int cell2, vint &outerQubitIndices, vint &innerQubitIndices, vvint &cellToFaces, vint &qubits, int L)
+void joinDualPair(int cell1, int cell2, Lattice &lattice, int L, int useOuter, int useInner)
 {
     vint path;
-    if (cell2 == -1) path = shortestPathToZBoundary(cell1, cellToFaces, L);
-    else path = shortestDualPath(cell1, cell2, outerQubitIndices, 
-                                    innerQubitIndices, cellToFaces, L);
-    for (int i : path) qubits[i] = (qubits[i] + 1) % 2;
+    if (cell2 == -1) path = shortestPathToZBoundary(cell1, lattice.cellToFaces, L);
+    else path = shortestDualPath(cell1, cell2, lattice, L, useOuter, useInner);
+    for (int i : path) qubitsZ[i] = (qubitsZ[i] + 1) % 2;
 }
 
-void zErrorDecoder(vint &qubits, vint &outerQubitIndices, &innerQubitIndices, vvint &cellToFaces, vint &xStabs, int L)
+void zErrorDecoder(Lattice &lattice, int L, int useOuter, int useInner)
 {
     vint violatedXStabs;
     vpint xStabPairs;
     for (int j = 0; j < xStabs.size(); j++)
     {
-        if (xStabs[j] == 1) violatedXStabs.push_back(j);
+        if (lattice.syndromeX[j] == 1) violatedXStabs.push_back(j);
     }
     xStabPairs = mwpm(violatedXStabs, L, 1);
     for (auto &pair : xStabPairs)
     {
-        joinDualPair(pair.first, pair.second, outerQubitIndices, 
-                        innerQubitIndices, cellToFaces, qubits, L);
+        joinDualPair(pair.first, pair.second, lattice, L, useOuter, useInner);
     }
 }
 
-void measErrorDecoder(vint &syndromeZ, vint &zSyndIndices, vvint &vertexToEdges, vint &defects, int L)
+void measErrorDecoder(Lattice &lattice, int L)
 {
-    vpint defectPairs = mwpm(defects, L, 0);
+    vpint defectPairs = mwpm(lattice.defects, L, 0);
     for (auto& pair : defectPairs)
     {
-        joinPair(pair.first, pair.second, zSyndIndices, vertexToEdges, syndromeZ, L);
+        joinPair(pair.first, pair.second, lattice, L);
     }
 }
 

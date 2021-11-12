@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     double q = std::atof(argv[3]);
     int runs = std::atoi(argv[4]);
     int link = std::atoi(argv[5]);
-    //MORE HERE?
+    int debug = std::atoi(argv[6]);
     
     std::vector<Lattice> lattices(3);
     Lattice &cubic = lattices[0];
@@ -51,20 +51,20 @@ int main(int argc, char *argv[])
         rhombic2.biasedError(0.5, engine, dist, 'x', 0);
 
         //Z stabiliser syndrome + measurement errors
-        cubic.calcSynd('z');
+        cubic.calcSynd('z', 1, 1);
         cubic.measError(q, engine, dist, 'z');
-        rhombic1.calcSynd('z');
+        rhombic1.calcSynd('z', 1, 1);
         rhombic1.measError(q, engine, dist, 'z');
-        rhombic2.calcSynd('z');
+        rhombic2.calcSynd('z', 1, 1);
         rhombic2.measError(q, engine, dist, 'z');
 
         //Find and fix measurement errors
         cubic.findDefects();
-        cubic::measErrorDecoder(cubic.syndromeZ, cubic.defects, L);
+        cubic::measErrorDecoder(cubic, L);
         rhombic1.findDefects();
-        rhombic1::measErrorDecoder(rhombic1.syndromeZ, rhombic1.defects, L); 
+        rhombic1::measErrorDecoder(rhombic1, L);
         rhombic2.findDefects();
-        rhombic2::measErrorDecoder(rhombic2.syndromeZ, rhombic2.defects, L); 
+        rhombic2::measErrorDecoder(rhombic2, L);
 
         //Fix X errors (decoder for this not done yet)
         cubic::xErrorDecoder(...);
@@ -72,12 +72,15 @@ int main(int argc, char *argv[])
         rhombic2::xErrorDecoder(...);
 
         //Check everything working as expected (debugging step)
-        cubic.checkInBounds('x');
-        cubic.checkInCodespace('x');
-        rhombic1.checkInBounds('x');
-        rhombic1.checkInCodespace('x');
-        rhombic2.checkInBounds('x');
-        rhombic2.checkInCodespace('x');
+        if (debug == 1)
+        {
+            cubic.checkInBounds();
+            cubic.checkInCodespace('x', 1, 1);
+            rhombic1.checkInBounds();
+            rhombic1.checkInCodespace('x', 1, 1);
+            rhombic2.checkInBounds();
+            rhombic2.checkInCodespace('x', 1, 1);
+        }
 
         //Check X logical errors
         cFailures[0] += cubic.checkLogicalError('x');
@@ -85,6 +88,8 @@ int main(int argc, char *argv[])
         r2Failures[0] += rhombic2.checkLogicalError('x');
 
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
+        //Although in practise only Z errors matter after this point
+        //so equivalently could do a biased error with prob 2*p/3
         applyCCZ(lattices, overlappingFaces, L, engine, dist, link);
         cubic.depolarisingError(p, engine, dist);
         rhombic1.depolarisingError(p, engine, dist);
@@ -98,39 +103,61 @@ int main(int argc, char *argv[])
         rhombic2.zStabPattern(engine, dist);
         rhombic2.biasedError(q, engine, dist, 'z', 1);
 
-        //Z error decoding from single-qubit measurements
-        cubic.calcSynd('x');
-        cubic::zErrorDecoder(cubic, L);
-        rhombic1.calcSynd('x');
-        rhombic1::zErrorDecoder(rhombic1, L);
-        rhombic2.calcSynd('x');
-        rhombic2::zErrorDecoder(rhombic2, L);
+        //Z error decoding from single-qubit measurements (only on inner qubits)
+        cubic.calcSynd('x', 0, 1);
+        cubic::zErrorDecoder(cubic, L, 0, 1);
+        rhombic1.calcSynd('x', 0, 1);
+        rhombic1::zErrorDecoder(rhombic1, L, 0, 1);
+        rhombic2.calcSynd('x', 0, 1);
+        rhombic2::zErrorDecoder(rhombic2, L, 0, 1);
 
-        //Check everything working as expected (debugging step)
-        cubic.checkInBounds('z');
-        cubic.checkInCodespace('z');
-        rhombic1.checkInBounds('z');
-        rhombic1.checkInCodespace('z');
-        rhombic2.checkInBounds('z');
-        rhombic2.checkInCodespace('z');
+        //Check step
+        if (debug == 1)
+        {
+            cubic.checkInBounds();
+            cubic.checkInCodespace('z', 0, 1);
+            rhombic1.checkInBounds();
+            rhombic1.checkInCodespace('z', 0, 1);
+            rhombic2.checkInBounds();
+            rhombic2.checkInCodespace('z', 0, 1);
+        }
 
-        //Find 2D code corrections
+        //Find dimension jump corrections for 2D codes 
         cubic::jumpCorrection(cubic, L);
         rhombicJumpCorrection(rhombic1, engine, dist, L, 1);
         rhombicJumpCorrection(rhombic2, engine, dist, L, 2);
 
-        //Need a measurement-error free 2D code decoder here
-        cubic::decoder2D(...);
-        rhombic1::decoder2D(...);
-        rhombic2::decoder2D(...);
+        //Another check step
+        if (debug == 1)
+        {
+            cubic.checkInBounds();
+            cubic.checkJumpCorrection();
+            rhombic1.checkInBounds();
+            rhombic1.checkJumpCorrection();
+            rhombic2.checkInBounds();
+            rhombic2.checkJumpCorrection();
+        }
+        
+        //We do not expect the 2D code to be error free even if we make no mistakes
+        //because it will still have errors from the CZ + depolarising error
+        //so we need a measurement-error free decoding step before checking for success.
+        //Can use the same decoder as for 3D here as long as errors are only on outer qubits
+        cubic.calcSynd('x', 1, 0); 
+        cubic::zErrorDecoder(cubic, L, 1, 0);
+        rhombic1.calcSynd('x', 1, 0);
+        rhombic1::zErrorDecoder(rhombic1, L, 1, 0);
+        rhombic2.calcSynd('x', 1, 0);
+        rhombic2::zErrorDecoder(rhombic2, L, 1, 0);
 
-        //Check Z logical errors (need to make sure logical Zs I chose are in 2D codes)
-        cFailuers += cubic.checkLogicalError('z');
-        r1Failures += rhombic1.checkLogicalError('z');
-        r2Failures += rhombic2.checkLogicalError('z');
+        //Check Z logical errors 
+        cFailuers[1] += cubic.checkLogicalError('z');
+        r1Failures[1] += rhombic1.checkLogicalError('z');
+        r2Failures[1] += rhombic2.checkLogicalError('z');
     }
     
-    std::cout << OUTPUTS << '\n';
+    std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << link << '\n';
+    std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
+    std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
 
     return 0;
 }

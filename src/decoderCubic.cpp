@@ -238,12 +238,12 @@ void zErrorDecoder(Lattice &lattice, int L)
     }
 }
 
-void measErrorDecoder(vint &syndromeZ, vint &defects, int L)
+void measErrorDecoder(Lattice &lattice, int L)
 {
-    vpint defectPairs = mwpm(defects, L, 0);
+    vpint defectPairs = mwpm(lattice.defects, L, 0);
     for (auto &pair : defectPairs)
     {
-        joinPair(pair.first, pair.second, syndromeZ, L);
+        joinPair(pair.first, pair.second, lattice.syndromeZ, L);
     }
 }
 

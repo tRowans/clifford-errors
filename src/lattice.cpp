@@ -86,49 +86,54 @@ void Lattice::zStabPattern(std::mt19937& engine, std::uniform_real_distribution<
     }
 }
 
-void Lattice::calcSynd(char pauli)
+void Lattice::calcSynd(char pauli, int useOuter, int useInner)
 {
-    //X stabilisers/Z errors
-    if (pauli == 'x' || pauli == 'X')
+    vint whichQubits = {useOuter, useInner};
+    int j = 0;
+    for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
     {
-        std::fill(syndromeX.begin(), syndromeX.end(), 0);
-        for (int i : innerQubitIndices)  //Don't use outer code qubits for this
+        if (whichQubits[j] == 1)
         {
-            if (qubitsZ[i] == 1)
+            //X stabilisers/Z errors
+            if (pauli == 'x' || pauli == 'X')
             {
-                std::pair<int,int> &cells = faceToCells[i];
-                for (int cell : {cells.first, cells.second})
+                for (int i : qubitIndices)
                 {
-                    if (std::find(xSyndIndices.begin(), xSyndIndices.end(), cell) 
-                            == xSyndIndices.end()) continue;
-                    syndromeX[cell] = (syndrome[cell] + 1) % 2;
-                }
-            }
-        }
-    }
-    //Z stabilisers/X errors
-    else if (pauli == 'z' || pauli == 'Z')
-    {
-        std::fill(syndromeZ.begin(), syndromeZ.end(), 0);
-        for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
-        {
-            for (int i : qubitIndices)
-            {
-                if (qubitsX[i] == 1)
-                {
-                    std::vector<int> &edges = faceToEdges[i];
-                    for (auto edgeIndex : edges)
+                    std::fill(syndromeX.begin(), syndromeX.end(), 0);
+                    if (qubitsZ[i] == 1)
                     {
-                        if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edgeIndex)
-                                == zSyndIndices.end()) continue;
-                        syndromeZ[edgeIndex] = (syndrome[edgeIndex] + 1) % 2;
+                        pint &cells = faceToCells[i];
+                        for (int cell : {cells.first, cells.second})
+                        {
+                            if (std::find(xSyndIndices.begin(), xSyndIndices.end(), cell)
+                                    == xSyndIndices.end()) continue;
+                            syndromeX[cell] = (syndromeX[cell] + 1) % 2;
+                        }
                     }
                 }
             }
+            //Z stabilisers/X errors
+            else if (pauli == 'z' || pauli == 'Z')
+            {
+                for (int i : qubitIndices)
+                {
+                    std::fill(syndromeZ.begin(), syndromeZ.end(), 0);
+                    if (qubitsX[i] == 1)
+                    {
+                        vint &edges = faceToEdges[i];
+                        for (auto edge : edges)
+                        {
+                            if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edge)
+                                    == zSyndIndices.end()) continue;
+                            syndromeZ[edge] = (syndrome[edge] + 1) % 2;
+                        }
+                    }
+                }
+            }
+            else throw std::invalid_argument("Invalid Pauli given for calcSynd");
         }
+        j = 1;
     }
-
-    else throw std::invalid_argument("Invalid Pauli given for calcSynd");
 }
 
 void Lattice::findDefects()
@@ -199,23 +204,38 @@ void Lattice::checkInBounds()
     }
 }
 
-void Lattice::checkInCodespace()
+void Lattice::checkInCodespace(char pauli, int useOuter, int useInner)
 {
-    calcSynd('x');
-    calcSynd('z');
-    for (int i = 0; i < 8*L*L*L; i++)
+    if (pauli == 'x' || pauli == 'X')
     {
-        if (i < L*L*L)
+        calcSynd('z', useOuter, useInner);
+        for (int i = 0; i < 8*L*L*L; i++)
         {
-            if (syndromeX[i] == 1)
+            if (syndromeZ[i] == 1)
             {
                 throw std::runtime_error("Out of codespace (bad Z correction)");
             }
         }
-        if (syndromeZ[i] == 1)
+    }
+    else if (pauli == 'z' || pauli == 'Z')
+    {
+        calcSynd('x', useOuter, useInner);
+        for (int i = 0, i < L*L*L; i++)
         {
-            throw std::runtime_error("Out of codespace (bad X correction)");
+            if (syndromeX[i] == 1)
+            {
+                throw std::runtime_error("Out of codespace (bad X Correction)");
+            }
         }
+    }
+    else throw std::invalid_argument("Invalid Pauli given for checkInCodespace");
+}
+
+void Lattice::checkJumpCorrection()
+{
+    for (int i : innerQubitIndices)
+    {
+        if (qubitsZ[i] == 1) std::runtime_error("Bad jump correction");
     }
 }
 

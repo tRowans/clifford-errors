@@ -51,10 +51,11 @@ class Lattice
         void applyZStab(int edge);
         void zStabPattern(std::mt19937& engine, 
                             std::uniform_real_distribution<double>& dist)
-        void calcSynd(char pauli);
+        void calcSynd(char pauli, int useOuter, int useInner);
         void findDefects();
-        void checkInBounds(char pauli);
-        void checkInCodespace(char pauli);
+        void checkInBounds();
+        void checkInCodespace(char pauli, int useOuter, int useInner);
+        void checkJumpCorrection();
         int checkLogicalError(char pauli);
         void wipe(); //clears error and syndrome info
 };

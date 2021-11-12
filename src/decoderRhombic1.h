@@ -18,15 +18,15 @@ vint shortestPathToZB(int cell, vvint &cellToFaces, int L);
 
 vpint mwpm(vint &defects, int L, int dual);
 
-void joinPair(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, vint &syndrome, int L);
+void joinPair(int v1, int v2, Lattice &lattice, int L);
 
-void joinDualPair(int cell1, int cell2, vint &outerQubitIndices, vint &innerQubitIndices, vvint &cellToFaces, vint &qubits, int L);
+void joinDualPair(int cell1, int cell2, Lattice &lattice, int L, int useOuter, int useInner);
 
 //void xErrorDecoder(...)
 
-void zErrorDecoder(vint &qubits, vint &outerQubitIndices, vint &innerQubitIndices, vvint &cellToFaces, vint &xStabs, int L);
+void zErrorDecoder(Lattice &lattice, int L, int useOuter, int useInner);
 
-void measErrorDecoder(vint &syndromeZ, vint &zSyndIndices, vvint &vertexToEdges, vint &defects, int L);
+void measErrorDecoder(Lattice &lattice, int L);
 
 }
 #endif

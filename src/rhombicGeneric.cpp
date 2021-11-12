@@ -23,7 +23,7 @@ coord indexToCoord(int i, int L)
         c.xi[0] = i % L;
         c.xi[1] = (int)floor(i / L) % L;
         c.xi[2] = (int)floor(i / (L * L)) % L;
-        c.xi[3] = (int)floor(i / (L * L * L)) % L; //not sure this needs a %L but I'll leave it
+        c.xi[3] = (int)floor(i / (L * L * L)) % L; //not sure this needs a %L but why not
         return c;
     }
     else
@@ -104,7 +104,9 @@ int neigh(int v, int dir, int sign, int L)
     }
     else 
     {
-        std::string errorMsg = "Invalid argument passed to neigh (arguments were " + std::to_string(v) + ',' + std::to_string(dir) + ',' + std::to_string(sign) + ',' + std::to_string(L) + ")\n";
+        std::string errorMsg = "Invalid argument passed to neigh (arguments were " 
+                                + std::to_string(v) + ',' + std::to_string(dir) + ',' 
+                                + std::to_string(sign) + ',' + std::to_string(L) + ")\n";
     throw std::invalid_argument(errorMsg);
     }
 }
@@ -137,8 +139,10 @@ int edgeIndex(int v, int dir, int sign, int L)
     return 4 * v + dir;
 }
 
-// This is different to cubic lattice, I am not using a clever indexing system and just manually adding each face
-void addFace(int v, int f, const vint &dirs, const vint &dirs2, const vint &signs, const vint &signs2, vvint &faceToVertices, vvint &faceToEdges, vpint &faceToCells, vvint &vertexToFaces, vvint &edgeToFaces, int L)
+// This is different to cubic lattice, 
+// I am not using a clever indexing system and just manually adding each face
+void addFace(int v, int f, const vint &dirs, const vint &dirs2, 
+                 const vint &signs, const vint &signs2, Lattice &lattice, int L)
 {
     // Construct edges and vertices
     vint vertices;
@@ -160,16 +164,16 @@ void addFace(int v, int f, const vint &dirs, const vint &dirs2, const vint &sign
     std::sort(vertices.begin(), vertices.end());
     std::sort(edges.begin(), edges.end());
     // Populate vvints
-    faceToVertices[f] = vertices;
-    faceToEdges[f] = edges;
-    faceToCells[f] = cells;
+    lattice.faceToVertices[f] = vertices;
+    lattice.faceToEdges[f] = edges;
+    lattice.faceToCells[f] = cells;
     for (const auto vertex :  vertices)
     {
-        vertexToFaces[vertex].push_back(f);
+        lattice.vertexToFaces[vertex].push_back(f);
     }
     for (const auto edge : edges)
     {
-        edgeToFaces[edge].push_back(f);
+        lattice.edgeToFaces[edge].push_back(f);
     }
 }
 
@@ -188,16 +192,8 @@ int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices)
     return -1; //no face contains both of these vertices
 }
 
-int scalarProduct(std::vector<float> vec, int dir)
+int scalarProduct(std::vector<float> vec, int dir, int sign)
 {
-    //scalar product of a vector with one of the edge directions
-    //but these directions can be negative
-    int sign = 1;
-    if (dir < 0) 
-    {
-        dir = -1*dir;
-        sign = -1;
-    }
     if (dir == 1) return sign*vec[0] + sign*vec[1] - sign*vec[2];   //{1,1,-1}
     else if (dir == 2) return sign*vec[0] - sign*vec[1] + sign*vec[2];  //{1,-1,1}
     else if (dir == 3) return -1*sign*vec[0] + sign*vec[1] + sign*vec[2];   //{-1,1,1}
@@ -230,50 +226,35 @@ int shortestPathLength(int v1, int v2, int L)
     return abs(dist); //can be -1 if both vertices have the same first 3 coords
 }
 
-vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L, int r)
+vint shortestPath(int v1, int v2, &Lattice, lattice, int L)
 {
     int originalVertex = v1;
     coord c1 = indexToCoord(v1, L);
     coord c2 = indexToCoord(v2, L);
-    std::vector<float> diff = {c2.xi[0] - c1.xi[0] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2), 
-                               c2.xi[1] - c1.xi[1] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
-                               c2.xi[2] - c1.xi[2] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2)};
+    std::vector<float> diff = {c2.xi[0] - c1.xi[0] + 
+                                    (static_cast<float>(c2.xi[3] - c1.xi[3])/2), 
+                               c2.xi[1] - c1.xi[1] + 
+                                    (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
+                               c2.xi[2] - c1.xi[2] + 
+                                    (static_cast<float>(c2.xi[3] - c1.xi[3])/2)};
     vint path = {};
     //Need to add 1 to each or xy and -xy look the same
-    vint dirs1 = {xy+1, xz+1, yz+1, xyz+1, -1*(xy+1), -1*(xz+1), -1*(yz+1), -1*(xyz+1)};
-    vint dirs2 = {xy+1, xz+1, yz+1, -1*(xyz+1)};
-    vint dirs3 = {xyz+1, -1*(xy+1), -1*(xz+1), -1*(yz+1)};
     int turnAround = 0;
     while (abs(diff[0]) + abs(diff[1]) + abs(diff[2]) > 0)
     {
         int bestEdge;
-        int bestProduct;
         vpint products;
-        vint dirs;
-        if (c1.xi[3] == 0) dirs = dirs1;
-        else 
+        vint &edges = lattice.vertexToEdges[v1];
+        for (int edge : edges)
         {
-            if (r == 1)
+            int dir = edge % 4;
+            int sign;
+            if (edge/4 == v1) sign = 1;
+            else sign = -1;
+            if (std::find(lattice.zSyndIndices.begin(), lattice.zSyndIndices.end(), edge) 
+                    != lattice.zSyndIndices.end())
             {
-                if ((c1.xi[0] + c1.xi[1] + c1.xi[2]) % 2 == 0) dirs = dirs2;
-                else dirs = dirs3;
-            }
-            else 
-            {
-                if ((c1.xi[0] + c1.xi[1] + c1.xi[2]) % 2 == 1) dirs = dirs2;
-                else dirs = dirs3;
-            }
-        }
-        vint edges;
-        for (int i = 0; i < dirs.size(); i++)
-        {
-            int edge;
-            if (dirs[i] > 0) edge = edgeIndex(v1, dirs[i]-1, 1, L);
-            else edge = edgeIndex(v1, -1*dirs[i]-1, -1, L);
-            edges.push_back(edge);
-            if (std::find(syndIndices.begin(), syndIndices.end(), edge) != syndIndices.end())
-            {
-                products.push_back({scalarProduct(diff, dirs[i]), i});
+                products.push_back({scalarProduct(diff, dir, sign), edge});
             }
         }
         std::sort(products.begin(), products.end());
@@ -286,23 +267,29 @@ vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L
         //I don't know if we need this here 
         //because I don't remember what the problem cases were in the slices
         //but probably best to just leave it in
-        if (std::find(path.begin(), path.end(), edges[bestEdge]) != path.end())
+        if (std::find(path.begin(), path.end(), bestEdge) != path.end())
         {
             //Sometimes gets stuck at a dead end and needs to turn around
             //we go back to the previous vertex and rerun then choose the second best edge 
-            if (path.back() == edges[bestEdge]) turnAround = 1;
+            if (path.back() == bestEdge) turnAround = 1;
             //If we have gone in a larger loop just abort
             //but I don't think this should happen
             else
             {
-                std::string errorMsg = "Loop occurred while building path between vertices " + std::to_string(v1) + " and " + std::to_string(v2) + '\n'+ " (vertices passed to function were " + std::to_string(originalVertex) + " and " + std::to_string(v2) + ")\n";
+                std::string errorMsg = ("Loop occurred while building path between vertices " 
+                                        + std::to_string(v1) + " and " 
+                                        + std::to_string(v2) + '\n'
+                                        + " (vertices passed to function were " 
+                                        + std::to_string(originalVertex) + " and " 
+                                        + std::to_string(v2) + ")\n");
                 throw std::runtime_error(errorMsg);
             }
         }
-        if (turnAround == 0) path.push_back(edges[bestEdge]);
+        if (turnAround == 0) path.push_back(bestEdge);
         else path.pop_back();
-        if (dirs[bestEdge] > 0) v1 = neigh(v1, dirs[bestEdge]-1, 1, L);
-        else v1 = neigh(v1, -1*dirs[bestEdge]-1, -1, L);
+        pint verts = lattice.edgeToVertices[bestEdge];
+        if (verts.first == v1) v1 = verts.second;
+        else v1 = verts.first;
         c1 = indexToCoord(v1, L);
         diff = {c2.xi[0] - c1.xi[0] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2), 
                 c2.xi[1] - c1.xi[1] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
@@ -312,7 +299,8 @@ vint shortestPath(int v1, int v2, vint &syndIndices, vvint &vertexToEdges, int L
     return path;
 }
 
-vint shortestDualPath(int cell1, int cell2, vint &outerQubitIndices, vint &innerQubitIndices, vvint &cellToFaces, int L)
+vint shortestDualPath(int cell1, int cell2, Lattice &lattice, 
+                                int L, int useOuter, int useInner)
 {
     int originalCell = cell1;
     coord cd1 = indexToCoord(cell1, L);
@@ -332,11 +320,21 @@ vint shortestDualPath(int cell1, int cell2, vint &outerQubitIndices, vint &inner
         vpint products;
         for (int i = 0; i < 12; i++)
         {
-            int q = cellToFaces[cell1][i];
-            if (std::find(outerQubitIndices.begin(), outerQubitIndices.end(), q) 
-                    != outerQubitIndices.end() ||
-                std::find(innerQubitIndices.begin(), innerQubitIndices.end(), q) 
-                    != innerQubitIndices.end())
+            int q = lattice.cellToFaces[cell1][i];
+            int allowedFace = 0;
+            if (useOuter == 1)
+            {
+                if (std::find(lattice.outerQubitIndices.begin(), 
+                              lattice.outerQubitIndices.end(), q) 
+                              != lattice.outerQubitIndices.end()) allowedFace = 1;
+            }
+            if (useInner == 1 && allowedFace == 0)
+            {
+                if (std::find(lattice.innerQubitIndices.begin(), 
+                              lattice.innerQubitIndices.end(), q) 
+                              != lattice.innerQubitIndices.end()) allowedFace = 1;
+            }
+            if (allowedFace == 1)
             {
                 int product = dirs[i][0]*diff[0] + dirs[i][1]*diff[1] + dirs[i][2]*diff[2];
                 products.push_back({product, i});
@@ -349,19 +347,20 @@ vint shortestDualPath(int cell1, int cell2, vint &outerQubitIndices, vint &inner
             turnAround = 0;
         }
         bestDir = products.back().second;
-        bestFace = cellToFaces[cell1][bestDir];
+        bestFace = lattice.cellToFaces[cell1][bestDir];
         //Once again, probably don't need this
         //but no harm in leaving it in just in case 
         if (std::find(path.begin(), path.end(), bestFace) != path.end())
         {
-            //Sometimes gets stuck at a dead end and needs to turn around
-            //we go back to the previous vertex and rerun then choose the second best edge 
             if (path.back() == bestFace) turnAround = 1;
-            //If we have gone in a larger loop just abort
-            //but I don't think this should happen
             else
             {
-                std::string errorMsg = "Loop occurred while building path between cells " + std::to_string(cell1) + " and " + std::to_string(cell2) + '\n'+ " (cells passed to function were " + std::to_string(originalCell) + " and " + std::to_string(cell2) + ")\n";
+                std::string errorMsg = ("Loop occurred while building path between cells " 
+                                        + std::to_string(cell1) + " and " 
+                                        + std::to_string(cell2) + '\n'
+                                        + " (cells passed to function were " 
+                                        + std::to_string(originalCell) + " and " 
+                                        + std::to_string(cell2) + ")\n");
                 throw std::runtime_error(errorMsg);
             }
         }
@@ -377,7 +376,8 @@ vint shortestDualPath(int cell1, int cell2, vint &outerQubitIndices, vint &inner
     }
     return path;
 }
-//Need to run a bounds check before running this function 
+
+//This assumes no out of bounds errors
 void rhombicJumpCorrection(Lattice &lattice, std::mt19937& engine, 
                         std::uniform_real_distribution<double>& dist, int L, int r)
 {
