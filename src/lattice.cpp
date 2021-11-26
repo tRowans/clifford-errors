@@ -21,7 +21,8 @@ void Lattice::depolarisingError(double p, std::mt19937& engine, std::uniform_rea
     }
 }
 
-void Lattice::biasedError(double p, std::mt19937& engine, std::uniform_real_distribution<double>& dist, char pauli, int innerOnly)
+void Lattice::biasedError(double p, std::mt19937& engine, 
+                            std::uniform_real_distribution<double>& dist, char pauli, int innerOnly)
 {
     if (innerOnly == 0)
     {
@@ -56,33 +57,6 @@ void Lattice::measError(double q, std::mt19937& engine, std::uniform_real_distri
             else if (pauli == 'z' || pauli == 'Z') syndromesZ[i] = (syndromesZ[i] + 1) % 2;
             else throw std::invalid_argument("Invalid Pauli given for measError");
         }
-    }
-}
-
-void Lattice::applyZStab(int edge)
-{
-    if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edge) == zSyndIndices.end())
-    {
-        throw std::invalid_argument("Non-stabiliser edge passed to applyZStab");
-    }
-    vint &stabQubits = edgeToFaces[edge];
-    for (int q : stabQubits)
-    {
-        if (std::find(outerQubitIndices.begin(), outerQubitIndices.end(), q) 
-              != outerQubitIndices.end() ||
-            std::find(innerQubitIndices.begin(), innerQubitIndices.end(), q)
-              != innerQubitIndices.end())
-        {
-            qubitsZ[q] = (qubits[Z] + 1) % 2;
-        }
-    }
-}
-
-void Lattice::zStabPattern(std::mt19937& engine, std::uniform_real_distribution<double>& dist)
-{
-    for (int stab : zSyndIndices)
-    {
-        if (dist(engine < 0.5)) applyZStab(stab);
     }
 }
 
@@ -149,6 +123,33 @@ void Lattice::findDefects()
         }
 
         if (count % 2 == 1) defects.push_back(v);
+    }
+}
+
+void Lattice::applyZStab(int edge)
+{
+    if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edge) == zSyndIndices.end())
+    {
+        throw std::invalid_argument("Non-stabiliser edge passed to applyZStab");
+    }
+    vint &stabQubits = edgeToFaces[edge];
+    for (int q : stabQubits)
+    {
+        if (std::find(outerQubitIndices.begin(), outerQubitIndices.end(), q) 
+              != outerQubitIndices.end() ||
+            std::find(innerQubitIndices.begin(), innerQubitIndices.end(), q)
+              != innerQubitIndices.end())
+        {
+            qubitsZ[q] = (qubits[Z] + 1) % 2;
+        }
+    }
+}
+
+void Lattice::zStabPattern(std::mt19937& engine, std::uniform_real_distribution<double>& dist)
+{
+    for (int stab : zSyndIndices)
+    {
+        if (dist(engine < 0.5)) applyZStab(stab);
     }
 }
 
@@ -256,6 +257,7 @@ int Lattice::checkLogicalError(char pauli)
             if (qubitsZ[i] == 1) parity = (parity + 1) % 2;
         }
     }
+    else throw std::invalid_argument("Invalid Pauli given for checkLogicalError");
     return parity;
 }
 

@@ -4,7 +4,7 @@ namespace cubic {
 
 int coordToIndex(coord c, int L)
 {
-    if (0 <= c.xi[0] && c.xi[0] < L &&  //could actually make this L-2 but maybe not worth it
+    if (0 <= c.xi[0] && c.xi[0] < L &&  
         0 <= c.xi[1] && c.xi[1] < L && 
         0 <= c.xi[2] && c.xi[2] < L)
     {
@@ -74,15 +74,24 @@ void buildFaceToEdges(vvint &faceToEdges, int L)
         int dir = f % 3;
         if (dir == 0)
         {
-            faceToEdges.push_back({edgeIndex(v, x, 1, L), edgeIndex(v, y, 1, L), edgeIndex(neigh(v, x, 1, L), y, 1, L), edgeIndex(neigh(v, y, 1, L), x, 1, L)});
+            faceToEdges.push_back({edgeIndex(v, x, 1, L), 
+                                   edgeIndex(v, y, 1, L), 
+                                   edgeIndex(neigh(v, x, 1, L), y, 1, L), 
+                                   edgeIndex(neigh(v, y, 1, L), x, 1, L)});
         }
         else if (dir == 1)
         {
-            faceToEdges.push_back({edgeIndex(v, x, 1, L), edgeIndex(v, z, 1, L), edgeIndex(neigh(v, x, 1, L), z, 1, L), edgeIndex(neigh(v, z, 1, L), x, 1, L)});
+            faceToEdges.push_back({edgeIndex(v, x, 1, L), 
+                                   edgeIndex(v, z, 1, L), 
+                                   edgeIndex(neigh(v, x, 1, L), z, 1, L), 
+                                   edgeIndex(neigh(v, z, 1, L), x, 1, L)});
         }
         else if (dir == 2)
         {
-            faceToEdges.push_back({edgeIndex(v, y, 1, L), edgeIndex(v, z, 1, L), edgeIndex(neigh(v, y, 1, L), z, 1, L), edgeIndex(neigh(v, z, 1, L), y, 1, L)});
+            faceToEdges.push_back({edgeIndex(v, y, 1, L), 
+                                   edgeIndex(v, z, 1, L), 
+                                   edgeIndex(neigh(v, y, 1, L), z, 1, L), 
+                                   edgeIndex(neigh(v, z, 1, L), y, 1, L)});
         }
     }
 }
@@ -186,15 +195,18 @@ void buildFaceToVertices(vvint &faceToVertices, int L)
         vint vertices;
         if (dir == 0)
         {
-            vertices = {v, neigh(v,x,1,L), neigh(v,y,1,L), neigh(neigh(v,x,1,L),y,1,L)};
+            vertices = {v, neigh(v,x,1,L), 
+                        neigh(v,y,1,L), neigh(neigh(v,x,1,L),y,1,L)};
         }
         else if (dir == 1)
         {
-            vertices = {v, neigh(v,x,1,L), neigh(v,z,1,L), neigh(neigh(v,x,1,L),z,1,L)};
+            vertices = {v, neigh(v,x,1,L), 
+                        neigh(v,z,1,L), neigh(neigh(v,x,1,L),z,1,L)};
         }
         else 
         {
-            vertices = {v, neigh(v,y,1,L), neigh(v,z,1,L), neigh(neigh(v,y,1,L),z,1,L)};
+            vertices = {v, neigh(v,y,1,L), 
+                        neigh(v,z,1,L), neigh(neigh(v,y,1,L),z,1,L)};
         }
     }
 }
@@ -208,7 +220,10 @@ void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L)
         coord cd = indexToCoord(v, L);
         if (cd.xi[0] < (L-3) && cd.xi[1] < (L-3) && cd.xi[2] < (L-3))
         {
-            if (dir == 0 && cd.xi[0] < (L-4) && cd.xi[2] > 0) innerQubitIndices.push_back(f);
+            if (dir == 0 && cd.xi[0] < (L-4) && cd.xi[2] > 0)
+            {
+                innerQubitIndices.push_back(f);
+            }
             else if (dir == 1 && cd.xi[0] < (L-4) && cd.xi[1] > 0) 
             {
                 if (cd.xi[2] == 0) outerQubitIndices.push_back(f);
