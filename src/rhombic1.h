@@ -3,7 +3,9 @@
 
 #include "rhombicGeneric.h"
 
-namespace rhombic1 {
+namespace rhombic {
+
+namespace r1 {
 
 void buildFaces(Lattice &lattice, int L);
 
@@ -22,6 +24,8 @@ void buildXSyndIndices(vint &xSyndIndices, int L);
 void buildZSyndIndices(vint &zSyndIndices, int L);
 
 void buildLogicals(Lattice &lattice, int L);
+
+}
 
 }
 

@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
     Lattice &rhombic2 = lattices[2];
 
     cubic::buildLattice(cubic, L);
-    rhombic1::buildLattice(rhombic1, L);
-    rhombic2::buildLattice(rhombic2, L);
+    rhombic::r1::buildLattice(rhombic1, L);
+    rhombic::r2::buildLattice(rhombic2, L);
 
     std::map<pint,std::pair<pint,pint>> overlappingFaces = buildOverlappingFaces(lattices, L);
 
@@ -62,14 +62,14 @@ int main(int argc, char *argv[])
         cubic.findDefects();
         cubic::measErrorDecoder(cubic, L);
         rhombic1.findDefects();
-        rhombic1::measErrorDecoder(rhombic1, L);
+        rhombic::r1::measErrorDecoder(rhombic1, L);
         rhombic2.findDefects();
-        rhombic2::measErrorDecoder(rhombic2, L);
+        rhombic::r2::measErrorDecoder(rhombic2, L);
 
         //Fix X errors (decoder for this not done yet)
         cubic::xErrorDecoder(...);
-        rhombic1::xErrorDecoder(...);
-        rhombic2::xErrorDecoder(...);
+        rhombic::r1::xErrorDecoder(...);
+        rhombic::r2::xErrorDecoder(...);
 
         //Check everything working as expected (debugging step)
         if (debug == 1)
@@ -107,9 +107,9 @@ int main(int argc, char *argv[])
         cubic.calcSynd('x', 0, 1);
         cubic::zErrorDecoder(cubic, L, 0, 1);
         rhombic1.calcSynd('x', 0, 1);
-        rhombic1::zErrorDecoder(rhombic1, L, 0, 1);
+        rhombic::r1::zErrorDecoder(rhombic1, L, 0, 1);
         rhombic2.calcSynd('x', 0, 1);
-        rhombic2::zErrorDecoder(rhombic2, L, 0, 1);
+        rhombic::r2::zErrorDecoder(rhombic2, L, 0, 1);
 
         //Check step
         if (debug == 1)
@@ -124,8 +124,8 @@ int main(int argc, char *argv[])
 
         //Find dimension jump corrections for 2D codes 
         cubic::jumpCorrection(cubic, L);
-        rhombicJumpCorrection(rhombic1, engine, dist, L, 1);
-        rhombicJumpCorrection(rhombic2, engine, dist, L, 2);
+        rhombic::jumpCorrection(rhombic1, engine, dist, L, 1);
+        rhombic::jumpCorrection(rhombic2, engine, dist, L, 2);
 
         //Another check step
         if (debug == 1)
@@ -145,9 +145,9 @@ int main(int argc, char *argv[])
         cubic.calcSynd('x', 1, 0); 
         cubic::zErrorDecoder(cubic, L, 1, 0);
         rhombic1.calcSynd('x', 1, 0);
-        rhombic1::zErrorDecoder(rhombic1, L, 1, 0);
+        rhombic::r1::zErrorDecoder(rhombic1, L, 1, 0);
         rhombic2.calcSynd('x', 1, 0);
-        rhombic2::zErrorDecoder(rhombic2, L, 1, 0);
+        rhombic::r2::zErrorDecoder(rhombic2, L, 1, 0);
 
         //Check Z logical errors 
         cFailuers[1] += cubic.checkLogicalError('z');

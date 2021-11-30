@@ -1,6 +1,8 @@
 #include "rhombic2.h"
 
-namespace rhombic2 {
+namespace rhombic {
+
+namespace r2 {
 
 void buildFaces(Lattice &lattice, int L)
 {
@@ -306,6 +308,8 @@ void buildLattice(Lattice &lattice, int L)
     buildXSyndIndices(lattice.xSyndIndices, L);
     buildZSyndIndices(lattice.zSyndIndices, L);
     buildLogicals(lattice, L);
+}
+
 }
 
 }

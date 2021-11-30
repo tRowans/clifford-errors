@@ -1,5 +1,7 @@
 #include "rhombicGeneric.h"
 
+namespace rhombic {
+
 int coordToIndex(coord c, int L)
 {
     if (0 <= c.xi[0] && c.xi[0] < L &&
@@ -378,7 +380,7 @@ vint shortestDualPath(int cell1, int cell2, Lattice &lattice,
 }
 
 //This assumes no out of bounds errors
-void rhombicJumpCorrection(Lattice &lattice, std::mt19937& engine, 
+void jumpCorrection(Lattice &lattice, std::mt19937& engine, 
                         std::uniform_real_distribution<double>& dist, int L, int r)
 {
     for (int x = L-4; x > 0; x--)
@@ -490,4 +492,5 @@ void rhombicJumpCorrection(Lattice &lattice, std::mt19937& engine,
         }
     }
 }
- 
+
+}

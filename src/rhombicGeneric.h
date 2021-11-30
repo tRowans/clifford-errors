@@ -4,6 +4,8 @@
 #include <math.h>
 #include "lattice.h"
 
+namespace rhombic {
+
 struct coord
 {
     int xi[4];
@@ -35,7 +37,9 @@ vint shortestPath(int v1, int v2, Lattice &lattice, int L);
 vint shortestDualPath(int cell1, int cell2, Lattice &lattice, 
                                 int L, int useOuter, int useInner);
 
-void rhombicJumpCorrection(Lattice &lattice, std::mt19937& engine, 
+void jumpCorrection(Lattice &lattice, std::mt19937& engine, 
                         std::uniform_real_distribution<double>& dist, int L, int r);
+
+}
 
 #endif
