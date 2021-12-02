@@ -290,10 +290,11 @@ void buildLogicals(Lattice &lattice, int L)
     {
         for (int q : qubitIndices)
         {
-            int v = faceToBaseVertex(q, L);
-            coord cd = indexToCoord(v, L);
-            if (cd.xi[1] == 0 && cd.xi[3] == 0) lattice.xLogical.push_back(q);
-            if (cd.xi[0] == 0 && cd.xi[2] == 0 && cd.xi[3] == 0)lattice.zLogical.push_back(q);
+            int vertices = lattice.faceToVertices[q];
+            coord cd1 = indexToCoord(v[0], L);
+            coord cd2 = indexToCoord(v[1], L);
+            if (cd1.xi[1] == 0 || cd2.xi[1] == 0) lattice.xLogical.push_back(q);
+            if (cd1.xi[0] == 0 && cd1.xi[2] == 0)lattice.zLogical.push_back(q);
         }
     }
 }
@@ -307,7 +308,7 @@ void buildLattice(Lattice &lattice, int L)
     buildQubitIndices(lattice, L);
     buildXSyndIndices(lattice.xSyndIndices, L);
     buildZSyndIndices(lattice.zSyndIndices, L);
-    buildLogicals(lattice, L);
+    buildLogicals(lattice, L);  //this needs to come after index building functions
                  
 }
 
