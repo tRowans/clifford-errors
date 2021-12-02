@@ -291,8 +291,8 @@ void buildLogicals(Lattice &lattice, int L)
         for (int q : qubitIndices)
         {
             int vertices = lattice.faceToVertices[q];
-            coord cd1 = indexToCoord(v[0], L);
-            coord cd2 = indexToCoord(v[1], L);
+            coord cd1 = indexToCoord(vertices[0], L);
+            coord cd2 = indexToCoord(vertices[1], L);
             if (cd1.xi[1] == 0 || cd2.xi[1] == 0) lattice.xLogical.push_back(q);
             if (cd1.xi[0] == 0 && cd1.xi[2] == 0)lattice.zLogical.push_back(q);
         }

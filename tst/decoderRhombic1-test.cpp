@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include "decoderRhombic1.h"
-#include "prepIndexVectors.h"
 #include <iostream>
 
 //------------------------------------------------------------

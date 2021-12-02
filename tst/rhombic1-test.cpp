@@ -12,17 +12,17 @@ TEST(buildFacesTest, CorrectOutput)
     vint edges = {1, 3, 649, 741};
     pint cells = {1, 36};
 
-    EXPECT_EQ(faceToVertices[1], vertices);
-    EXPECT_EQ(faceToEdges[1], edges);
-    EXPECT_EQ(faceToCells[1], cells);
-    EXPECT_EQ(vertexToFaces[0][1], 1);
-    EXPECT_EQ(vertexToFaces[37][0], 1);
-    EXPECT_EQ(vertexToFaces[216][1], 1);
-    EXPECT_EQ(vertexToFaces[246][0], 1);
-    EXPECT_EQ(edgeToFaces[3][1], 1);
-    EXPECT_EQ(edgeToFaces[1][0], 1);
-    EXPECT_EQ(edgeToFaces[649][0], 1);
-    EXPECT_EQ(edgeToFaces[741][0], 1);
+    EXPECT_EQ(lattice.faceToVertices[1], vertices);
+    EXPECT_EQ(lattice.faceToEdges[1], edges);
+    EXPECT_EQ(lattice.faceToCells[1], cells);
+    EXPECT_EQ(lattice.vertexToFaces[0][1], 1);
+    EXPECT_EQ(lattice.vertexToFaces[37][0], 1);
+    EXPECT_EQ(lattice.vertexToFaces[216][1], 1);
+    EXPECT_EQ(lattice.vertexToFaces[246][0], 1);
+    EXPECT_EQ(lattice.edgeToFaces[3][1], 1);
+    EXPECT_EQ(lattice.edgeToFaces[1][0], 1);
+    EXPECT_EQ(lattice.edgeToFaces[649][0], 1);
+    EXPECT_EQ(lattice.edgeToFaces[741][0], 1);
 }
 
 //------------------------------------------------------------
@@ -42,12 +42,13 @@ TEST(faceToBaseVertexTest, CorrectOutput)
 
 TEST(buildVertexToEdgesTest, CorrectOutput)
 {
-    vvint vertexToEdges = rhombic::r1::buildVertexToEdges(6);
+    vvint vertexToEdges;
+    rhombic::r1::buildVertexToEdges(vertexToEdges, 6);
     
-    vint edges1 = {176, 177, 178, 179, 871, 874, 893, 1012};
+    vint edges1 = {176, 177, 178, 179, 1012, 893, 874, 871};
     vint edges2 = {};
-    vint edges3 = {179, 1040, 1041, 1042};
-    vint edges4 = {178, 197, 316, 1039};
+    vint edges3 = {1040, 1041, 1042, 179};
+    vint edges4 = {316, 197, 178, 1039};
     
     EXPECT_EQ(vertexToEdges[44], edges1);
     EXPECT_EQ(vertexToEdges[43], edges2);
