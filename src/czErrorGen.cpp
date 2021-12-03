@@ -1,8 +1,8 @@
 #include "czErrorGen.h"
 
-std::map<pint,std::pair<pint,pint>> buildOverlappingFaces(std::vector<Lattice> &lattices, int L)
+std::map<pint,ppint> buildOverlappingFaces(std::vector<Lattice> &lattices, int L)
 {
-    std::map<pint,std::pair<pint,pint>> overlappingFaces;
+    std::map<pint,ppint> overlappingFaces;
     int fC, fR1, fR2
     for (int v = 0; v < L*L*L; v++)
     {
@@ -36,7 +36,7 @@ vvint getSyndromeVertices(std::vector<Lattice> &lattices)
         {
             if (l.syndromesZ[e] == 1)
             {
-                std::pair<int,int> vertices = l.edgeToVertices[e];
+                pint vertices = l.edgeToVertices[e];
                 syndromeVerticesSets[i].insert(vertices.first);
                 syndromeVerticesSets[i].insert(vertices.second);
             }
@@ -74,7 +74,7 @@ int latticeWhereCell(int v, int latticeA, int L)
     return latticeC;
 }
 
-void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,std::pair<pint,pint>> &overlappingFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, int link)
+void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, int link)
 {
     //membrane boundary errors
     vvint syndromeVertices = getSyndromeVertices(lattices);
@@ -82,15 +82,15 @@ void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,std::pair<pint,pint>
     {
         for (int v : syndromeVertices[i])
         {
-            std::pair<int,int> cell = {latticeWhereCell(v,i,L), v};
+            pint cell = {latticeWhereCell(v,i,L), v};
             if (dist(engine) < 0.5)
             {
                 vint faces = lattices[cell.first].cellToFaces[cell.second];
                 for (int face : faces)
                 {
                     auto overlap = overlappingFaces[{cell.first,face}];
-                    std::pair<int,int> &xFace;
-                    std::pair<int,int> &zFace;
+                    pint &xFace;
+                    pint &zFace;
                     if (overlap.first.first == i)
                     {
                         xFace = overlap.first;

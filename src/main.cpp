@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     rhombic::r1::buildLattice(rhombic1, L);
     rhombic::r2::buildLattice(rhombic2, L);
 
-    std::map<pint,std::pair<pint,pint>> overlappingFaces = buildOverlappingFaces(lattices, L);
+    std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices, L);
 
     vint cFailures = {0,0};
     vint r1Failures = {0,0};

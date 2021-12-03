@@ -14,6 +14,7 @@ typedef std::vector<int> vint;
 typedef std::vector<std::vector<int>> vvint;
 typedef std::pair<int,int> pint;
 typedef std::vector<std::pair<int, int>> vpint;
+typedef std::pair<std::pair<int,int>,std::pair<int,int>> ppint;
 
 class Lattice
 {

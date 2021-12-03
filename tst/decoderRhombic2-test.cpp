@@ -54,10 +54,10 @@ TEST(shortestPathToZBTest, CorrectOutput)
     vint path2 = {363};
     vint path3 = {252};
     vint path4 = {147};
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(196, cellToFacesR2, 6), path1);
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(283, cellToFacesR2, 6), path2);
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(91, cellToFacesR2, 6), path3);
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(54, cellToFacesR2, 6), path4);
+    EXPECT_EQ(rhombic::r2::shortestPathToZB(196, latRhombic2.cellToFacesR2, 6), path1);
+    EXPECT_EQ(rhombic::r2::shortestPathToZB(283, latRhombic2.cellToFacesR2, 6), path2);
+    EXPECT_EQ(rhombic::r2::shortestPathToZB(91, latRhombic2.cellToFacesR2, 6), path3);
+    EXPECT_EQ(rhombic::r2::shortestPathToZB(54, latRhombic2.cellToFacesR2, 6), path4);
 }
 
 //------------------------------------------------------------
