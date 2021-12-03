@@ -35,8 +35,8 @@ TEST(shortestPathToXBoundaryTest, CorrectOutput)
     //These might be wrong because I'm not sure which path it will choose
     vint path1 = {171};
     vint path2 = {1012};
-    vint path3 = {196};
-    vint path4 = {319};
+    vint path3 = {894};
+    vint path4 = {317};
     EXPECT_EQ(rhombic::r1::shortestPathToXB(258, 6), path1);
     EXPECT_EQ(rhombic::r1::shortestPathToXB(253, 6), path2);
     EXPECT_EQ(rhombic::r1::shortestPathToXB(49, 6), path3);
