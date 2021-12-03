@@ -1,5 +1,5 @@
 #include "lattice.h"
 
-Lattice cubic;
-Lattice rhombic1;
-Lattice rhombic2;
+Lattice latCubic;
+Lattice latRhombic1;
+Lattice latRhombic2;

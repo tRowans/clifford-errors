@@ -9,7 +9,7 @@
 
 TEST(indexBuilding, build)
 {
-    cubic::buildLattice(cubic, 6);
+    cubic::buildLattice(latCubic, 6);
     ASSERT_TRUE(true);
 }
 
@@ -181,72 +181,72 @@ TEST(joinDualPairTest, joinToBoundary)
 
 TEST(zErrorDecoderTest, matchPair)
 {
-    cubic.wipe();
-    cubic.qubitsZ[279] = 1; 
-    cubic.syndromeX[57] = 1;
-    cubic.syndromeX[93] = 1;
+    latCubic.wipe();
+    latCubic.qubitsZ[279] = 1; 
+    latCubic.syndromeX[57] = 1;
+    latCubic.syndromeX[93] = 1;
 
-    cubic::zErrorDecoder(cubic, 6);
+    cubic::zErrorDecoder(latCubic, 6);
     vint qubitsExpected = (3*6*6*6, 0);
-    EXPECT_EQ(cubic.qubitsZ, qubitsExpected);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 TEST(zErrorDecoderTest, matchTwoPairs)
 {  
-    cubic.wipe();
-    cubic.qubitsZ[279] = 1;
-    cubic.syndromeX[57] = 1;
-    cubic.syndromeX[93] = 1;
-    cubic.qubitsZ[461] = 1;
-    cubic.syndromeX[152] = 1;
-    cubic.syndromeX[153] = 1;
+    latCubic.wipe();
+    latCubic.qubitsZ[279] = 1;
+    latCubic.syndromeX[57] = 1;
+    latCubic.syndromeX[93] = 1;
+    latCubic.qubitsZ[461] = 1;
+    latCubic.syndromeX[152] = 1;
+    latCubic.syndromeX[153] = 1;
 
-    cubic::zErrorDecoder(cubic, 6);
+    cubic::zErrorDecoder(latCubic, 6);
     vint qubitsExpected = (3*6*6*6, 0);
-    EXPECT_EQ(cubic.qubitsZ, qubitsExpected);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 TEST(zErrorDecoderTest, matchToBoundary)
 {
-    cubic.wipe();
-    cubic.qubitsZ[176] = 1;
-    cubic.syndromeX[57] = 1;
+    latCubic.wipe();
+    latCubic.qubitsZ[176] = 1;
+    latCubic.syndromeX[57] = 1;
 
-    cubic::zErrorDecoder(cubic, 6);
+    cubic::zErrorDecoder(latCubic, 6);
     vint qubitsExpected = (3*6*6*6, 0);
-    EXPECT_EQ(cubic.qubitsZ, qubitsExpected);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 
 //------------------------------------------------------------
 
 TEST(measErrorDecoderTest, matchPair)
 {
-    cubic.wipe();
-    cubic.syndromeZ[127] = 1;
-    cubic.defects = {42, 48};
+    latCubic.wipe();
+    latCubic.syndromeZ[127] = 1;
+    latCubic.defects = {42, 48};
 
-    cubic::measErrorDecoder(cubic, 6);
+    cubic::measErrorDecoder(latCubic, 6);
     vint syndromeExpected = (8*6*6*6, 0);
-    EXPECT_EQ(cubic.syndromeZ, syndromeExpected);
+    EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
 TEST(measErrorDecoderTest, matchTwoPair)
 {
-    cubic.wipe();
-    cubic.syndromeZ[127] = 1;
-    cubic.syndromeZ[241] = 1;
-    cubic.defects = {42, 48, 80, 86};
+    latCubic.wipe();
+    latCubic.syndromeZ[127] = 1;
+    latCubic.syndromeZ[241] = 1;
+    latCubic.defects = {42, 48, 80, 86};
 
-    cubic::measErrorDecoder(cubic, 6);
+    cubic::measErrorDecoder(latCubic, 6);
     vint syndromeExpected = (8*6*6*6, 0);
-    EXPECT_EQ(cubic.syndromeZ, syndromeExpected);
+    EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
 TEST(measErrorDecoderTest, matchToBoundary)
 {
-    cubic.wipe();
-    cubic.syndromeZ[109] = 1;
-    cubic.defects = {42};
+    latCubic.wipe();
+    latCubic.syndromeZ[109] = 1;
+    latCubic.defects = {42};
 
-    cubic::measErrorDecoder(cubic, 6);
+    cubic::measErrorDecoder(latCubic, 6);
     vint syndromeExpected = (8*6*6*6, 0);
-    EXPECT_EQ(cubic.syndromeZ, syndromeExpected);
+    EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
 
 //------------------------------------------------------------
@@ -256,23 +256,24 @@ TEST(measErrorDecoderTest, matchToBoundary)
 TEST(jumpCorrectionTest, CorrectOutputExample)
 {
     //Tests a specific example
-    cubic.wipe();
-    cubic.qubitsZ[110] = 1;
-    cubic.qubitsZ[216] = 1;
-    cubic.qubitsZ[218] = 1;
+    latCubic.wipe();
+    latCubic.qubitsZ[110] = 1;
+    latCubic.qubitsZ[216] = 1;
+    latCubic.qubitsZ[218] = 1;
 
-    cubic::jumpCorrection(cubic, 6);
+    cubic::jumpCorrection(latCubic, 6);
     vint qubitsExpected = (3*6*6*6, 0);
-    EXPECT_EQ(cubic.qubitsZ, qubitsExpected);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 TEST(jumpCorrectionTest, CorrectOutput)
 {
     std::random_device rd{};
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
-
-    cubic.zStabPattern(engine, dist);
-    cubic::jumpCorrection(cubic, 6);
+    
+    latCubic.wipe();
+    latCubic.zStabPattern(engine, dist);
+    cubic::jumpCorrection(latCubic, 6);
     vint qubitsExpected = (3*6*6*6, 0);
-    EXPECT_EQ(cubic.qubitsZ, qubitsExpected);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
