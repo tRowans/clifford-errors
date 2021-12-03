@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libPerfectMatching.a CMakeFiles/PerfectMatching.dir/misc.cpp.o CMakeFiles/PerfectMatching.dir/PMduals.cpp.o CMakeFiles/PerfectMatching.dir/PMexpand.cpp.o CMakeFiles/PerfectMatching.dir/PMinit.cpp.o CMakeFiles/PerfectMatching.dir/PMinterface.cpp.o CMakeFiles/PerfectMatching.dir/PMmain.cpp.o CMakeFiles/PerfectMatching.dir/PMrepair.cpp.o CMakeFiles/PerfectMatching.dir/PMshrink.cpp.o CMakeFiles/PerfectMatching.dir/MinCost/MinCost.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libPerfectMatching.a

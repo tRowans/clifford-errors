@@ -206,21 +206,21 @@ vpint mwpm(vint &defects, int L, int dual)
     return defectPairs;
 }
 
-void joinPair(int v1, int v2, vint &syndrome, int L)
+void joinPair(int v1, int v2, Lattice &lattice, int L)
 {
     vint path;
     //If matched to boundary
     if (v2 == -1) path = shortestPathToXBoundary(v1, L);
     else path = shortestPath(v1, v2, L);
-    for (int i : path) syndrome[i] = (syndrome[i] + 1) % 2;
+    for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
 
-void joinDualPair(int cell1, int cell2, vint &qubits, int L)
+void joinDualPair(int cell1, int cell2, Lattice &lattice, int L)
 {
     vint path;
     if (cell2 == -1) path = shortestPathToZBoundary(cell1, L);
-    else path = shortestDualPath(cell1, cell2, L);
-    for (int i : path) qubits[i] = (qubits[i] + 1) % 2;
+    else path = shortestDualPath(cell1, cell2, lattice, L);
+    for (int i : path) lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
 }
 
 void zErrorDecoder(Lattice &lattice, int L)

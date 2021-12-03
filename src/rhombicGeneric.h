@@ -1,5 +1,5 @@
-#ifndef RHOMBICGENERIC.H
-#define RHOMBICGENERIC.H
+#ifndef RHOMBICGENERIC_H
+#define RHOMBICGENERIC_H
 
 #include <math.h>
 #include "lattice.h"

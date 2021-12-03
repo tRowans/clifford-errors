@@ -100,10 +100,6 @@ TEST(applyCCZTest, singleCubicXError)
     vint qubitsZExpectedR1[0] = 1;
     vint qubitsZExpectedR2[111] = 1;
     
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
     for (int i = 0; i < 100; i++)
     {
         latRhombic1.wipe();
@@ -120,10 +116,6 @@ TEST(applyCCZTest, multipleCubicErrors)
 {
     overlappingFaces = buildOverlappingFaces(lattices, 6);
     
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
     latCubic.qubitsX[2] = 1;
     latCubic.qubitsX[20] = 1;
     latCubic.qubitsX[110] = 1;
@@ -156,10 +148,6 @@ TEST(applyCCZTest, singleR1XError)
     vint qubitsZExpectedC[2] = 1;
     vint qubitsZExpectedR2[111] = 1;
     
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
     for (int i = 0; i < 100; i++)
     {
         latCubic.wipe();
@@ -177,10 +165,6 @@ TEST(applyCCZTest, multipleR1XError)
 {
     overlappingFaces = buildOverlappingFaces(lattices, 6);
     
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
     latRhombic1.qubitsX[0] = 1;
     latRhombic1.qubitsX[216] = 1;
     latRhombic1.qubitsX[219] = 1;
@@ -213,10 +197,6 @@ TEST(applyCCZTest, singleR2XError)
     vint qubitsZExpectedC[2] = 1;
     vint qubitsZExpectedR1[0] = 1;
     
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
     for (int i = 0; i < 100; i++)
     {
         latCubic.wipe();
@@ -234,10 +214,6 @@ TEST(applyCCZTest, multipleR2XError)
 {
     overlappingFaces = buildOverlappingFaces(lattices, 6);
     
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
     latRhombic2.qubitsX[111] = 1;
     latRhombic2.qubitsX[108] = 1;
     latRhombic2.qubitsX[327] = 1;
@@ -262,10 +238,6 @@ TEST(applyCCZTest, link)
 {
     overlappingFaces = buildOverlappingFaces(lattices, 6);
     
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
     latCubic.qubitsX[2] = 1;
     latRhombic1.qubitsX[0] = 1;
     latRhombic2.qubitsX[111] = 1;

@@ -9,13 +9,7 @@
 
 TEST(buildLattice, build)
 {
-    Lattice lattice;
-    cubic::buildLattice(lattice, 6);
-    
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-
+    cubic::buildLattice(latCubic, 6);
     ASSERT_TRUE(true);
 }
 

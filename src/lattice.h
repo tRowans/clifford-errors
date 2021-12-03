@@ -36,11 +36,20 @@ class Lattice
         vint xLogical;
         vint zLogical; 
 
-        vint qubitsX(3*L*L*L, 0);
-        vint qubitsZ(3*L*L*L, 0);
-        vint syndromeX(L*L*L, 0);   //X stabiliser syndromes
-        vint syndromeZ(8*L*L*L, 0); //This is bigger than cubic needs but doesn't matter
-        vint defects = {};
+        vint qubitsX;
+        vint qubitsZ;
+        vint syndromeX;   //X stabiliser syndromes
+        vint syndromeZ;   //Z stabiliser syndromes
+        vint defects;
+
+        Lattice(L)
+        {
+            qubitsX = vint(3*L*L*L, 0);
+            qubitsZ = vint(3*L*L*L, 0);
+            syndromeX = vint(L*L*L, 0);
+            syndromeZ = vint(8*L*L*L, 0);   //This is bigger than cubic needs but doesn't matter
+            defects = {};
+        }
 
         void depolarisingError(double p, std::mt19937& engine, 
                                 std::uniform_real_distribution<double>& dist);

@@ -322,7 +322,7 @@ void joinDualPair(int cell1, int cell2, Lattice &lattice, int L, int useOuter, i
     vint path;
     if (cell2 == -1) path = shortestPathToZBoundary(cell1, lattice.cellToFaces, L);
     else path = shortestDualPath(cell1, cell2, lattice, L, useOuter, useInner);
-    for (int i : path) qubitsZ[i] = (qubitsZ[i] + 1) % 2;
+    for (int i : path) lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
 }
 
 void zErrorDecoder(Lattice &lattice, int L, int useOuter, int useInner)

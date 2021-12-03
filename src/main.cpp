@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     int link = std::atoi(argv[5]);
     int debug = std::atoi(argv[6]);
     
-    std::vector<Lattice> lattices(3);
+    std::vector<Lattice> lattices(3,L);
     Lattice &cubic = lattices[0];
     Lattice &rhombic1 = lattices[1];
     Lattice &rhombic2 = lattices[2];
@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
         rhombic::r2::measErrorDecoder(rhombic2, L);
 
         //Fix X errors (decoder for this not done yet)
-        cubic::xErrorDecoder(...);
-        rhombic::r1::xErrorDecoder(...);
-        rhombic::r2::xErrorDecoder(...);
+        //cubic::xErrorDecoder(...);
+        //rhombic::r1::xErrorDecoder(...);
+        //rhombic::r2::xErrorDecoder(...);
 
         //Check everything working as expected (debugging step)
         if (debug == 1)
@@ -104,8 +104,11 @@ int main(int argc, char *argv[])
         rhombic2.biasedError(q, engine, dist, 'z', 1);
 
         //Z error decoding from single-qubit measurements (only on inner qubits)
+        //cubic decoder does not need to specify inner/outer qubits
+        //because if no z=0 stabilisers are violated no outer qubits will be used in pathing
+        //and if only z=0 stabilisers are used then only outer qubits will be used
         cubic.calcSynd('x', 0, 1);
-        cubic::zErrorDecoder(cubic, L, 0, 1);
+        cubic::zErrorDecoder(cubic, L); 
         rhombic1.calcSynd('x', 0, 1);
         rhombic::r1::zErrorDecoder(rhombic1, L, 0, 1);
         rhombic2.calcSynd('x', 0, 1);
@@ -143,7 +146,7 @@ int main(int argc, char *argv[])
         //so we need a measurement-error free decoding step before checking for success.
         //Can use the same decoder as for 3D here as long as errors are only on outer qubits
         cubic.calcSynd('x', 1, 0); 
-        cubic::zErrorDecoder(cubic, L, 1, 0);
+        cubic::zErrorDecoder(cubic, L);
         rhombic1.calcSynd('x', 1, 0);
         rhombic::r1::zErrorDecoder(rhombic1, L, 1, 0);
         rhombic2.calcSynd('x', 1, 0);

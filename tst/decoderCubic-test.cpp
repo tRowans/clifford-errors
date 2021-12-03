@@ -267,10 +267,6 @@ TEST(jumpCorrectionTest, CorrectOutputExample)
 }
 TEST(jumpCorrectionTest, CorrectOutput)
 {
-    std::random_device rd{};
-    std::mt19937 engine{rd()};
-    std::uniform_real_distribution<double> dist(0,1);
-    
     latCubic.wipe();
     latCubic.zStabPattern(engine, dist);
     cubic::jumpCorrection(latCubic, 6);
