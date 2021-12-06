@@ -1,0 +1,3 @@
+[submodule "lib/bp_osd"]
+	path = lib/bp_osd
+	url = git@github.com:quantumgizmos/bp_osd.git
