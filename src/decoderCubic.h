@@ -24,17 +24,17 @@ vint shortestPathToZBoundary(int cell, int L);
 
 vpint mwpm(vint &defects, int L, int dual);
 
-void joinPair(int v1, int v2, vint &syndrome, int L);
+void joinPair(int v1, int v2, Lattice &lattice);
 
-void joinDualPair(int cell1, int cell2, vint &qubits, int L);
+void joinDualPair(int cell1, int cell2, Lattice &lattice);
 
 //void xErrorDecoder(...)
 
-void zErrorDecoder(Lattice &lattice, int L);
+void zErrorDecoder(Lattice &lattice);
 
-void measErrorDecoder(Lattice &lattice, int L);
+void measErrorDecoder(Lattice &lattice);
 
-void jumpCorrection(Lattice &lattice, int L);
+void jumpCorrection(Lattice &lattice);
 
 }
 

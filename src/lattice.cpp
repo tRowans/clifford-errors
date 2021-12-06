@@ -2,7 +2,7 @@
 
 void Lattice::depolarisingError(double p, std::mt19937& engine, std::uniform_real_distribution<double>& dist)
 {
-    for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
+    for (const vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
     {
         for (int i : qubitIndices)
         {
@@ -13,8 +13,8 @@ void Lattice::depolarisingError(double p, std::mt19937& engine, std::uniform_rea
                 else if (1/3 <= x && x < 2/3) qubitsZ[i]  = (qubitsZ[i] + 1) % 2; 
                 else if (2/3 <= x && x < 1) //Y error
                 {
-                    lattice.qubitsX[i] = (lattice.qubitsX[i] + 1) % 2;
-                    lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
+                    qubitsX[i] = (qubitsX[i] + 1) % 2;
+                    qubitsZ[i] = (qubitsZ[i] + 1) % 2;
                 }
             }
         }
@@ -31,7 +31,7 @@ void Lattice::biasedError(double p, std::mt19937& engine,
             if (dist(engine) < p)
             {
                 if (pauli == 'x' || pauli == 'X') qubitsX[i] = (qubitsX[i] + 1) % 2;
-                else if (pauli == 'z' || pauli = 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
+                else if (pauli == 'z' || pauli == 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
                 else throw std::invalid_argument("Invalid Pauli given for biased error");
             }
         }
@@ -41,7 +41,7 @@ void Lattice::biasedError(double p, std::mt19937& engine,
         if (dist(engine) < p)
         {
             if (pauli == 'x' || pauli == 'X') qubitsX[i] = (qubitsX[i] + 1) % 2;
-            else if (pauli == 'z' || pauli = 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
+            else if (pauli == 'z' || pauli == 'Z') qubitsZ[i] = (qubitsZ[i] =1 ) % 2;
             else throw std::invalid_argument("Invalid Pauli given for biased error");
         }
     }
@@ -49,22 +49,28 @@ void Lattice::biasedError(double p, std::mt19937& engine,
 
 void Lattice::measError(double q, std::mt19937& engine, std::uniform_real_distribution<double>& dist, char pauli)
 {
-    for (int i : syndromeIndices)
+    if (pauli == 'x' || pauli == 'X')
     {
-        if (dist(engine) < q)
+        for (int i : xSyndIndices)
         {
-            if (pauli == 'x' || pauli == 'X') syndromeX[i] = (syndromeX[i] + 1) % 2;
-            else if (pauli == 'z' || pauli == 'Z') syndromesZ[i] = (syndromesZ[i] + 1) % 2;
-            else throw std::invalid_argument("Invalid Pauli given for measError");
+            if (dist(engine) < q) syndromeX[i] = (syndromeX[i] + 1) % 2;
         }
     }
+    else if (pauli == 'z' || pauli == 'Z')
+    {
+        for (int i : zSyndIndices)
+        {
+            if (dist(engine) < q) syndromeZ[i] = (syndromeZ[i] + 1) % 2;
+        }
+    }
+    else throw std::invalid_argument("Invalid Pauli given for measError");
 }
 
 void Lattice::calcSynd(char pauli, int useOuter, int useInner)
 {
     vint whichQubits = {useOuter, useInner};
     int j = 0;
-    for (vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
+    for (const vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
     {
         if (whichQubits[j] == 1)
         {
@@ -99,7 +105,7 @@ void Lattice::calcSynd(char pauli, int useOuter, int useInner)
                         {
                             if (std::find(zSyndIndices.begin(), zSyndIndices.end(), edge)
                                     == zSyndIndices.end()) continue;
-                            syndromeZ[edge] = (syndrome[edge] + 1) % 2;
+                            syndromeZ[edge] = (syndromeZ[edge] + 1) % 2;
                         }
                     }
                 }
@@ -140,7 +146,7 @@ void Lattice::applyZStab(int edge)
             std::find(innerQubitIndices.begin(), innerQubitIndices.end(), q)
               != innerQubitIndices.end())
         {
-            qubitsZ[q] = (qubits[Z] + 1) % 2;
+            qubitsZ[q] = (qubitsZ[q] + 1) % 2;
         }
     }
 }
@@ -149,7 +155,7 @@ void Lattice::zStabPattern(std::mt19937& engine, std::uniform_real_distribution<
 {
     for (int stab : zSyndIndices)
     {
-        if (dist(engine < 0.5)) applyZStab(stab);
+        if (dist(engine) < 0.5) applyZStab(stab);
     }
 }
 
@@ -221,7 +227,7 @@ void Lattice::checkInCodespace(char pauli, int useOuter, int useInner)
     else if (pauli == 'z' || pauli == 'Z')
     {
         calcSynd('x', useOuter, useInner);
-        for (int i = 0, i < L*L*L; i++)
+        for (int i = 0; i < L*L*L; i++)
         {
             if (syndromeX[i] == 1)
             {

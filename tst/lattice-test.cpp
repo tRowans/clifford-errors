@@ -3,29 +3,18 @@
 
 //------------------------------------------------------------
 
-//This is just a hack to make the testing software build the lattice
-//and also initialise some other stuff
-//Means it doesn't have to be build individually in every test
-
-TEST(buildLattice, build)
-{
-    cubic::buildLattice(latCubic, 6);
-    ASSERT_TRUE(true);
-}
-
-//------------------------------------------------------------
-
 TEST(wipeTest, VectorsClear)
 {
-    for (int i = 0; i < qubitsX.size(); i++) qubitsX[i] = 1;
-    for (int i = 0; i < qubitsZ.size(); i++) qubitsZ[i] = 1;
-    for (int i = 0; i < syndromeX.size(); i++) syndromeX[i] = 1;
-    for (int i = 0; i < syndromeZ.size(); i++) syndromeZ[i] = 1;
+    Lattice lattice(6);
+    for (int i = 0; i < lattice.qubitsX.size(); i++) lattice.qubitsX[i] = 1;
+    for (int i = 0; i < lattice.qubitsZ.size(); i++) lattice.qubitsZ[i] = 1;
+    for (int i = 0; i < lattice.syndromeX.size(); i++) lattice.syndromeX[i] = 1;
+    for (int i = 0; i < lattice.syndromeZ.size(); i++) lattice.syndromeZ[i] = 1;
     lattice.wipe();
-    for (int i : lattice.qubitsX) {if (i != 0) FAIL()};
-    for (int i : lattice.qubitsZ) {if (i != 0) FAIL()};
-    for (int i : lattice.syndromeX) {if (i != 0) FAIL()};
-    for (int i : lattice.syndromeZ) {if (i != 0) FAIL()};
+    for (int i : lattice.qubitsX) {if (i != 0) FAIL();}
+    for (int i : lattice.qubitsZ) {if (i != 0) FAIL();}
+    for (int i : lattice.syndromeX) {if (i != 0) FAIL();}
+    for (int i : lattice.syndromeZ) {if (i != 0) FAIL();}
 }
 
 //------------------------------------------------------------
@@ -36,11 +25,16 @@ TEST(wipeTest, VectorsClear)
 
 TEST(depolarisingErrorTest, NonTrivialAction)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.depolarisingError(0.5,engine,dist);
     int nonZeroCheck = 0;
-    for (int i : lattice.qubitsX) {if (i != 0) nonZeroCheck = 1};
-    for (int i : lattice.qubitsZ) {if (i != 0) nonZeroCheck = 1};
+    for (int i : lattice.qubitsX) {if (i != 0) nonZeroCheck = 1;}
+    for (int i : lattice.qubitsZ) {if (i != 0) nonZeroCheck = 1;}
     EXPECT_EQ(nonZeroCheck, 1);
 }
 
@@ -49,45 +43,66 @@ TEST(depolarisingErrorTest, NonTrivialAction)
 
 TEST(biasedErrorTest, NonTrivialAction)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.biasedError(0.5, engine, dist, 'x', 0);
     int nonZeroCheck = 0;
-    for (int i : lattice.qubitsX) {if (i != 0) nonZeroCheck = 1};
+    for (int i : lattice.qubitsX) {if (i != 0) nonZeroCheck = 1;}
     EXPECT_EQ(nonZeroCheck, 1);
 }
 TEST(biasedErrorTest, XZOnly)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.biasedError(0.5, engine, dist, 'x', 0);
     int nonZeroCheck = 0;
     int zeroCheck = 0;
-    for (int i : lattice.qubitsX) {if (i != 0) nonZeroCheck = 1};
-    for (int i : lattice.qubitsZ) {if (i != 0) zeroCheck = 1};
+    for (int i : lattice.qubitsX) {if (i != 0) nonZeroCheck = 1;}
+    for (int i : lattice.qubitsZ) {if (i != 0) zeroCheck = 1;}
     EXPECT_EQ(nonZeroCheck, 1);
     EXPECT_EQ(zeroCheck, 0);
 
     lattice.wipe();
     lattice.biasedError(0.5, engine, dist, 'z', 0);
-    int nonZeroCheck = 0;
-    int zeroCheck = 0;
-    for (int i : lattice.qubitsZ) {if (i != 0) nonZeroCheck = 1};
-    for (int i : lattice.qubitsX) {if (i != 0) zeroCheck = 1};
+    nonZeroCheck = 0;
+    zeroCheck = 0;
+    for (int i : lattice.qubitsZ) {if (i != 0) nonZeroCheck = 1;}
+    for (int i : lattice.qubitsX) {if (i != 0) zeroCheck = 1;}
     EXPECT_EQ(nonZeroCheck, 1);
     EXPECT_EQ(zeroCheck, 0);
 }
 TEST(biasedErrorTest, InnerOnly)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.biasedError(0.5, engine, dist, 'x', 1);
     int nonZeroCheck = 0;
     int zeroCheck = 0;
-    for (int i : lattice.innerQubitIndices) {if (lattice.qubitsX[i] != 0) nonZeroCheck = 1};
-    for (int i : lattice.outerQubitIndices) {if (lattice.qubitsX[i] != 0) zeroCheck = 1};
+    for (int i : lattice.innerQubitIndices) {if (lattice.qubitsX[i] != 0) nonZeroCheck = 1;}
+    for (int i : lattice.outerQubitIndices) {if (lattice.qubitsX[i] != 0) zeroCheck = 1;}
     EXPECT_EQ(nonZeroCheck, 1);
     EXPECT_EQ(zeroCheck, 0);
 }
 TEST(biasedErrorTest, InvalidInput)
 {
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     EXPECT_THROW(lattice.biasedError(0.5,engine,dist,'a',0), std::invalid_argument);
 }
 
@@ -95,25 +110,41 @@ TEST(biasedErrorTest, InvalidInput)
 
 TEST(measErrorTest, NonTrivialAction)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.measError(0.5, engine, dist, 'x');
     int nonZeroCheck = 0;
-    for (int i : lattice.syndromeX) {if (i != 0) nonZeroCheck = 1};
+    for (int i : lattice.syndromeX) {if (i != 0) nonZeroCheck = 1;}
     EXPECT_EQ(nonZeroCheck, 1);
 }
 TEST(measErrorTest, XZOnly)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.measError(0.5, engine, dist, 'x');
     int nonZeroCheck = 0;
     int zeroCheck = 0;
-    for (int i : lattice.syndromeX) {if (i != 0) nonZeroCheck = 1};
-    for (int i : lattice.syndromeZ) {if (i != 0) zeroCheck = 1};
+    for (int i : lattice.syndromeX) {if (i != 0) nonZeroCheck = 1;}
+    for (int i : lattice.syndromeZ) {if (i != 0) zeroCheck = 1;}
     EXPECT_EQ(nonZeroCheck, 1);
     EXPECT_EQ(zeroCheck, 1);
 }
 TEST(measErrorTest, InvalidArgument)
 {
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     EXPECT_THROW(lattice.measError(0.5,engine,dist,'a'), std::invalid_argument);
 }
 
@@ -121,7 +152,7 @@ TEST(measErrorTest, InvalidArgument)
 
 TEST(calcSyndTest, CorrectOutputOneXError)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[20] = 1;
     lattice.calcSynd('z', 1, 1);
     vint syndromeExpected(8*6*6*6, 0);
@@ -133,7 +164,7 @@ TEST(calcSyndTest, CorrectOutputOneXError)
 }
 TEST(calcSyndTest, CorrectOutputTwoXErrors)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[20] = 1;
     lattice.qubitsX[128] = 1;
     lattice.calcSynd('z', 1, 1);
@@ -148,7 +179,7 @@ TEST(calcSyndTest, CorrectOutputTwoXErrors)
 }
 TEST(calcSyndTest, CorrectOutputOneZError)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsZ[20] = 1;
     lattice.calcSynd('x', 1, 1);
     vint syndromeExpected(6*6*6, 0);
@@ -156,9 +187,9 @@ TEST(calcSyndTest, CorrectOutputOneZError)
     syndromeExpected[6] = 1;
     EXPECT_EQ(lattice.syndromeX, syndromeExpected);
 }
-TEST(calcSyndTest, CorrectOutputTwoXErrors)
+TEST(calcSyndTest, CorrectOutputTwoZErrors)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsZ[20] = 1;
     lattice.qubitsZ[23] = 1;
     lattice.calcSynd('x', 1, 1);
@@ -169,29 +200,29 @@ TEST(calcSyndTest, CorrectOutputTwoXErrors)
 }
 TEST(calcSyndTest, InnerOnly)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[20] = 1;
     lattice.qubitsX[128] = 1;
     lattice.qubitsZ[20] = 1;
-    lattice.qubitsX[128] = 1;
+    lattice.qubitsZ[128] = 1;
     lattice.calcSynd('x', 1, 0);
     lattice.calcSynd('z', 1, 0);
     vint syndromeXExpected(6*6*6, 0);
     vint syndromeZExpected(8*6*6*6, 0);
     syndromeXExpected[6] = 1;
-    syndromeExpected[20] = 1;
-    syndromeExpected[38] = 1;
-    syndromeExpected[127] = 1;
+    syndromeZExpected[20] = 1;
+    syndromeZExpected[38] = 1;
+    syndromeZExpected[127] = 1;
     EXPECT_EQ(lattice.syndromeX, syndromeXExpected);
     EXPECT_EQ(lattice.syndromeZ, syndromeZExpected);
 }
 TEST(calcSyndTest, OuterOnly)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[20] = 1;
     lattice.qubitsX[128] = 1;
     lattice.qubitsZ[20] = 1;
-    lattice.qubitsX[128] = 1;
+    lattice.qubitsZ[128] = 1;
     lattice.calcSynd('x', 0, 1);
     lattice.calcSynd('z', 0, 1);
     vint syndromeXExpected(6*6*6, 0);
@@ -199,8 +230,8 @@ TEST(calcSyndTest, OuterOnly)
     syndromeXExpected[42] = 1;
     syndromeZExpected[127] = 1;
     syndromeZExpected[128] = 1;
-    syndromeExpected[146] = 1;
-    syndromeExpected[235] = 1;
+    syndromeZExpected[146] = 1;
+    syndromeZExpected[235] = 1;
     EXPECT_EQ(lattice.syndromeX, syndromeXExpected);
     EXPECT_EQ(lattice.syndromeZ, syndromeZExpected);
 }
@@ -209,7 +240,7 @@ TEST(calcSyndTest, OuterOnly)
 
 TEST(findDefectsTest, OneDefect)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     vint defectsExpected = {};
     EXPECT_EQ(lattice.defects, defectsExpected);
     lattice.syndromeZ[109] = 1;
@@ -230,7 +261,7 @@ TEST(findDefectsTest, OneDefect)
 
 TEST(applyZStabTest, CorrectAction)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.applyZStab(20);
     vint qubitsExpected(3*6*6*6, 0);
     EXPECT_EQ(lattice.qubitsX, qubitsExpected);
@@ -248,30 +279,40 @@ TEST(applyZStabTest, CorrectAction)
 
 TEST(zStabPatternTest, NonTrivialAction)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.zStabPattern(engine, dist);
     int nonZeroCheck = 0;
     int zeroCheck = 0;
-    for (int i : lattice.qubitsX) {if (i != 0) zeroCheck = 1};
-    for (int i : lattice.qubitsZ) {if (i != 0) nonZeroCheck = 1};
+    for (int i : lattice.qubitsX) {if (i != 0) zeroCheck = 1;}
+    for (int i : lattice.qubitsZ) {if (i != 0) nonZeroCheck = 1;}
     EXPECT_EQ(zeroCheck, 0);
     EXPECT_EQ(nonZeroCheck, 1);
 }
 TEST(zStabPatternTest, NoSyndrome)
 {
-    lattice.wipe();
+    Lattice lattice(6);
+    
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
     lattice.zStabPattern(engine, dist);
     lattice.calcSynd('x', 1, 1);
     lattice.calcSynd('z', 1, 1);
-    for (int i : lattice.syndromeX) {if (i != 0) FAIL()};
-    for (int i : lattice.syndromeZ) {if (i != 0) FAIL()};
+    for (int i : lattice.syndromeX) {if (i != 0) FAIL();}
+    for (int i : lattice.syndromeZ) {if (i != 0) FAIL();}
 }
 
 //------------------------------------------------------------
 
 TEST(checkInBoundsTest, InBounds)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[2] = 1;     //test for outer
     lattice.qubitsX[110] = 1;   //and inner qubits
     lattice.qubitsZ[2] = 1;
@@ -282,25 +323,25 @@ TEST(checkInBoundsTest, InBounds)
 }
 TEST(checkInBoundsTest, XErrorOutOfBounds)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[0] = 1;
     EXPECT_THROW(lattice.checkInBounds(), std::runtime_error);
 }
 TEST(checkInBoundsTest, ZErrorOutOfBounds)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsZ[0] = 1;
     EXPECT_THROW(lattice.checkInBounds(), std::runtime_error);
 }
 TEST(checkInBoundsTest, XStabOutOfBounds)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.syndromeX[2] = 1;
     EXPECT_THROW(lattice.checkInBounds(), std::runtime_error);
 }
 TEST(checkInBoundsTest, ZStabOutOfBounds)
 {
-   lattice.wipe();
+   Lattice lattice(6);
    lattice.syndromeZ[0] = 1;
    EXPECT_THROW(lattice.checkInBounds(), std::runtime_error);
 }
@@ -309,13 +350,13 @@ TEST(checkInBoundsTest, ZStabOutOfBounds)
 
 TEST(checkInCodespaceTest, Nothing)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     EXPECT_NO_THROW(lattice.checkInCodespace('x', 1, 1));
     EXPECT_NO_THROW(lattice.checkInCodespace('z', 1, 1));
 }
 TEST(checkInCodespaceTest, XStabiliser)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[2] = 1;
     lattice.qubitsX[5] = 1;
     lattice.qubitsX[19] = 1;
@@ -324,26 +365,27 @@ TEST(checkInCodespaceTest, XStabiliser)
 }
 TEST(checkInCodespaceTest, XOutOfCodespace)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[2] = 1;
     EXPECT_THROW(lattice.checkInCodespace('x', 1, 1), std::runtime_error);
 }
 TEST(checkInCodespaceTest, ZStabiliser)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsZ[2] = 1;
     lattice.qubitsZ[108] = 1;
     lattice.qubitsZ[110] = 1;
     EXPECT_NO_THROW(lattice.checkInCodespace('z', 1, 1));
 }
-TEST(checkInCodespaceTest ZOutOfCodespace)
+TEST(checkInCodespaceTest, ZOutOfCodespace)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsZ[2] = 1;
     EXPECT_THROW(lattice.checkInCodespace('z', 1, 1), std::runtime_error);
 }
 TEST(checkInCodespaceTest, InvalidArgument)
 {
+    Lattice lattice(6);
     EXPECT_THROW(lattice.checkInCodespace('a', 1, 1), std::invalid_argument);
 }
 
@@ -351,19 +393,19 @@ TEST(checkInCodespaceTest, InvalidArgument)
 
 TEST(checkJumpCorrectionTest, Nothing)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     EXPECT_NO_THROW(lattice.checkJumpCorrection());
 }
 TEST(checkJumpCorrectionTest, InnerEmpty)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsZ[2] = 1;
     EXPECT_NO_THROW(lattice.checkJumpCorrection());
 }
 TEST(checkJumpCorrectionTest, InnerNotEmpty)
 {
-    lattice.wipe();
-    lattice.qubits[108] = 1;
+    Lattice lattice(6);
+    lattice.qubitsZ[108] = 1;
     EXPECT_THROW(lattice.checkJumpCorrection(), std::runtime_error);
 }
 
@@ -371,7 +413,7 @@ TEST(checkJumpCorrectionTest, InnerNotEmpty)
 
 TEST(checkLogicalErrorTest, NoError)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     EXPECT_EQ(lattice.checkLogicalError('x'), 0);
     EXPECT_EQ(lattice.checkLogicalError('z'), 0);
     lattice.qubitsX[2] = 1;
@@ -381,7 +423,7 @@ TEST(checkLogicalErrorTest, NoError)
 }
 TEST(checkLogicalErrorTest, LogicalXError)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsX[2] = 1;
     lattice.qubitsX[20] = 1;
     lattice.qubitsX[38] = 1;
@@ -396,10 +438,12 @@ TEST(checkLogicalErrorTest, LogicalXError)
 }
 TEST(checkLogicalErrorTest, LogicalZError)
 {
-    lattice.wipe();
+    Lattice lattice(6);
     lattice.qubitsZ[2] = 1;
     lattice.qubitsZ[5] = 1;
     lattice.qubitsZ[8] = 1;
     EXPECT_EQ(lattice.checkLogicalError('x'), 0);
     EXPECT_EQ(lattice.checkLogicalError('z'), 1);
 }
+
+

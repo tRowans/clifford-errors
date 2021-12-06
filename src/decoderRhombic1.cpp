@@ -1,6 +1,8 @@
 #include "decoderRhombic1.h"
 
-namespace rhombic1 {
+namespace rhombic {
+
+namespace r1 {
 
 std::vector<int> distanceToClosestXBoundary(int v, int L)
 {
@@ -62,7 +64,7 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
             if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 0)
             {
                 if (sign == 1) moveDir1 = {xy,1};
-                else moveDir1 == {xyz,-1};
+                else moveDir1 = {xyz,-1};
             }
             else 
             {
@@ -107,9 +109,9 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
                 }
             }
 
-            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L);
+            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L));
             v = neigh(v, moveDir1[0], moveDir1[1], L);
-            path.push_back(edgeIndex(v, moveDir2[0], moveDir2[1], L);
+            path.push_back(edgeIndex(v, moveDir2[0], moveDir2[1], L));
             v = neigh(v, moveDir2[0], moveDir2[1], L);
             zigzag = (zigzag + 1) % 2;
             dist -= 2;
@@ -145,6 +147,7 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
                 {
                     moveDir1 = {xz, 1};
                     moveDir2 = {yz, 1};
+                }
                 else 
                 {
                     moveDir1 = {xyz, -1};
@@ -166,9 +169,9 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
                 }
             }
             
-            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L);
+            path.push_back(edgeIndex(v, moveDir1[0], moveDir1[1], L));
             v = neigh(v, moveDir1[0], moveDir1[1], L);
-            path.push_back(edgeIndex(v, moveDir2[0], moveDir2[1], L);
+            path.push_back(edgeIndex(v, moveDir2[0], moveDir2[1], L));
             v = neigh(v, moveDir2[0], moveDir2[1], L);
             cd = indexToCoord(v, L);
             dist -= 2;
@@ -180,20 +183,27 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
 
 vint distanceToClosestZBoundary(int cell, int L)
 {
-    coord cd = IndexToCoord(cell, L);
-    int dist;
+    coord cd = indexToCoord(cell, L);
+    vint distInfo = {0,0}; //sign, dist
 
-    if (cd.xi[1] > (L-3)/2) dist = (L-3) - cd.xi[1];
-    else dist = -cd.xi[1];
-
-    return dist;
+    if (cd.xi[1] > (L-3)/2)
+    {
+        distInfo[0] = 1;
+        distInfo[1] = (L-3) - cd.xi[1];
+    }
+    else
+    {
+        distInfo[0] = -1;
+        distInfo[1] = cd.xi[1];
+    }
+    return distInfo;
 }
 
 vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
 {
-    int dist = distanceToClosestZBoundary(cell, L);
-    int sign = (0 < dist) - (0 > dist);
-    int dist = abs(dist);
+    vint distInfo = distanceToClosestZBoundary(cell, L);
+    int &sign = distInfo[0];
+    int &dist = distInfo[1];
     coord cd = indexToCoord(cell, L);
     vint path;
 
@@ -203,7 +213,7 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
         if (cd.xi[2] == L-3) zigzag = 1;
         while (dist > 0)
         {
-            if (zigzag = 0)
+            if (zigzag == 0)
             {
                 path.push_back(cellToFaces[cell][6]);
                 cell = cell + L + L*L;
@@ -222,7 +232,7 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
         if (cd.xi[2] == L-3) zigzag = 1;
         while (dist > 0)
         {
-            if (zigzag = 0)
+            if (zigzag == 0)
             {
                 path.push_back(cellToFaces[cell][7]);
                 cell = cell - L + L*L;
@@ -273,7 +283,7 @@ vpint mwpm(vint &defects, int L, int dual)
         edges.push_back(i);
         edges.push_back(nodeNum + i);
         if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L)[2]);
-        else weights.push_back(abs(distanceToClosestZBoundary(defects[i], L)));
+        else weights.push_back(distanceToClosestZBoundary(defects[i], L)[1]);
     }
     int edgeNum = edges.size() / 2;
     struct PerfectMatching::Options options;
@@ -308,45 +318,47 @@ vpint mwpm(vint &defects, int L, int dual)
     return defectPairs;
 }
 
-void joinPair(int v1, int v2, Lattice &lattice, int L)
+void joinPair(int v1, int v2, Lattice &lattice)
 {
     vint path;
     //If matched to boundary
-    if (v2 == -1) path = shortestPathToXBoundary(v1, L);
-    else path = shortestPath(v1, v2, lattice, L);
+    if (v2 == -1) path = shortestPathToXBoundary(v1, lattice.L);
+    else path = shortestPath(v1, v2, lattice);
     for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
 
-void joinDualPair(int cell1, int cell2, Lattice &lattice, int L, int useOuter, int useInner)
+void joinDualPair(int cell1, int cell2, Lattice &lattice, int useOuter, int useInner)
 {
     vint path;
-    if (cell2 == -1) path = shortestPathToZBoundary(cell1, lattice.cellToFaces, L);
-    else path = shortestDualPath(cell1, cell2, lattice, L, useOuter, useInner);
+    if (cell2 == -1) path = shortestPathToZBoundary(cell1, lattice.cellToFaces, lattice.L);
+    else path = shortestDualPath(cell1, cell2, lattice, useOuter, useInner);
     for (int i : path) lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
 }
 
-void zErrorDecoder(Lattice &lattice, int L, int useOuter, int useInner)
+void zErrorDecoder(Lattice &lattice, int useOuter, int useInner)
 {
     vint violatedXStabs;
     vpint xStabPairs;
-    for (int j = 0; j < xStabs.size(); j++)
+    for (int j = 0; j < lattice.L*lattice.L*lattice.L; j++)
     {
         if (lattice.syndromeX[j] == 1) violatedXStabs.push_back(j);
     }
-    xStabPairs = mwpm(violatedXStabs, L, 1);
+    xStabPairs = mwpm(violatedXStabs, lattice.L, 1);
     for (auto &pair : xStabPairs)
     {
-        joinDualPair(pair.first, pair.second, lattice, L, useOuter, useInner);
+        joinDualPair(pair.first, pair.second, lattice, useOuter, useInner);
     }
 }
 
-void measErrorDecoder(Lattice &lattice, int L)
+void measErrorDecoder(Lattice &lattice)
 {
-    vpint defectPairs = mwpm(lattice.defects, L, 0);
+    vpint defectPairs = mwpm(lattice.defects, lattice.L, 0);
     for (auto& pair : defectPairs)
     {
-        joinPair(pair.first, pair.second, lattice, L);
+        joinPair(pair.first, pair.second, lattice);
     }
+}
+
 }
 
 }

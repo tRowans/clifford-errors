@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc liblattice_lib.a CMakeFiles/lattice_lib.dir/lattice.cpp.o CMakeFiles/lattice_lib.dir/cubic.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib liblattice_lib.a

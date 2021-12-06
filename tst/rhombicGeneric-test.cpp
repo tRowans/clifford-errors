@@ -3,6 +3,8 @@
 #include "rhombic1.h" //for use of lattice building only (see pathing function tests)
 #include "rhombic2.h" //same
 
+//------------------------------------------------------------
+
 TEST(coordToIndexTest, HandlesCorrectInput)
 {
     rhombic::coord c0;
@@ -162,11 +164,11 @@ TEST(addFaceTest, CorrectOutput)
     vvint edgeToFaces;
     vvint cellToFaces;
     
-    Lattice lattice;
+    Lattice lattice(6);
 
     //v=44 is (2,1,1,0)
-    rhombic::addFace(44, 0, {3, 1, 1, 3}, {0, 2}, {1, 1, 1, 1}, {1, 1},  lattice, 6);
-    rhombic::addFace(44, 1, {0, 1, 1, 0}, {1, 2}, {1, -1, -1, 1}, {1, -1},  lattice, 6);
+    rhombic::addFace(44, 0, {3, 1, 1, 3}, {0, 2}, {1, 1, 1, 1}, {1, 1},  lattice);
+    rhombic::addFace(44, 1, {0, 1, 1, 0}, {1, 2}, {1, -1, -1, 1}, {1, -1},  lattice);
 
     vint vertices1 = {44, 81, 254, 260};
     vint edges1 = {177, 179, 1019, 1041};
@@ -195,35 +197,37 @@ TEST(addFaceTest, CorrectOutput)
 
 TEST(findFaceTest, CorrectOutput)
 {
-    rhombic::addFace(44, 0, {3, 1, 1, 3}, {0, 2}, {1, 1, 1, 1}, {1, 1},  lattice, 6);
-    rhombic::addFace(44, 1, {0, 1, 1, 0}, {1, 2}, {1, -1, -1, 1}, {1, -1},  lattice, 6);
+    Lattice lattice(6);
 
-    EXPECT_EQ(findFace({44,81}, lattice.vertexToFaces, lattice.faceToVertices), 0);
-    EXPECT_EQ(findFace({2,44}, lattice.vertexToFaces, lattice.faceToVertices), 1);
+    rhombic::addFace(44, 0, {3, 1, 1, 3}, {0, 2}, {1, 1, 1, 1}, {1, 1},  lattice);
+    rhombic::addFace(44, 1, {0, 1, 1, 0}, {1, 2}, {1, -1, -1, 1}, {1, -1},  lattice);
+
+    EXPECT_EQ(rhombic::findFace({44,81}, lattice.vertexToFaces, lattice.faceToVertices), 0);
+    EXPECT_EQ(rhombic::findFace({2,44}, lattice.vertexToFaces, lattice.faceToVertices), 1);
 }
 
 //------------------------------------------------------------
 
 TEST(scalarProductTest, HandlesCorrectInput)
 {
-    EXPECT_EQ(scalarProduct({4,1,-3}, 1), 8);
-    EXPECT_EQ(scalarProduct({4,1,-3}, 2), 0);
-    EXPECT_EQ(scalarProduct({4,1,-3}, 3), -6);
-    EXPECT_EQ(scalarProduct({4,1,-3}, 4), 2);
-    EXPECT_EQ(scalarProduct({4,1,-3}, -1*1), -8);
-    EXPECT_EQ(scalarProduct({4,1,-3}, -1*2), 0);
-    EXPECT_EQ(scalarProduct({4,1,-3}, -1*3), 6);
-    EXPECT_EQ(scalarProduct({4,1,-3}, -1*4), -2);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 0, 1), 8);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 1, 1), 0);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 2, 1), -6);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 3, 1), 2);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 0, -1), -8);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 1, -1), 0);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 2, -1), 6);
+    EXPECT_EQ(rhombic::scalarProduct({4,1,-3}, 3, -1), -2);
 
-    EXPECT_EQ(scalarProduct({0,1,1}, 1), 0);
-    EXPECT_EQ(scalarProduct({1,0,1}, 2), 2);
-    EXPECT_EQ(scalarProduct({1,1,0}, 3), 0);
+    EXPECT_EQ(rhombic::scalarProduct({0,1,1}, 0, 1), 0);
+    EXPECT_EQ(rhombic::scalarProduct({1,0,1}, 1, 1), 2);
+    EXPECT_EQ(rhombic::scalarProduct({1,1,0}, 2, 1), 0);
 }
 TEST(scalarProductTest, HandlesIncorrectInput)
 {
-    EXPECT_THROW(scalarProduct({1,1,1}, 0), std::invalid_argument);
-    EXPECT_THROW(scalarProduct({1,1,1}, 5), std::invalid_argument);
-    EXPECT_THROW(scalarProduct({1,1,1}, -5), std::invalid_argument);
+    EXPECT_THROW(rhombic::scalarProduct({1,1,1}, 100, 1), std::invalid_argument);
+    EXPECT_THROW(rhombic::scalarProduct({1,1,1}, 0, 0), std::invalid_argument);
+    EXPECT_THROW(rhombic::scalarProduct({1,1,1}, 0, 2), std::invalid_argument);
 }
 
 //------------------------------------------------------------
@@ -245,7 +249,7 @@ TEST(shortestPathTest, CorrectOutputNoBuild)
     vint path2 = {3, 865};
     vint path3 = {3, 865, 148};
     
-    Lattice lattice;
+    Lattice lattice(6);
     lattice.zSyndIndices = {3, 865, 148};
 
     lattice.vertexToEdges[0] = {3};
@@ -257,9 +261,9 @@ TEST(shortestPathTest, CorrectOutputNoBuild)
     lattice.edgeToVertices[865] = {36, 216};
     lattice.edgeToVertices[148] = {36, 217};
 
-    EXPECT_EQ(rhombic::shortestPath(0, 216, lattice, 6), path1);
-    EXPECT_EQ(rhombic::shortestPath(0, 36, lattice, 6), path2);
-    EXPECT_EQ(rhombic::shortestPath(0, 217, lattice, 6), path3);
+    EXPECT_EQ(rhombic::shortestPath(0, 216, lattice), path1);
+    EXPECT_EQ(rhombic::shortestPath(0, 36, lattice), path2);
+    EXPECT_EQ(rhombic::shortestPath(0, 217, lattice), path3);
 }
 TEST(shortestPathTest, CorrectOutputBuild_)
 {
@@ -271,19 +275,19 @@ TEST(shortestPathTest, CorrectOutputBuild_)
     vint path2 = {3, 865};
     vint path3 = {3, 865, 148};
 
-    Lattice lattice;
-    rhombic::r1::buildLattice(lattice, 6);
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
 
-    EXPECT_EQ(rhombic::shortestPath(42, 258, lattice, 6), path1);
-    EXPECT_EQ(rhombic::shortestPath(42, 79, lattice, 6), path2);
-    EXPECT_EQ(rhombic::shortestPath(42, 259, lattice, 6), path3);
+    EXPECT_EQ(rhombic::shortestPath(42, 258, lattice), path1);
+    EXPECT_EQ(rhombic::shortestPath(42, 79, lattice), path2);
+    EXPECT_EQ(rhombic::shortestPath(42, 259, lattice), path3);
 
     //boundary paths
     vint path4 = {865};
     vint path5 = {865, 148};
    
-    EXPECT_EQ(rhombic::shortestPath(216, 36, lattice, 6), path4);
-    EXPECT_EQ(rhombic::shortestPath(216, 217, lattice, 6), path5);
+    EXPECT_EQ(rhombic::shortestPath(216, 36, lattice), path4);
+    EXPECT_EQ(rhombic::shortestPath(216, 217, lattice), path5);
 }
 
 //------------------------------------------------------------
@@ -294,14 +298,14 @@ TEST(shortestDualPathTest, CorrectOutputNoBuild)
     vint path1 = {129};
     vint path2 = {129,126};
 
-    Lattice lattice;
-    lattice.outerQubits = {126, 129};
+    Lattice lattice(6);
+    lattice.outerQubitIndices = {126, 129};
     lattice.cellToFaces[6] = {129};
     lattice.cellToFaces[48] = {126, 129};
     lattice.cellToFaces[78] = {126};
 
-    EXPECT_EQ(rhombic::shortestDualPath(6, 48, lattice, 6, 1, 1), path1);
-    EXPECT_EQ(rhombic::shortestDualPath(6, 78, lattice, 6, 1, 1), path2);
+    EXPECT_EQ(rhombic::shortestDualPath(6, 48, lattice, 1, 1), path1);
+    EXPECT_EQ(rhombic::shortestDualPath(6, 78, lattice, 1, 1), path2);
 }
 TEST(shortestDualPathTest, CorrectOutputBuild)
 {
@@ -309,30 +313,30 @@ TEST(shortestDualPathTest, CorrectOutputBuild)
     vint path1 = {126};
     vint path2 = {126, 127};
 
-    Lattice lattice;
-    rhombic::r1::buildLattice(lattice, 6);
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
 
-    EXPECT_EQ(rhombic::shortestDualPath(48, 78, lattice, 6, 1, 1), path1);
-    EXPECT_EQ(rhombic::shortestDualPath(48, 43, lattice, 6, 1, 1), path2);
+    EXPECT_EQ(rhombic::shortestDualPath(48, 78, lattice, 1, 1), path1);
+    EXPECT_EQ(rhombic::shortestDualPath(48, 43, lattice, 1, 1), path2);
 
     //boundary path
     vint path3 = {129, 37};
 
-    EXPECT_EQ(rhombic::shortestDualPath(6, 13, lattice, 6, 1, 1), path3);
+    EXPECT_EQ(rhombic::shortestDualPath(6, 13, lattice, 1, 1), path3);
 }
 TEST(shortestDualPathTest, CorrectOutputInnerOnly)
 {
-    Lattice lattice;
-    rhombic::r1::buildLattice(lattice, 6);
-    vint path = rhombic::shortestDualPath(48, 78, lattice, 6, 0, 1);
-    for (int i : path) {if (i == 126) FAIL()};
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
+    vint path = rhombic::shortestDualPath(48, 78, lattice, 0, 1);
+    for (int i : path) {if (i == 126) FAIL();}
 }
 TEST(shortestDualPathTest, CorrectOutputOuterOnly)
 {
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
     vint path = {126};
-    Lattice lattice;
-    rhombic::r1::buildLattice(lattice, 6);
-    EXPECT_EQ(rhombic::shoretestDualPath(48, 78. lattice, 6, 1, 0), path);
+    EXPECT_EQ(rhombic::shortestDualPath(48, 78, lattice, 1, 0), path);
 }
 
 //------------------------------------------------------------
@@ -340,8 +344,8 @@ TEST(shortestDualPathTest, CorrectOutputOuterOnly)
 TEST(rhombicJumpCorrectionTest, CorrectOutputExample)
 {
     //Tests action on a specific example
-    Lattice lattice;
-    rhombic::r1::buildLattice(lattice, 6);
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
     
     //weight-2 boundary stab
     lattice.qubitsZ[117] = 1;
@@ -351,35 +355,38 @@ TEST(rhombicJumpCorrectionTest, CorrectOutputExample)
     lattice.qubitsZ[145] = 1;
     lattice.qubitsZ[146] = 1;
 
-    rhombic::jumpCorrection(lattice, engine, dist, 6, 1);
-    for (int i : lattice.innerQubitIndices) {if (i != 0) FAIL()};
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
+
+    rhombic::jumpCorrection(lattice, engine, dist, 1);
+    for (int i : lattice.innerQubitIndices) {if (i != 0) FAIL();}
 }
 TEST(rhombicJumpCorrectionTest, CorrectOutputR1)
 {
-    //Tests action on a random example generated by lattice.zStabPattern()
-    Lattice lattice;
-    rhombic::r1::buildLattice(lattice, 6);  //tested separately
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
 
     std::random_device rd{};
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
 
     lattice.zStabPattern(engine, dist);     //tested separately
-    rhombic::jumpCorrection(lattice, engine, dist, 6, 1);
-    for (int i : lattice.innerQubitIndices) {if (i != 0) FAIL()};
+    rhombic::jumpCorrection(lattice, engine, dist, 1);
+    for (int i : lattice.innerQubitIndices) {if (i != 0) FAIL();}
 }
 TEST(rhombicJumpCorrectionTest, CorrectOutputR2)
 {
-    Lattice lattice;
-    rhombic::r2::buildLattice(lattice, 6);  //tested separately
+    Lattice lattice(6);
+    rhombic::r2::buildLattice(lattice);
 
     std::random_device rd{};
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
 
     lattice.zStabPattern(engine, dist);     //tested separately
-    rhombic::jumpCorrection(lattice, engine, dist, 6, 2);
-    for (int i : lattice.innerQubitIndices) {if (i != 0) FAIL()};
+    rhombic::jumpCorrection(lattice, engine, dist, 2);
+    for (int i : lattice.innerQubitIndices) {if (i != 0) FAIL();}
 }
 
 //------------------------------------------------------------

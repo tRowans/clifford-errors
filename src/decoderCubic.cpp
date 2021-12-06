@@ -1,6 +1,6 @@
 #include "decoderCubic.h"
 
-namespace toric {
+namespace cubic {
 
 vint taxi(int v1, int v2, int L)
 {
@@ -38,7 +38,7 @@ vint shortestPath(int v1, int v2, int L)
 vint shortestDualPath(int c1, int c2, int L)
 {
     //Again don't think I need a check for valid faces here
-    vint dists = taxi{c1, c2, L};
+    vint dists = taxi(c1, c2, L);
     vint path;
     for (int i = 0; i < 3; i++)
     {
@@ -73,8 +73,8 @@ vint distanceToClosestXBoundary(int v, int L)
     
     for (int i = 0; i < 2; i++)
     {
-        if (cd.xi[i+1] <= (L-3)/2) dist[i] = -cd.xi[i+1];
-        else dist[i] = (L-3) - cd.xi[i+1];
+        if (cd.xi[i+1] <= (L-3)/2) dists[i] = -cd.xi[i+1];
+        else dists[i] = (L-3) - cd.xi[i+1];
     }
 
     vint distInfo = {0,0,0}; //dir, sign, dist
@@ -139,7 +139,7 @@ vint shortestPathToZBoundary(int cell, int L)
         {
             cell = neigh(cell, x, 1, L);
             path.push_back(3*cell+2);
-            distinfo[1] -= 1;
+            distInfo[1] -= 1;
         }
     }
 
@@ -206,58 +206,58 @@ vpint mwpm(vint &defects, int L, int dual)
     return defectPairs;
 }
 
-void joinPair(int v1, int v2, Lattice &lattice, int L)
+void joinPair(int v1, int v2, Lattice &lattice)
 {
     vint path;
     //If matched to boundary
-    if (v2 == -1) path = shortestPathToXBoundary(v1, L);
-    else path = shortestPath(v1, v2, L);
+    if (v2 == -1) path = shortestPathToXBoundary(v1, lattice.L);
+    else path = shortestPath(v1, v2, lattice.L);
     for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
 
-void joinDualPair(int cell1, int cell2, Lattice &lattice, int L)
+void joinDualPair(int cell1, int cell2, Lattice &lattice)
 {
     vint path;
-    if (cell2 == -1) path = shortestPathToZBoundary(cell1, L);
-    else path = shortestDualPath(cell1, cell2, lattice, L);
+    if (cell2 == -1) path = shortestPathToZBoundary(cell1, lattice.L);
+    else path = shortestDualPath(cell1, cell2, lattice.L);
     for (int i : path) lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
 }
 
-void zErrorDecoder(Lattice &lattice, int L)
+void zErrorDecoder(Lattice &lattice)
 {
     vint violatedXStabs;
     vpint xStabPairs;
-    for (int j = 0; j < L*L*L; j++)
+    for (int j = 0; j < lattice.L*lattice.L*lattice.L; j++)
     {
         if (lattice.syndromeX[j] == 1) violatedXStabs.push_back(j);
     }
-    xStabPairs = mwpm(violatedXStabs, L, 1);
+    xStabPairs = mwpm(violatedXStabs,lattice.L, 1);
     for (auto &pair : xStabPairs) 
     {
-        joinDualPair(pair.first, pair.second, lattice.qubitsZ, L);
+        joinDualPair(pair.first, pair.second, lattice);
     }
 }
 
-void measErrorDecoder(Lattice &lattice, int L)
+void measErrorDecoder(Lattice &lattice)
 {
-    vpint defectPairs = mwpm(lattice.defects, L, 0);
+    vpint defectPairs = mwpm(lattice.defects, lattice.L, 0);
     for (auto &pair : defectPairs)
     {
-        joinPair(pair.first, pair.second, lattice.syndromeZ, L);
+        joinPair(pair.first, pair.second, lattice);
     }
 }
 
-void jumpCorrection(Lattice &lattice, int L)
+void jumpCorrection(Lattice &lattice)
 {
-    for (int z = L-4; z > 0; z--)
+    for (int z = lattice.L-4; z > 0; z--)
     {
-        for (int x = 0; x < L-4; x++)
+        for (int x = 0; x < lattice.L-4; x++)
         {
-            for (int y = 0; y < L-4; y++)
+            for (int y = 0; y < lattice.L-4; y++)
             {
-                faceXZ = 3*(x + y*L + z*L*L) + 1;
-                faceYZ = 3*(x + y*L + z*L*L) + 2;
-                for (int &face : {faceXZ, faceYZ})
+                int faceXZ = 3*(x + y*lattice.L + z*lattice.L*lattice.L) + 1;
+                int faceYZ = 3*(x + y*lattice.L + z*lattice.L*lattice.L) + 2;
+                for (const int &face : {faceXZ, faceYZ})
                 {
                     if (lattice.qubitsZ[face] == 1) //run a bounds check before this func
                     {

@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "cubic.h"
 
-TEST(coordToIndexTest, HandlesExpectedInput)
+TEST(coordToIndexTestC, HandlesExpectedInput)
 {
     cubic::coord c;
     c.xi[0] = 4;
@@ -9,7 +9,7 @@ TEST(coordToIndexTest, HandlesExpectedInput)
     c.xi[2] = 1;
     EXPECT_EQ(cubic::coordToIndex(c, 6), 64);
 } 
-TEST(coordToIndexTest, HandlesOutOfRangeInput)
+TEST(coordToIndexTestC, HandlesOutOfRangeInput)
 {
     cubic::coord c;
     c.xi[0] = -1;
@@ -22,14 +22,14 @@ TEST(coordToIndexTest, HandlesOutOfRangeInput)
 
 //------------------------------------------------------------
 
-TEST(indexToCoordTest, HandlesExpectedInput)
+TEST(indexToCoordTestC, HandlesExpectedInput)
 {
     cubic::coord c = cubic::indexToCoord(64, 6);
     EXPECT_EQ(c.xi[0], 4);
     EXPECT_EQ(c.xi[1], 4);
     EXPECT_EQ(c.xi[2], 1);
 }
-TEST(indexToCoordTest, HandlesOutOfRangeInput)
+TEST(indexToCoordTestC, HandlesOutOfRangeInput)
 {
     EXPECT_THROW(cubic::indexToCoord(-1, 6), std::invalid_argument);
     EXPECT_THROW(cubic::indexToCoord(216, 6), std::invalid_argument);
@@ -37,7 +37,7 @@ TEST(indexToCoordTest, HandlesOutOfRangeInput)
 
 //------------------------------------------------------------
 
-TEST(neighTest, CorrectOutput)
+TEST(neighTestC, CorrectOutput)
 {
     //129 = {3,3,3}
     EXPECT_EQ(cubic::neigh(129, 0, 1, 6), 130);
@@ -50,7 +50,7 @@ TEST(neighTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(edgeIndexTest, HandlesExpectedInput)
+TEST(edgeIndexTestC, HandlesExpectedInput)
 {
     EXPECT_EQ(cubic::edgeIndex(129, 0, 1, 6), 387);
     EXPECT_EQ(cubic::edgeIndex(129, 1, 1, 6), 388);
@@ -59,14 +59,14 @@ TEST(edgeIndexTest, HandlesExpectedInput)
     EXPECT_EQ(cubic::edgeIndex(129, 1, -1, 6), 370);
     EXPECT_EQ(cubic::edgeIndex(129, 2, -1, 6), 281);
 }
-TEST(edgeIndexTest, HandlesInvalidInput)
+TEST(edgeIndexTestC, HandlesInvalidInput)
 {
     EXPECT_THROW(cubic::edgeIndex(0, 3, 1, 5), std::invalid_argument);
 }
 
 //------------------------------------------------------------
 
-TEST(buildFaceToEdgesTest, CorrectOutput)
+TEST(buildFaceToEdgesTestC, CorrectOutput)
 {   
     //Not worth checking the whole thing
     //Just check this for the three directions of face and check size is right
@@ -79,12 +79,12 @@ TEST(buildFaceToEdgesTest, CorrectOutput)
     EXPECT_EQ(faceToEdges[387], edges1);
     EXPECT_EQ(faceToEdges[388], edges2);
     EXPECT_EQ(faceToEdges[389], edges3);
-    EXPECT_EQ(faceToEdge.size(), 3*6*6*6);
+    EXPECT_EQ(faceToEdges.size(), 3*6*6*6);
 }
 
 //------------------------------------------------------------
 
-TEST(buildEdgeToFaces, CorrectOutput)
+TEST(buildEdgeToFacesC, CorrectOutput)
 {
     vvint edgeToFaces;
     cubic::buildEdgeToFaces(edgeToFaces, 6);
@@ -99,7 +99,7 @@ TEST(buildEdgeToFaces, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildVertexToEdgesTest, CorrectOutput)
+TEST(buildVertexToEdgesTestC, CorrectOutput)
 {
     vvint vertexToEdges;
     cubic::buildVertexToEdges(vertexToEdges, 6);
@@ -110,7 +110,7 @@ TEST(buildVertexToEdgesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildEdgeToVerticesTest, CorrectOutput)
+TEST(buildEdgeToVerticesTestC, CorrectOutput)
 {
     vpint edgeToVertices;
     cubic::buildEdgeToVertices(edgeToVertices, 6);
@@ -120,15 +120,15 @@ TEST(buildEdgeToVerticesTest, CorrectOutput)
     EXPECT_EQ(edgeToVertices[387], vertices1);
     EXPECT_EQ(edgeToVertices[388], vertices2);
     EXPECT_EQ(edgeToVertices[389], vertices3);
-    EXPECT_EQ(edgeToVertice.size(), 3*6*6*6);
+    EXPECT_EQ(edgeToVertices.size(), 3*6*6*6);
 }
 
 //------------------------------------------------------------
 
-TEST(buildCellToFacesTest, CorrectOutput)
+TEST(buildCellToFacesTestC, CorrectOutput)
 {
     vvint cellToFaces;
-    cubic::buildCellToFaces(cellToFace, 6);
+    cubic::buildCellToFaces(cellToFaces, 6);
     vint faces = {171, 172, 173, 176, 190, 279};
     EXPECT_EQ(cellToFaces[57], faces);
     EXPECT_EQ(cellToFaces.size(), 6*6*6);
@@ -136,7 +136,7 @@ TEST(buildCellToFacesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildFaceToCellsTest, CorrectOutput)
+TEST(buildFaceToCellsTestC, CorrectOutput)
 {
     vpint faceToCells;
     cubic::buildFaceToCells(faceToCells, 6);
@@ -151,7 +151,7 @@ TEST(buildFaceToCellsTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildFaceToVerticesTest, CorrectOutput)
+TEST(buildFaceToVerticesTestC, CorrectOutput)
 {
     vvint faceToVertices;
     cubic::buildFaceToVertices(faceToVertices, 6);
@@ -166,7 +166,7 @@ TEST(buildFaceToVerticesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildQubitIndicesTest, CorrectOutput)
+TEST(buildQubitIndicesTestC, CorrectOutput)
 {
     vint outerQubitIndicesExpected = {2,5,8,19,20,22,23,26,37,38,40,41,44};
     vint innerQubitIndicesExpected = {108,110,111,113,116,126,127,128,129,
@@ -183,7 +183,7 @@ TEST(buildQubitIndicesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildXSyndIndicesTest, CorrectOutput)
+TEST(buildXSyndIndicesTestC, CorrectOutput)
 {
     vint xSyndIndicesExpected = {0,1,6,7,12,13,36,37,42,
                                  43,48,49,72,73,78,79,84,85};
@@ -194,13 +194,13 @@ TEST(buildXSyndIndicesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildZSyndIndicesTest, CorrectOutput)
+TEST(buildZSyndIndicesTestC, CorrectOutput)
 {
     vint zSyndIndicesExpected = {20,23,26,38,41,44,108,111,114,126,127,
                                  128,129,130,131,133,134,144,145,146,147,
                                  148,149,151,152,216,219,222,234,235,236,
                                  237,238,239,241,242,252,253,254,255,256,
-                                 257,259,260}
+                                 257,259,260};
     vint zSyndIndices;
     cubic::buildZSyndIndices(zSyndIndices, 6);
     EXPECT_EQ(zSyndIndices, zSyndIndicesExpected);
@@ -208,7 +208,7 @@ TEST(buildZSyndIndicesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildXLogicalTest, CorrectOutput)
+TEST(buildXLogicalTestC, CorrectOutput)
 {
     vint xLogicalExpected = {2,20,38,110,128,146,218,236,254};
     vint xLogical;
@@ -218,7 +218,7 @@ TEST(buildXLogicalTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildZLogicalTest, CorrectOutput)
+TEST(buildZLogicalTestC, CorrectOutput)
 {
     vint zLogicalExpected = {2,5,8};
     vint zLogical;

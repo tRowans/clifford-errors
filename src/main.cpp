@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc != AMOUNT)
+    if (argc != 7)
     {
         std::cout << "Invalid number of arguments." << '\n';
         return 1;
@@ -19,15 +19,15 @@ int main(int argc, char *argv[])
     int debug = std::atoi(argv[6]);
     
     std::vector<Lattice> lattices(3,L);
-    Lattice &cubic = lattices[0];
-    Lattice &rhombic1 = lattices[1];
-    Lattice &rhombic2 = lattices[2];
+    Lattice &latCubic = lattices[0];
+    Lattice &latRhombic1 = lattices[1];
+    Lattice &latRhombic2 = lattices[2];
 
-    cubic::buildLattice(cubic, L);
-    rhombic::r1::buildLattice(rhombic1, L);
-    rhombic::r2::buildLattice(rhombic2, L);
+    cubic::buildLattice(latCubic);
+    rhombic::r1::buildLattice(latRhombic1);
+    rhombic::r2::buildLattice(latRhombic2);
 
-    std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices, L);
+    std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
 
     vint cFailures = {0,0};
     vint r1Failures = {0,0};
@@ -36,9 +36,9 @@ int main(int argc, char *argv[])
     for (int i = 0; i < runs; i++)
     {
         //reset error info
-        cubic.wipe();
-        rhombic1.wipe();
-        rhombic2.wipe();
+        latCubic.wipe();
+        latRhombic1.wipe();
+        latRhombic2.wipe();
         
         //reset this stuff (is this necessary?)
         std::random_device rd{};
@@ -46,25 +46,25 @@ int main(int argc, char *argv[])
         std::uniform_real_distribution<double> dist(0,1);
 
         //qubits start in |+> --> measure Z stabilisers = random X error distribution
-        cubic.biasedError(0.5, engine, dist, 'x', 0);
-        rhombic1.biasedError(0.5, engine, dist, 'x', 0);
-        rhombic2.biasedError(0.5, engine, dist, 'x', 0);
+        latCubic.biasedError(0.5, engine, dist, 'x', 0);
+        latRhombic1.biasedError(0.5, engine, dist, 'x', 0);
+        latRhombic2.biasedError(0.5, engine, dist, 'x', 0);
 
         //Z stabiliser syndrome + measurement errors
-        cubic.calcSynd('z', 1, 1);
-        cubic.measError(q, engine, dist, 'z');
-        rhombic1.calcSynd('z', 1, 1);
-        rhombic1.measError(q, engine, dist, 'z');
-        rhombic2.calcSynd('z', 1, 1);
-        rhombic2.measError(q, engine, dist, 'z');
+        latCubic.calcSynd('z', 1, 1);
+        latCubic.measError(q, engine, dist, 'z');
+        latRhombic1.calcSynd('z', 1, 1);
+        latRhombic1.measError(q, engine, dist, 'z');
+        latRhombic2.calcSynd('z', 1, 1);
+        latRhombic2.measError(q, engine, dist, 'z');
 
         //Find and fix measurement errors
-        cubic.findDefects();
-        cubic::measErrorDecoder(cubic, L);
-        rhombic1.findDefects();
-        rhombic::r1::measErrorDecoder(rhombic1, L);
-        rhombic2.findDefects();
-        rhombic::r2::measErrorDecoder(rhombic2, L);
+        latCubic.findDefects();
+        cubic::measErrorDecoder(latCubic);
+        latRhombic1.findDefects();
+        rhombic::r1::measErrorDecoder(latRhombic1);
+        latRhombic2.findDefects();
+        rhombic::r2::measErrorDecoder(latRhombic2);
 
         //Fix X errors (decoder for this not done yet)
         //cubic::xErrorDecoder(...);
@@ -74,88 +74,88 @@ int main(int argc, char *argv[])
         //Check everything working as expected (debugging step)
         if (debug == 1)
         {
-            cubic.checkInBounds();
-            cubic.checkInCodespace('x', 1, 1);
-            rhombic1.checkInBounds();
-            rhombic1.checkInCodespace('x', 1, 1);
-            rhombic2.checkInBounds();
-            rhombic2.checkInCodespace('x', 1, 1);
+            latCubic.checkInBounds();
+            latCubic.checkInCodespace('x', 1, 1);
+            latRhombic1.checkInBounds();
+            latRhombic1.checkInCodespace('x', 1, 1);
+            latRhombic2.checkInBounds();
+            latRhombic2.checkInCodespace('x', 1, 1);
         }
 
         //Check X logical errors
-        cFailures[0] += cubic.checkLogicalError('x');
-        r1Failures[0] += rhombic1.checkLogicalError('x');
-        r2Failures[0] += rhombic2.checkLogicalError('x');
+        cFailures[0] += latCubic.checkLogicalError('x');
+        r1Failures[0] += latRhombic1.checkLogicalError('x');
+        r2Failures[0] += latRhombic2.checkLogicalError('x');
 
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
         //so equivalently could do a biased error with prob 2*p/3
-        applyCCZ(lattices, overlappingFaces, L, engine, dist, link);
-        cubic.depolarisingError(p, engine, dist);
-        rhombic1.depolarisingError(p, engine, dist);
-        rhombic2.depolarisingError(p, engine, dist);
+        applyCCZ(lattices, overlappingFaces, engine, dist, link);
+        latCubic.depolarisingError(p, engine, dist);
+        latRhombic1.depolarisingError(p, engine, dist);
+        latRhombic2.depolarisingError(p, engine, dist);
 
         //Project to stabiliser distribution + random bit flips from measurement error
-        cubic.zStabPattern(engine, dist);
-        cubic.biasedError(q, engine, dist, 'z', 1);
-        rhombic1.zStabPattern(engine, dist);
-        rhombic1.biasedError(q, engine, dist, 'z', 1);
-        rhombic2.zStabPattern(engine, dist);
-        rhombic2.biasedError(q, engine, dist, 'z', 1);
+        latCubic.zStabPattern(engine, dist);
+        latCubic.biasedError(q, engine, dist, 'z', 1);
+        latRhombic1.zStabPattern(engine, dist);
+        latRhombic1.biasedError(q, engine, dist, 'z', 1);
+        latRhombic2.zStabPattern(engine, dist);
+        latRhombic2.biasedError(q, engine, dist, 'z', 1);
 
         //Z error decoding from single-qubit measurements (only on inner qubits)
         //cubic decoder does not need to specify inner/outer qubits
         //because if no z=0 stabilisers are violated no outer qubits will be used in pathing
         //and if only z=0 stabilisers are used then only outer qubits will be used
-        cubic.calcSynd('x', 0, 1);
-        cubic::zErrorDecoder(cubic, L); 
-        rhombic1.calcSynd('x', 0, 1);
-        rhombic::r1::zErrorDecoder(rhombic1, L, 0, 1);
-        rhombic2.calcSynd('x', 0, 1);
-        rhombic::r2::zErrorDecoder(rhombic2, L, 0, 1);
+        latCubic.calcSynd('x', 0, 1);
+        cubic::zErrorDecoder(latCubic); 
+        latRhombic1.calcSynd('x', 0, 1);
+        rhombic::r1::zErrorDecoder(latRhombic1, 0, 1);
+        latRhombic2.calcSynd('x', 0, 1);
+        rhombic::r2::zErrorDecoder(latRhombic2, 0, 1);
 
         //Check step
         if (debug == 1)
         {
-            cubic.checkInBounds();
-            cubic.checkInCodespace('z', 0, 1);
-            rhombic1.checkInBounds();
-            rhombic1.checkInCodespace('z', 0, 1);
-            rhombic2.checkInBounds();
-            rhombic2.checkInCodespace('z', 0, 1);
+            latCubic.checkInBounds();
+            latCubic.checkInCodespace('z', 0, 1);
+            latRhombic1.checkInBounds();
+            latRhombic1.checkInCodespace('z', 0, 1);
+            latRhombic2.checkInBounds();
+            latRhombic2.checkInCodespace('z', 0, 1);
         }
 
         //Find dimension jump corrections for 2D codes 
-        cubic::jumpCorrection(cubic, L);
-        rhombic::jumpCorrection(rhombic1, engine, dist, L, 1);
-        rhombic::jumpCorrection(rhombic2, engine, dist, L, 2);
+        cubic::jumpCorrection(latCubic);
+        rhombic::jumpCorrection(latRhombic1, engine, dist, 1);
+        rhombic::jumpCorrection(latRhombic2, engine, dist, 2);
 
         //Another check step
         if (debug == 1)
         {
-            cubic.checkInBounds();
-            cubic.checkJumpCorrection();
-            rhombic1.checkInBounds();
-            rhombic1.checkJumpCorrection();
-            rhombic2.checkInBounds();
-            rhombic2.checkJumpCorrection();
+            latCubic.checkInBounds();
+            latCubic.checkJumpCorrection();
+            latRhombic1.checkInBounds();
+            latRhombic1.checkJumpCorrection();
+            latRhombic2.checkInBounds();
+            latRhombic2.checkJumpCorrection();
         }
         
         //We do not expect the 2D code to be error free even if we make no mistakes
         //because it will still have errors from the CZ + depolarising error
         //so we need a measurement-error free decoding step before checking for success.
         //Can use the same decoder as for 3D here as long as errors are only on outer qubits
-        cubic.calcSynd('x', 1, 0); 
-        cubic::zErrorDecoder(cubic, L);
-        rhombic1.calcSynd('x', 1, 0);
-        rhombic::r1::zErrorDecoder(rhombic1, L, 1, 0);
-        rhombic2.calcSynd('x', 1, 0);
-        rhombic::r2::zErrorDecoder(rhombic2, L, 1, 0);
+        latCubic.calcSynd('x', 1, 0); 
+        cubic::zErrorDecoder(latCubic);
+        latRhombic1.calcSynd('x', 1, 0);
+        rhombic::r1::zErrorDecoder(latRhombic1, 1, 0);
+        latRhombic2.calcSynd('x', 1, 0);
+        rhombic::r2::zErrorDecoder(latRhombic2, 1, 0);
 
         //Check Z logical errors 
-        cFailuers[1] += cubic.checkLogicalError('z');
-        r1Failures[1] += rhombic1.checkLogicalError('z');
-        r2Failures[1] += rhombic2.checkLogicalError('z');
+        cFailures[1] += latCubic.checkLogicalError('z');
+        r1Failures[1] += latRhombic1.checkLogicalError('z');
+        r2Failures[1] += latRhombic2.checkLogicalError('z');
     }
     
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << link << '\n';

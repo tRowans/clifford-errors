@@ -5,6 +5,7 @@
 /Users/tom/Documents/clifford-errors/build/CMakeFiles/install/local.dir
 /Users/tom/Documents/clifford-errors/build/CMakeFiles/install/strip.dir
 /Users/tom/Documents/clifford-errors/build/src/CMakeFiles/czErrors.dir
+/Users/tom/Documents/clifford-errors/build/src/CMakeFiles/lattice_lib.dir
 /Users/tom/Documents/clifford-errors/build/src/CMakeFiles/cubic_lib.dir
 /Users/tom/Documents/clifford-errors/build/src/CMakeFiles/rhombic_lib.dir
 /Users/tom/Documents/clifford-errors/build/src/CMakeFiles/cz_lib.dir
@@ -43,7 +44,10 @@
 /Users/tom/Documents/clifford-errors/build/lib/googletest/googletest/CMakeFiles/install.dir
 /Users/tom/Documents/clifford-errors/build/lib/googletest/googletest/CMakeFiles/install/local.dir
 /Users/tom/Documents/clifford-errors/build/lib/googletest/googletest/CMakeFiles/install/strip.dir
-/Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/RunTests.dir
+/Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/LatticeTests.dir
+/Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/CubicTests.dir
+/Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/RhombicTests.dir
+/Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/CZTests.dir
 /Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/edit_cache.dir
 /Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/rebuild_cache.dir
 /Users/tom/Documents/clifford-errors/build/tst/CMakeFiles/list_install_components.dir

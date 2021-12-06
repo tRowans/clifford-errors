@@ -44,7 +44,7 @@ void buildXLogical(vint &xLogical, int L);
 
 void buildZLogical(vint &zLogical, int L);
 
-void buildLattice(Lattice &lattice, int L);
+void buildLattice(Lattice &lattice);
 
 }
 

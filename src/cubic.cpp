@@ -190,8 +190,8 @@ void buildFaceToVertices(vvint &faceToVertices, int L)
 {
     for (int f = 0; f < 3 * L * L * L; f++)
     {
-        v = f / 3;
-        dir = f % 3;
+        int v = f / 3;
+        int dir = f % 3;
         vint vertices;
         if (dir == 0)
         {
@@ -285,23 +285,25 @@ void buildZLogical(vint &zLogical, int L)
 {
     for (int x; x < (L-3); x++)
     {
-        f = 3*x + 2;
+        int f = 3*x + 2;
         zLogical.push_back(f);
     }
 }
 
-void buildLattice(Lattice &lattice, int L)
+void buildLattice(Lattice &lattice)
 {
-    buildFaceToEdges(lattice.faceToEdges, L);
-    buildEdgeToFaces(lattice.edgeToFaces, L);
-    buildVertexToEdges(lattice.vertexToEdges, L);
-    buildEdgeToVertices(lattice.edgeToVertices, L);
-    buildCellToFaces(lattice.cellToFaces, L);
-    buildFaceToCells(lattice.faceToCells, L);
-    buildFaceToVertices(lattice.faceToVertices, L);
-    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, L);
-    buildXSyndIndices(lattice.xSyndIndices, L);
-    buildZSyndIndices(lattice.zSyndIndices, L);
-    buildXLogical(lattice.xLogical, L);
-    buildZLogical(lattice.zLogical, L);
+    buildFaceToEdges(lattice.faceToEdges, lattice.L);
+    buildEdgeToFaces(lattice.edgeToFaces, lattice.L);
+    buildVertexToEdges(lattice.vertexToEdges, lattice.L);
+    buildEdgeToVertices(lattice.edgeToVertices, lattice.L);
+    buildCellToFaces(lattice.cellToFaces, lattice.L);
+    buildFaceToCells(lattice.faceToCells, lattice.L);
+    buildFaceToVertices(lattice.faceToVertices, lattice.L);
+    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.L);
+    buildXSyndIndices(lattice.xSyndIndices, lattice.L);
+    buildZSyndIndices(lattice.zSyndIndices, lattice.L);
+    buildXLogical(lattice.xLogical, lattice.L);
+    buildZLogical(lattice.zLogical, lattice.L);
+}
+
 }

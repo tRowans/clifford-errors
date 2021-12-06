@@ -1,18 +1,18 @@
 #include "gtest/gtest.h"
 #include "decoderRhombic2.h"
-#include "prepLattices.h"
+#include "prepRhombic2.h"
 
 //------------------------------------------------------------
 
-TEST(indexBuilding, building)
+TEST(indexBuildingR2, building)
 {
-    rhombic::r2::buildLattice(latRhombic2, 6);
+    rhombic::r2::buildLattice(latRhombic2);
     ASSERT_TRUE(true);
 }
 
 //------------------------------------------------------------
 
-TEST(distanceToClosestXBoundaryTest, CorrectOutput)
+TEST(distanceToClosestXBoundaryTestR2, CorrectOutput)
 {
     vint distInfo1 = {0, -1, 1};
     vint distInfo2 = {0, 1, 1};
@@ -26,7 +26,7 @@ TEST(distanceToClosestXBoundaryTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(shortestPathToXBoundaryTest, CorrectOutput)
+TEST(shortestPathToXBoundaryTestR2, CorrectOutput)
 {
     vint path1 = {27};
     vint path2 = {895};
@@ -40,24 +40,26 @@ TEST(shortestPathToXBoundaryTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(distanceToClosestZBoundaryTest, CorrectOutput)
+TEST(distanceToClosestZBoundaryTestR2, CorrectOutput)
 {
-    EXPECT_EQ(rhombic::r2::distanceToClosestZBoundary(42, 6), -1);
-    EXPECT_EQ(rhombic::r2::distanceToClosestZBoundary(84, 6), 1);
+    vint distInfoExpected1 = {-1, 1};
+    vint distInfoExpected2 = {1, 1};
+    EXPECT_EQ(rhombic::r2::distanceToClosestZBoundary(42, 6), distInfoExpected1);
+    EXPECT_EQ(rhombic::r2::distanceToClosestZBoundary(84, 6), distInfoExpected2);
 }
 
 //------------------------------------------------------------
 
-TEST(shortestPathToZBTest, CorrectOutput)
+TEST(shortestPathToZBoundaryTestR2, CorrectOutput)
 {
     vint path1 = {18};
     vint path2 = {363};
     vint path3 = {252};
     vint path4 = {147};
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(196, latRhombic2.cellToFacesR2, 6), path1);
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(283, latRhombic2.cellToFacesR2, 6), path2);
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(91, latRhombic2.cellToFacesR2, 6), path3);
-    EXPECT_EQ(rhombic::r2::shortestPathToZB(54, latRhombic2.cellToFacesR2, 6), path4);
+    EXPECT_EQ(rhombic::r2::shortestPathToZBoundary(196, latRhombic2.cellToFaces, 6), path1);
+    EXPECT_EQ(rhombic::r2::shortestPathToZBoundary(283, latRhombic2.cellToFaces, 6), path2);
+    EXPECT_EQ(rhombic::r2::shortestPathToZBoundary(91, latRhombic2.cellToFaces, 6), path3);
+    EXPECT_EQ(rhombic::r2::shortestPathToZBoundary(54, latRhombic2.cellToFaces, 6), path4);
 }
 
 //------------------------------------------------------------

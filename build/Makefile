@@ -175,6 +175,19 @@ czErrors/fast:
 .PHONY : czErrors/fast
 
 #=============================================================================
+# Target rules for targets named lattice_lib
+
+# Build rule for target.
+lattice_lib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lattice_lib
+.PHONY : lattice_lib
+
+# fast build rule for target.
+lattice_lib/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/build
+.PHONY : lattice_lib/fast
+
+#=============================================================================
 # Target rules for targets named cubic_lib
 
 # Build rule for target.
@@ -279,17 +292,56 @@ gtest_main/fast:
 .PHONY : gtest_main/fast
 
 #=============================================================================
-# Target rules for targets named RunTests
+# Target rules for targets named LatticeTests
 
 # Build rule for target.
-RunTests: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 RunTests
-.PHONY : RunTests
+LatticeTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 LatticeTests
+.PHONY : LatticeTests
 
 # fast build rule for target.
-RunTests/fast:
-	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/build
-.PHONY : RunTests/fast
+LatticeTests/fast:
+	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/LatticeTests.dir/build.make tst/CMakeFiles/LatticeTests.dir/build
+.PHONY : LatticeTests/fast
+
+#=============================================================================
+# Target rules for targets named CubicTests
+
+# Build rule for target.
+CubicTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CubicTests
+.PHONY : CubicTests
+
+# fast build rule for target.
+CubicTests/fast:
+	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/build
+.PHONY : CubicTests/fast
+
+#=============================================================================
+# Target rules for targets named RhombicTests
+
+# Build rule for target.
+RhombicTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 RhombicTests
+.PHONY : RhombicTests
+
+# fast build rule for target.
+RhombicTests/fast:
+	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/build
+.PHONY : RhombicTests/fast
+
+#=============================================================================
+# Target rules for targets named CZTests
+
+# Build rule for target.
+CZTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CZTests
+.PHONY : CZTests
+
+# fast build rule for target.
+CZTests/fast:
+	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CZTests.dir/build.make tst/CMakeFiles/CZTests.dir/build
+.PHONY : CZTests/fast
 
 # Help Target
 help:
@@ -303,8 +355,11 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... CZTests"
+	@echo "... CubicTests"
+	@echo "... LatticeTests"
 	@echo "... PerfectMatching"
-	@echo "... RunTests"
+	@echo "... RhombicTests"
 	@echo "... cubic_lib"
 	@echo "... czErrors"
 	@echo "... cz_lib"
@@ -312,6 +367,7 @@ help:
 	@echo "... gmock_main"
 	@echo "... gtest"
 	@echo "... gtest_main"
+	@echo "... lattice_lib"
 	@echo "... rhombic_lib"
 .PHONY : help
 

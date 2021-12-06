@@ -144,25 +144,25 @@ int edgeIndex(int v, int dir, int sign, int L)
 // This is different to cubic lattice, 
 // I am not using a clever indexing system and just manually adding each face
 void addFace(int v, int f, const vint &dirs, const vint &dirs2, 
-                 const vint &signs, const vint &signs2, Lattice &lattice, int L)
+                 const vint &signs, const vint &signs2, Lattice &lattice)
 {
     // Construct edges and vertices
     vint vertices;
     vint edges;
     pint cells;
-    int neighV = neigh(v, dirs[0], signs[0], L);
+    int neighV = neigh(v, dirs[0], signs[0], lattice.L);
     vertices = {v, neighV,
-                neigh(v, dirs[1], signs[1], L),
-                neigh(neighV, dirs[2], signs[2], L)};
-    edges = {edgeIndex(v, dirs[0], signs[0], L),
-             edgeIndex(v, dirs[1], signs[1], L),
-             edgeIndex(neighV, dirs[2], signs[2], L),
-             edgeIndex(vertices[2], dirs[3], signs[3], L)};
-    if (neighXYZ(v, dirs2[0], signs2[0], L) < neighXYZ(v, dirs2[1], signs2[1], L))
+                neigh(v, dirs[1], signs[1], lattice.L),
+                neigh(neighV, dirs[2], signs[2], lattice.L)};
+    edges = {edgeIndex(v, dirs[0], signs[0], lattice.L),
+             edgeIndex(v, dirs[1], signs[1], lattice.L),
+             edgeIndex(neighV, dirs[2], signs[2], lattice.L),
+             edgeIndex(vertices[2], dirs[3], signs[3], lattice.L)};
+    if (neighXYZ(v, dirs2[0], signs2[0], lattice.L) < neighXYZ(v, dirs2[1], signs2[1], lattice.L))
     {
-        cells = {neighXYZ(v, dirs2[0], signs2[0], L), neighXYZ(v, dirs2[1], signs2[1], L)};
+        cells = {neighXYZ(v, dirs2[0], signs2[0], lattice.L), neighXYZ(v, dirs2[1], signs2[1], lattice.L)};
     }
-    else cells = {neighXYZ(v, dirs2[1], signs2[1], L), neighXYZ(v, dirs2[0], signs2[0], L)};
+    else cells = {neighXYZ(v, dirs2[1], signs2[1], lattice.L), neighXYZ(v, dirs2[0], signs2[0], lattice.L)};
     std::sort(vertices.begin(), vertices.end());
     std::sort(edges.begin(), edges.end());
     // Populate vvints
@@ -179,7 +179,7 @@ void addFace(int v, int f, const vint &dirs, const vint &dirs2,
     }
 }
 
-int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices)
+int findFace(vint vertices, vvint &vertexToFaces, vvint &faceToVertices)
 {
     std::sort(vertices.begin(), vertices.end());
     auto v0Faces = vertexToFaces[vertices[0]];
@@ -196,10 +196,11 @@ int findFace(vint &vertices, vvint &vertexToFaces, vvint &faceToVertices)
 
 int scalarProduct(std::vector<float> vec, int dir, int sign)
 {
-    if (dir == 1) return sign*vec[0] + sign*vec[1] - sign*vec[2];   //{1,1,-1}
-    else if (dir == 2) return sign*vec[0] - sign*vec[1] + sign*vec[2];  //{1,-1,1}
-    else if (dir == 3) return -1*sign*vec[0] + sign*vec[1] + sign*vec[2];   //{-1,1,1}
-    else if (dir == 4) return sign*vec[0] + sign*vec[1] + sign*vec[2];  //{1,1,1}
+    if (sign != -1 && sign != 1) throw std::invalid_argument("Invalid sign");
+    if (dir == 0) return sign*vec[0] + sign*vec[1] - sign*vec[2];   //{1,1,-1}
+    else if (dir == 1) return sign*vec[0] - sign*vec[1] + sign*vec[2];  //{1,-1,1}
+    else if (dir == 2) return -1*sign*vec[0] + sign*vec[1] + sign*vec[2];   //{-1,1,1}
+    else if (dir == 3) return sign*vec[0] + sign*vec[1] + sign*vec[2];  //{1,1,1}
     else throw std::invalid_argument("Invalid direction");
 }
 
@@ -228,11 +229,11 @@ int shortestPathLength(int v1, int v2, int L)
     return abs(dist); //can be -1 if both vertices have the same first 3 coords
 }
 
-vint shortestPath(int v1, int v2, &Lattice, lattice, int L)
+vint shortestPath(int v1, int v2, Lattice &lattice)
 {
     int originalVertex = v1;
-    coord c1 = indexToCoord(v1, L);
-    coord c2 = indexToCoord(v2, L);
+    coord c1 = indexToCoord(v1, lattice.L);
+    coord c2 = indexToCoord(v2, lattice.L);
     std::vector<float> diff = {c2.xi[0] - c1.xi[0] + 
                                     (static_cast<float>(c2.xi[3] - c1.xi[3])/2), 
                                c2.xi[1] - c1.xi[1] + 
@@ -240,7 +241,6 @@ vint shortestPath(int v1, int v2, &Lattice, lattice, int L)
                                c2.xi[2] - c1.xi[2] + 
                                     (static_cast<float>(c2.xi[3] - c1.xi[3])/2)};
     vint path = {};
-    //Need to add 1 to each or xy and -xy look the same
     int turnAround = 0;
     while (abs(diff[0]) + abs(diff[1]) + abs(diff[2]) > 0)
     {
@@ -292,7 +292,7 @@ vint shortestPath(int v1, int v2, &Lattice, lattice, int L)
         pint verts = lattice.edgeToVertices[bestEdge];
         if (verts.first == v1) v1 = verts.second;
         else v1 = verts.first;
-        c1 = indexToCoord(v1, L);
+        c1 = indexToCoord(v1, lattice.L);
         diff = {c2.xi[0] - c1.xi[0] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2), 
                 c2.xi[1] - c1.xi[1] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
                 c2.xi[2] - c1.xi[2] + (static_cast<float>(c2.xi[3] - c1.xi[3])/2)};
@@ -302,11 +302,11 @@ vint shortestPath(int v1, int v2, &Lattice, lattice, int L)
 }
 
 vint shortestDualPath(int cell1, int cell2, Lattice &lattice, 
-                                int L, int useOuter, int useInner)
+                                int useOuter, int useInner)
 {
     int originalCell = cell1;
-    coord cd1 = indexToCoord(cell1, L);
-    coord cd2 = indexToCoord(cell2, L);
+    coord cd1 = indexToCoord(cell1, lattice.L);
+    coord cd2 = indexToCoord(cell2, lattice.L);
     vint diff = {cd2.xi[0] - cd1.xi[0], 
                  cd2.xi[1] - cd1.xi[1],
                  cd2.xi[2] - cd1.xi[2]};
@@ -371,7 +371,7 @@ vint shortestDualPath(int cell1, int cell2, Lattice &lattice,
         cd1.xi[0] += dirs[bestDir][0];
         cd1.xi[1] += dirs[bestDir][1];
         cd1.xi[2] += dirs[bestDir][2];
-        cell1 = coordToIndex(cd1, L);
+        cell1 = coordToIndex(cd1, lattice.L);
         diff = {cd2.xi[0] - cd1.xi[0], 
                 cd2.xi[1] - cd1.xi[1], 
                 cd2.xi[2] - cd1.xi[2]};
@@ -381,35 +381,35 @@ vint shortestDualPath(int cell1, int cell2, Lattice &lattice,
 
 //This assumes no out of bounds errors
 void jumpCorrection(Lattice &lattice, std::mt19937& engine, 
-                        std::uniform_real_distribution<double>& dist, int L, int r)
+                        std::uniform_real_distribution<double>& dist, int r)
 {
-    for (int x = L-4; x > 0; x--)
+    for (int x = lattice.L-4; x > 0; x--)
     {
         for (int cycle = 0; cycle < 2; cycle++)
         {
-            for (int z = 0; z < L-2; z++)
+            for (int z = 0; z < lattice.L-2; z++)
             {
-                for (int y = 0; y < L-2; y++)
+                for (int y = 0; y < lattice.L-2; y++)
                 {
                     if (r == 1 && (x + y + z) % 2 == 1) continue;
                     else if (r == 2 && (x + y + z) % 2 == 0) continue;
-                    int v = x + y*L + z*L*L;
+                    int v = x + y*lattice.L + z*lattice.L*lattice.L;
                     if (cycle == 0)
                     {
                         vint faces(4);
                         vvint edges(4);
-                        faces[0] = findFace({v,neigh(neigh(v,xyz,1,L),xz,1,L)},
+                        faces[0] = findFace({v,neigh(neigh(v,xyz,1,lattice.L),xz,1,lattice.L)},
                                         lattice.vertexToFaces, lattice.faceToVertices);
-                        faces[1] = findFace({v,neigh(neigh(v,xyz,1,L),xy,1,L)},
+                        faces[1] = findFace({v,neigh(neigh(v,xyz,1,lattice.L),xy,1,lattice.L)},
                                         lattice.vertexToFaces, lattice.faceToVertices);
-                        faces[2] = findFace({v,neigh(neigh(v,xy,1,L),yz,-1,L)},
+                        faces[2] = findFace({v,neigh(neigh(v,xy,1,lattice.L),yz,-1,lattice.L)},
                                         lattice.vertexToFaces, lattice.faceToVertices);
-                        faces[3] = findFace({v,neigh(neigh(v,yz,-1,L),xz,1,L)},
+                        faces[3] = findFace({v,neigh(neigh(v,yz,-1,lattice.L),xz,1,lattice.L)},
                                         lattice.vertexToFaces, lattice.faceToVertices);
-                        edges[0] = {edgeIndex(v,xz,1,L), edgeIndex(v,xyz,1,L)};
-                        edges[1] = {edgeIndex(v,xyz,1,L), edgeIndex(v,xy,1,L)};
-                        edges[2] = {edgeIndex(v,xy,1,L), edgeIndex(v,yz,-1,L)};
-                        edges[3] = {edgeIndex(v,yz,-1,L), edgeIndex(v,xz,1,L)};
+                        edges[0] = {edgeIndex(v,xz,1,lattice.L), edgeIndex(v,xyz,1,lattice.L)};
+                        edges[1] = {edgeIndex(v,xyz,1,lattice.L), edgeIndex(v,xy,1,lattice.L)};
+                        edges[2] = {edgeIndex(v,xy,1,lattice.L), edgeIndex(v,yz,-1,lattice.L)};
+                        edges[3] = {edgeIndex(v,yz,-1,lattice.L), edgeIndex(v,xz,1,lattice.L)};
                         for (int i = 0; i < 4; i++)
                         {
                             if (lattice.qubitsZ[faces[i]] == 1) //assumes bounds check
@@ -454,12 +454,14 @@ void jumpCorrection(Lattice &lattice, std::mt19937& engine,
                     {
                         vint faces(2);
                         vvint edges(2);
-                        faces[0] = findFace({v,neigh(neigh(v,xyz,1,L),yz,1,L)},
+                        faces[0] = findFace({v,neigh(neigh(v,xyz,1,lattice.L),yz,1,lattice.L)},
                                         lattice.vertexToFaces, lattice.faceToVertices);
-                        faces[1] = findFace({v,neigh(neigh(v,xy,1,L),xz,-1,L)},
+                        faces[1] = findFace({v,neigh(neigh(v,xy,1,lattice.L),xz,-1,lattice.L)},
                                         lattice.vertexToFaces, lattice.faceToVertices);
-                        edges[0] = {edgeIndex(v,yz,1,L), edgeIndex(neigh(v,yz,1,L),xyz,1,L)};
-                        edges[1] = {edgeIndex(v,xz,-1,L), edgeIndex(neigh(v,xz,-1,L),xy,1,L)};
+                        edges[0] = {edgeIndex(v,yz,1,lattice.L), 
+                                        edgeIndex(neigh(v,yz,1,lattice.L),xyz,1,lattice.L)};
+                        edges[1] = {edgeIndex(v,xz,-1,lattice.L), 
+                                        edgeIndex(neigh(v,xz,-1,lattice.L),xy,1,lattice.L)};
                         for (int i = 0; i < 2; i++)
                         {
                             if (lattice.qubitsZ[faces[i]] == 1) //assumes bounds check 

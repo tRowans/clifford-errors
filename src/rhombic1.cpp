@@ -4,36 +4,36 @@ namespace rhombic{
 
 namespace r1 {
 
-void buildFaces(Lattice &lattice, int L)
+void buildFaces(Lattice &lattice)
 {
-    lattice.faceToVertices.assign(3 * L * L * L, {});
-    lattice.faceToEdges.assign(3 * L * L * L, {});
-    lattice.faceToCells.assign(3 * L * L * L, {});
-    lattice.vertexToFaces.assign(2 * L * L * L, {});
-    lattice.edgeToFaces.assign(8 * L * L * L, {});
+    lattice.faceToVertices.assign(3 * lattice.L * lattice.L * lattice.L, {});
+    lattice.faceToEdges.assign(3 * lattice.L * lattice.L * lattice.L, {});
+    lattice.faceToCells.assign(3 * lattice.L * lattice.L * lattice.L, {});
+    lattice.vertexToFaces.assign(2 * lattice.L * lattice.L * lattice.L, {});
+    lattice.edgeToFaces.assign(8 * lattice.L * lattice.L * lattice.L, {});
     int f = 0;
     // Loop through all w=0 vertices coordinates
-    for (int v = 0; v < L * L * L; ++v) 
+    for (int v = 0; v < lattice.L * lattice.L * lattice.L; ++v) 
     {
-        coord c = indexToCoord(v, L);
+        coord c = indexToCoord(v, lattice.L);
         // Only half of w=0 coordinates have vertices
         if ((c.xi[0] + c.xi[1] + c.xi[2]) % 2 == 1) continue;
         vint signs = {1, 1, 1, 1};
         vint signs2 = {1, 1};
         // Each face containing w=0 vertex is in two such vertices, so we add 6/12 per vertex to avoid double counting
-        addFace(v, f, {xyz, yz, yz, xyz}, {1, 2}, signs, signs2, lattice, L);
+        addFace(v, f, {xyz, yz, yz, xyz}, {1, 2}, signs, signs2, lattice);
         ++f;
-        addFace(v, f, {xyz, xz, xz, xyz}, {0, 2}, signs, signs2, lattice, L);
+        addFace(v, f, {xyz, xz, xz, xyz}, {0, 2}, signs, signs2, lattice);
         ++f;
-        addFace(v, f, {xyz, xy, xy, xyz}, {0, 1}, signs, signs2, lattice, L);
+        addFace(v, f, {xyz, xy, xy, xyz}, {0, 1}, signs, signs2, lattice);
         ++f;
         signs = {1, -1, -1, 1};
         signs2 = {1, -1};
-        addFace(v, f, {xy, xz, xz, xy}, {1, 2}, signs, signs2, lattice, L);
+        addFace(v, f, {xy, xz, xz, xy}, {1, 2}, signs, signs2, lattice);
         ++f;
-        addFace(v, f, {xy, yz, yz, xy}, {0, 2}, signs, signs2, lattice, L);
+        addFace(v, f, {xy, yz, yz, xy}, {0, 2}, signs, signs2, lattice);
         ++f;
-        addFace(v, f, {xz, yz, yz, xz}, {0, 1}, signs, signs2, lattice, L);
+        addFace(v, f, {xz, yz, yz, xz}, {0, 1}, signs, signs2, lattice);
         ++f;
     }
 }
@@ -98,12 +98,10 @@ void buildVertexToEdges(vvint &vertexToEdges, int L)
         std::sort(edges.begin(), edges.end());
         vertexToEdges[v] = edges;
     }
-    return vertexToEdges;
 }
 
 void buildEdgeToVertices(vpint &edgeToVertices, int L)
 {
-    vpint edgeToVertices;
     edgeToVertices.assign(8 * L * L * L, {});
     for (int e = 0; e < 8 * L * L * L; ++e)
     {
@@ -136,7 +134,6 @@ void buildEdgeToVertices(vpint &edgeToVertices, int L)
             edgeToVertices[e] = {v2, v1};
         }
     }
-    return edgeToVertices;
 }
 
 void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVertices, int L)
@@ -159,7 +156,7 @@ void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVer
         int yMinus = neighXYZ(v,1,-1,L);
         int zPlus = neighXYZ(v,2,1,L);
         int zMinus = neighXYZ(v,2,-1,L);
-
+    
         faces.push_back(findFace({xPlus,yPlus}, vertexToFaces, faceToVertices));   //0
         faces.push_back(findFace({xPlus,yMinus}, vertexToFaces, faceToVertices));  //1
         faces.push_back(findFace({xMinus,yPlus}, vertexToFaces, faceToVertices));  //2
@@ -177,7 +174,7 @@ void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVer
     }
 }
 
-void buildQubitIndices(Lattice &lattice, int L)
+void buildQubitIndices(vint &outerQubitIndices, vint&innerQubitIndices, int L)
 {
     for (int f = 0; f < 3 * L * L * L; f++)
     {
@@ -189,26 +186,26 @@ void buildQubitIndices(Lattice &lattice, int L)
         {
             if (dir == 0 && cd.xi[1] < (L-3) && cd.xi[2] < (L-3))
             {
-                if (cd.xi[0] == 0) lattice.outerQubitIndices.push_back(f);
-                else lattice.innerQubitIndices.push_back(f);
+                if (cd.xi[0] == 0) outerQubitIndices.push_back(f);
+                else innerQubitIndices.push_back(f);
             }
             else if (dir == 1 && cd.xi[0] < (L-4)
                               && cd.xi[1] > 0 && cd.xi[1] < (L-3)
-                              && cd.xi[2] < (L-3)) lattice.innerQubitIndices.push_back(f);
+                              && cd.xi[2] < (L-3)) innerQubitIndices.push_back(f);
             else if (dir == 2 && cd.xi[0] < (L-4)
                               && cd.xi[1] < (L-3) && cd.xi[2] > 0 
-                              && cd.xi[2] < (L-3)) lattice.innerQubitIndices.push_back(f);
+                              && cd.xi[2] < (L-3)) innerQubitIndices.push_back(f);
             else if (dir == 3 && cd.xi[1] < (L-3) && cd.xi[2] > 0)
             {
-               if (cd.xi[0] == 0) lattice.outerQubitIndices.push_back(f);
-               else lattice.innerQubitIndices.push_back(f);
+               if (cd.xi[0] == 0) outerQubitIndices.push_back(f);
+               else innerQubitIndices.push_back(f);
             }
             else if (dir == 4 && cd.xi[0] < (L-4)
                               && cd.xi[1] > 0 && cd.xi[1] < (L-3)
-                              && cd.xi[2] > 0) lattice.innerQubitIndices.push_back(f);
+                              && cd.xi[2] > 0) innerQubitIndices.push_back(f);
             else if (dir == 5 && cd.xi[0] < (L-4)
                               && cd.xi[1] > 0 && cd.xi[2] > 0 
-                              && cd.xi[2] < (L-3)) lattice.innerQubitIndices.push_back(f);
+                              && cd.xi[2] < (L-3)) innerQubitIndices.push_back(f);
         }
     }
 }
@@ -217,7 +214,6 @@ void buildQubitIndices(Lattice &lattice, int L)
 
 void buildXSyndIndices(vint &xSyndIndices, int L)
 {
-    vint xSyndIndices;
     for (int v = 0; v < L * L * L; v++)
     {
         coord cd = indexToCoord(v, L);
@@ -228,14 +224,12 @@ void buildXSyndIndices(vint &xSyndIndices, int L)
                 && cd.xi[2] < (L-2)) xSyndIndices.push_back(v); 
         }
     }
-    return xSyndIndices;
 }
 
 //Z boundary stabilisers on +y and -y boundaries
 
 void buildZSyndIndices(vint &zSyndIndices, int L)
 {
-    vint zSyndIndices;
     for (int v = 0; v < L * L * L; v++)
     {
         coord cd = indexToCoord(v, L);
@@ -273,42 +267,41 @@ void buildZSyndIndices(vint &zSyndIndices, int L)
             dirs[3] = 0;
             dirs[5] = 0;
         }
-        for (i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             if (dirs[i] == 1) zSyndIndices.push_back(edgeIndex(v,i,1,L));
             if (dirs[i+4] == 1) zSyndIndices.push_back(edgeIndex(v,i+4,-1,L));
         }
     }
     std::sort(zSyndIndices.begin(), zSyndIndices.end());
-    return zSyndIndices;
 }
 
-void buildLogicals(Lattice &lattice, int L)
+void buildLogicals(Lattice &lattice)
 {
     //Do these together because the loops are the same 
-    for (vint &qubitIndices : {lattice.outerQubitIndices, lattice.innerQubitIndices})
+    for (const vint &qubitIndices : {lattice.outerQubitIndices, lattice.innerQubitIndices})
     {
         for (int q : qubitIndices)
         {
-            int vertices = lattice.faceToVertices[q];
-            coord cd1 = indexToCoord(vertices[0], L);
-            coord cd2 = indexToCoord(vertices[1], L);
+            vint vertices = lattice.faceToVertices[q];
+            coord cd1 = indexToCoord(vertices[0], lattice.L);
+            coord cd2 = indexToCoord(vertices[1], lattice.L);
             if (cd1.xi[1] == 0 || cd2.xi[1] == 0) lattice.xLogical.push_back(q);
             if (cd1.xi[0] == 0 && cd1.xi[2] == 0)lattice.zLogical.push_back(q);
         }
     }
 }
 
-void buildLattice(Lattice &lattice, int L)
+void buildLattice(Lattice &lattice)
 {
-    buildFaces(lattice, L);
-    buildVertexToEdges(lattice.vertexToEdges, L);
-    buildEdgeToVertices(lattice.edgeToVertices, L);
-    buildCellToFaces(lattice.cellToFaces, lattice.vertexToFaces, lattice.faceToVertices, L);
-    buildQubitIndices(lattice, L);
-    buildXSyndIndices(lattice.xSyndIndices, L);
-    buildZSyndIndices(lattice.zSyndIndices, L);
-    buildLogicals(lattice, L);  //this needs to come after index building functions
+    buildFaces(lattice);
+    buildVertexToEdges(lattice.vertexToEdges, lattice.L);
+    buildEdgeToVertices(lattice.edgeToVertices, lattice.L);
+    buildCellToFaces(lattice.cellToFaces, lattice.vertexToFaces, lattice.faceToVertices, lattice.L);
+    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.L);
+    buildXSyndIndices(lattice.xSyndIndices, lattice.L);
+    buildZSyndIndices(lattice.zSyndIndices, lattice.L);
+    buildLogicals(lattice);  //this needs to come after index building functions
                  
 }
 

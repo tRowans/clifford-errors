@@ -162,25 +162,67 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-tst/CMakeFiles/RunTests.dir/rule:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/RunTests.dir/rule
-.PHONY : tst/CMakeFiles/RunTests.dir/rule
+tst/CMakeFiles/LatticeTests.dir/rule:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/LatticeTests.dir/rule
+.PHONY : tst/CMakeFiles/LatticeTests.dir/rule
 
 # Convenience name for target.
-RunTests: tst/CMakeFiles/RunTests.dir/rule
-.PHONY : RunTests
+LatticeTests: tst/CMakeFiles/LatticeTests.dir/rule
+.PHONY : LatticeTests
 
 # fast build rule for target.
-RunTests/fast:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/build
-.PHONY : RunTests/fast
+LatticeTests/fast:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/LatticeTests.dir/build.make tst/CMakeFiles/LatticeTests.dir/build
+.PHONY : LatticeTests/fast
+
+# Convenience name for target.
+tst/CMakeFiles/CubicTests.dir/rule:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/CubicTests.dir/rule
+.PHONY : tst/CMakeFiles/CubicTests.dir/rule
+
+# Convenience name for target.
+CubicTests: tst/CMakeFiles/CubicTests.dir/rule
+.PHONY : CubicTests
+
+# fast build rule for target.
+CubicTests/fast:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/build
+.PHONY : CubicTests/fast
+
+# Convenience name for target.
+tst/CMakeFiles/RhombicTests.dir/rule:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/RhombicTests.dir/rule
+.PHONY : tst/CMakeFiles/RhombicTests.dir/rule
+
+# Convenience name for target.
+RhombicTests: tst/CMakeFiles/RhombicTests.dir/rule
+.PHONY : RhombicTests
+
+# fast build rule for target.
+RhombicTests/fast:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/build
+.PHONY : RhombicTests/fast
+
+# Convenience name for target.
+tst/CMakeFiles/CZTests.dir/rule:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/CZTests.dir/rule
+.PHONY : tst/CMakeFiles/CZTests.dir/rule
+
+# Convenience name for target.
+CZTests: tst/CMakeFiles/CZTests.dir/rule
+.PHONY : CZTests
+
+# fast build rule for target.
+CZTests/fast:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CZTests.dir/build.make tst/CMakeFiles/CZTests.dir/build
+.PHONY : CZTests/fast
 
 cubic-test.o: cubic-test.cpp.o
 .PHONY : cubic-test.o
 
 # target to build an object file
 cubic-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/cubic-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/cubic-test.cpp.o
 .PHONY : cubic-test.cpp.o
 
 cubic-test.i: cubic-test.cpp.i
@@ -188,7 +230,7 @@ cubic-test.i: cubic-test.cpp.i
 
 # target to preprocess a source file
 cubic-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/cubic-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/cubic-test.cpp.i
 .PHONY : cubic-test.cpp.i
 
 cubic-test.s: cubic-test.cpp.s
@@ -196,7 +238,7 @@ cubic-test.s: cubic-test.cpp.s
 
 # target to generate assembly for a file
 cubic-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/cubic-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/cubic-test.cpp.s
 .PHONY : cubic-test.cpp.s
 
 czErrorGen-test.o: czErrorGen-test.cpp.o
@@ -204,7 +246,7 @@ czErrorGen-test.o: czErrorGen-test.cpp.o
 
 # target to build an object file
 czErrorGen-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/czErrorGen-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CZTests.dir/build.make tst/CMakeFiles/CZTests.dir/czErrorGen-test.cpp.o
 .PHONY : czErrorGen-test.cpp.o
 
 czErrorGen-test.i: czErrorGen-test.cpp.i
@@ -212,7 +254,7 @@ czErrorGen-test.i: czErrorGen-test.cpp.i
 
 # target to preprocess a source file
 czErrorGen-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/czErrorGen-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CZTests.dir/build.make tst/CMakeFiles/CZTests.dir/czErrorGen-test.cpp.i
 .PHONY : czErrorGen-test.cpp.i
 
 czErrorGen-test.s: czErrorGen-test.cpp.s
@@ -220,7 +262,7 @@ czErrorGen-test.s: czErrorGen-test.cpp.s
 
 # target to generate assembly for a file
 czErrorGen-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/czErrorGen-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CZTests.dir/build.make tst/CMakeFiles/CZTests.dir/czErrorGen-test.cpp.s
 .PHONY : czErrorGen-test.cpp.s
 
 decoderCubic-test.o: decoderCubic-test.cpp.o
@@ -228,7 +270,7 @@ decoderCubic-test.o: decoderCubic-test.cpp.o
 
 # target to build an object file
 decoderCubic-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderCubic-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/decoderCubic-test.cpp.o
 .PHONY : decoderCubic-test.cpp.o
 
 decoderCubic-test.i: decoderCubic-test.cpp.i
@@ -236,7 +278,7 @@ decoderCubic-test.i: decoderCubic-test.cpp.i
 
 # target to preprocess a source file
 decoderCubic-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderCubic-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/decoderCubic-test.cpp.i
 .PHONY : decoderCubic-test.cpp.i
 
 decoderCubic-test.s: decoderCubic-test.cpp.s
@@ -244,7 +286,7 @@ decoderCubic-test.s: decoderCubic-test.cpp.s
 
 # target to generate assembly for a file
 decoderCubic-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderCubic-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/decoderCubic-test.cpp.s
 .PHONY : decoderCubic-test.cpp.s
 
 decoderRhombic1-test.o: decoderRhombic1-test.cpp.o
@@ -252,7 +294,7 @@ decoderRhombic1-test.o: decoderRhombic1-test.cpp.o
 
 # target to build an object file
 decoderRhombic1-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderRhombic1-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/decoderRhombic1-test.cpp.o
 .PHONY : decoderRhombic1-test.cpp.o
 
 decoderRhombic1-test.i: decoderRhombic1-test.cpp.i
@@ -260,7 +302,7 @@ decoderRhombic1-test.i: decoderRhombic1-test.cpp.i
 
 # target to preprocess a source file
 decoderRhombic1-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderRhombic1-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/decoderRhombic1-test.cpp.i
 .PHONY : decoderRhombic1-test.cpp.i
 
 decoderRhombic1-test.s: decoderRhombic1-test.cpp.s
@@ -268,7 +310,7 @@ decoderRhombic1-test.s: decoderRhombic1-test.cpp.s
 
 # target to generate assembly for a file
 decoderRhombic1-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderRhombic1-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/decoderRhombic1-test.cpp.s
 .PHONY : decoderRhombic1-test.cpp.s
 
 decoderRhombic2-test.o: decoderRhombic2-test.cpp.o
@@ -276,7 +318,7 @@ decoderRhombic2-test.o: decoderRhombic2-test.cpp.o
 
 # target to build an object file
 decoderRhombic2-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderRhombic2-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/decoderRhombic2-test.cpp.o
 .PHONY : decoderRhombic2-test.cpp.o
 
 decoderRhombic2-test.i: decoderRhombic2-test.cpp.i
@@ -284,7 +326,7 @@ decoderRhombic2-test.i: decoderRhombic2-test.cpp.i
 
 # target to preprocess a source file
 decoderRhombic2-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderRhombic2-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/decoderRhombic2-test.cpp.i
 .PHONY : decoderRhombic2-test.cpp.i
 
 decoderRhombic2-test.s: decoderRhombic2-test.cpp.s
@@ -292,15 +334,39 @@ decoderRhombic2-test.s: decoderRhombic2-test.cpp.s
 
 # target to generate assembly for a file
 decoderRhombic2-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/decoderRhombic2-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/decoderRhombic2-test.cpp.s
 .PHONY : decoderRhombic2-test.cpp.s
+
+lattice-test.o: lattice-test.cpp.o
+.PHONY : lattice-test.o
+
+# target to build an object file
+lattice-test.cpp.o:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/LatticeTests.dir/build.make tst/CMakeFiles/LatticeTests.dir/lattice-test.cpp.o
+.PHONY : lattice-test.cpp.o
+
+lattice-test.i: lattice-test.cpp.i
+.PHONY : lattice-test.i
+
+# target to preprocess a source file
+lattice-test.cpp.i:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/LatticeTests.dir/build.make tst/CMakeFiles/LatticeTests.dir/lattice-test.cpp.i
+.PHONY : lattice-test.cpp.i
+
+lattice-test.s: lattice-test.cpp.s
+.PHONY : lattice-test.s
+
+# target to generate assembly for a file
+lattice-test.cpp.s:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/LatticeTests.dir/build.make tst/CMakeFiles/LatticeTests.dir/lattice-test.cpp.s
+.PHONY : lattice-test.cpp.s
 
 rhombic1-test.o: rhombic1-test.cpp.o
 .PHONY : rhombic1-test.o
 
 # target to build an object file
 rhombic1-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombic1-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombic1-test.cpp.o
 .PHONY : rhombic1-test.cpp.o
 
 rhombic1-test.i: rhombic1-test.cpp.i
@@ -308,7 +374,7 @@ rhombic1-test.i: rhombic1-test.cpp.i
 
 # target to preprocess a source file
 rhombic1-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombic1-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombic1-test.cpp.i
 .PHONY : rhombic1-test.cpp.i
 
 rhombic1-test.s: rhombic1-test.cpp.s
@@ -316,7 +382,7 @@ rhombic1-test.s: rhombic1-test.cpp.s
 
 # target to generate assembly for a file
 rhombic1-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombic1-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombic1-test.cpp.s
 .PHONY : rhombic1-test.cpp.s
 
 rhombic2-test.o: rhombic2-test.cpp.o
@@ -324,7 +390,7 @@ rhombic2-test.o: rhombic2-test.cpp.o
 
 # target to build an object file
 rhombic2-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombic2-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombic2-test.cpp.o
 .PHONY : rhombic2-test.cpp.o
 
 rhombic2-test.i: rhombic2-test.cpp.i
@@ -332,7 +398,7 @@ rhombic2-test.i: rhombic2-test.cpp.i
 
 # target to preprocess a source file
 rhombic2-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombic2-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombic2-test.cpp.i
 .PHONY : rhombic2-test.cpp.i
 
 rhombic2-test.s: rhombic2-test.cpp.s
@@ -340,7 +406,7 @@ rhombic2-test.s: rhombic2-test.cpp.s
 
 # target to generate assembly for a file
 rhombic2-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombic2-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombic2-test.cpp.s
 .PHONY : rhombic2-test.cpp.s
 
 rhombicGeneric-test.o: rhombicGeneric-test.cpp.o
@@ -348,7 +414,7 @@ rhombicGeneric-test.o: rhombicGeneric-test.cpp.o
 
 # target to build an object file
 rhombicGeneric-test.cpp.o:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombicGeneric-test.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombicGeneric-test.cpp.o
 .PHONY : rhombicGeneric-test.cpp.o
 
 rhombicGeneric-test.i: rhombicGeneric-test.cpp.i
@@ -356,7 +422,7 @@ rhombicGeneric-test.i: rhombicGeneric-test.cpp.i
 
 # target to preprocess a source file
 rhombicGeneric-test.cpp.i:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombicGeneric-test.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombicGeneric-test.cpp.i
 .PHONY : rhombicGeneric-test.cpp.i
 
 rhombicGeneric-test.s: rhombicGeneric-test.cpp.s
@@ -364,7 +430,7 @@ rhombicGeneric-test.s: rhombicGeneric-test.cpp.s
 
 # target to generate assembly for a file
 rhombicGeneric-test.cpp.s:
-	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RunTests.dir/build.make tst/CMakeFiles/RunTests.dir/rhombicGeneric-test.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/rhombicGeneric-test.cpp.s
 .PHONY : rhombicGeneric-test.cpp.s
 
 # Help Target
@@ -379,7 +445,10 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... RunTests"
+	@echo "... CZTests"
+	@echo "... CubicTests"
+	@echo "... LatticeTests"
+	@echo "... RhombicTests"
 	@echo "... cubic-test.o"
 	@echo "... cubic-test.i"
 	@echo "... cubic-test.s"
@@ -395,6 +464,9 @@ help:
 	@echo "... decoderRhombic2-test.o"
 	@echo "... decoderRhombic2-test.i"
 	@echo "... decoderRhombic2-test.s"
+	@echo "... lattice-test.o"
+	@echo "... lattice-test.i"
+	@echo "... lattice-test.s"
 	@echo "... rhombic1-test.o"
 	@echo "... rhombic1-test.i"
 	@echo "... rhombic1-test.s"

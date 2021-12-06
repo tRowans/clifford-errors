@@ -176,6 +176,20 @@ czErrors/fast:
 .PHONY : czErrors/fast
 
 # Convenience name for target.
+src/CMakeFiles/lattice_lib.dir/rule:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/lattice_lib.dir/rule
+.PHONY : src/CMakeFiles/lattice_lib.dir/rule
+
+# Convenience name for target.
+lattice_lib: src/CMakeFiles/lattice_lib.dir/rule
+.PHONY : lattice_lib
+
+# fast build rule for target.
+lattice_lib/fast:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/build
+.PHONY : lattice_lib/fast
+
+# Convenience name for target.
 src/CMakeFiles/cubic_lib.dir/rule:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/cubic_lib.dir/rule
 .PHONY : src/CMakeFiles/cubic_lib.dir/rule
@@ -223,6 +237,7 @@ cubic.o: cubic.cpp.o
 # target to build an object file
 cubic.cpp.o:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/cubic.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/cubic.cpp.o
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cubic_lib.dir/build.make src/CMakeFiles/cubic_lib.dir/cubic.cpp.o
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/cubic.cpp.o
 .PHONY : cubic.cpp.o
@@ -233,6 +248,7 @@ cubic.i: cubic.cpp.i
 # target to preprocess a source file
 cubic.cpp.i:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/cubic.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/cubic.cpp.i
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cubic_lib.dir/build.make src/CMakeFiles/cubic_lib.dir/cubic.cpp.i
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/cubic.cpp.i
 .PHONY : cubic.cpp.i
@@ -243,6 +259,7 @@ cubic.s: cubic.cpp.s
 # target to generate assembly for a file
 cubic.cpp.s:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/cubic.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/cubic.cpp.s
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cubic_lib.dir/build.make src/CMakeFiles/cubic_lib.dir/cubic.cpp.s
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/cubic.cpp.s
 .PHONY : cubic.cpp.s
@@ -370,6 +387,7 @@ lattice.o: lattice.cpp.o
 # target to build an object file
 lattice.cpp.o:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/lattice.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/lattice.cpp.o
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cubic_lib.dir/build.make src/CMakeFiles/cubic_lib.dir/lattice.cpp.o
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/rhombic_lib.dir/build.make src/CMakeFiles/rhombic_lib.dir/lattice.cpp.o
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/lattice.cpp.o
@@ -381,6 +399,7 @@ lattice.i: lattice.cpp.i
 # target to preprocess a source file
 lattice.cpp.i:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/lattice.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/lattice.cpp.i
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cubic_lib.dir/build.make src/CMakeFiles/cubic_lib.dir/lattice.cpp.i
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/rhombic_lib.dir/build.make src/CMakeFiles/rhombic_lib.dir/lattice.cpp.i
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/lattice.cpp.i
@@ -392,6 +411,7 @@ lattice.s: lattice.cpp.s
 # target to generate assembly for a file
 lattice.cpp.s:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/lattice.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/lattice.cpp.s
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cubic_lib.dir/build.make src/CMakeFiles/cubic_lib.dir/lattice.cpp.s
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/rhombic_lib.dir/build.make src/CMakeFiles/rhombic_lib.dir/lattice.cpp.s
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/lattice.cpp.s
@@ -526,6 +546,7 @@ help:
 	@echo "... cubic_lib"
 	@echo "... czErrors"
 	@echo "... cz_lib"
+	@echo "... lattice_lib"
 	@echo "... rhombic_lib"
 	@echo "... cubic.o"
 	@echo "... cubic.i"

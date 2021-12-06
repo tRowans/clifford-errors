@@ -3,17 +3,17 @@
 
 //------------------------------------------------------------
 
-TEST(buildFacesTest, CorrectOutput)
+TEST(buildFacesTestR2, CorrectOutput)
 {   
-    Lattice lattice;
-    rhombic::r2::buildFaces(lattice, 6);
+    Lattice lattice(6);
+    rhombic::r2::buildFaces(lattice);
 
     vint vertices = {1, 38, 217, 247};
     vint edges = {5, 7, 868, 991};
     pint cells = {2, 37};
 
-    EXPECT_EQ(lattice.faceToVertices[1], vertices1);
-    EXPECT_EQ(lattice.faceToEdges[1], edges1);
+    EXPECT_EQ(lattice.faceToVertices[1], vertices);
+    EXPECT_EQ(lattice.faceToEdges[1], edges);
     EXPECT_EQ(lattice.faceToCells[1], cells);
     EXPECT_EQ(lattice.vertexToFaces[1][1], 1);
     EXPECT_EQ(lattice.vertexToFaces[38][0], 1);
@@ -27,20 +27,20 @@ TEST(buildFacesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(faceToBaseVertexTest, CorrectOutput)
+TEST(faceToBaseVertexTestR2, CorrectOutput)
 {
     //Matching indices
-    EXPECT_EQ(faceToBaseVertex(18, 6), 6);
-    EXPECT_EQ(faceToBaseVertex(22, 6), 6);
+    EXPECT_EQ(rhombic::r2::faceToBaseVertex(18, 6), 6);
+    EXPECT_EQ(rhombic::r2::faceToBaseVertex(22, 6), 6);
 
     //Non-matching indices
-    EXPECT_EQ(faceToBaseVertex(0, 6), 1);
-    EXPECT_EQ(faceToBaseVertex(4, 6), 1);
+    EXPECT_EQ(rhombic::r2::faceToBaseVertex(0, 6), 1);
+    EXPECT_EQ(rhombic::r2::faceToBaseVertex(4, 6), 1);
 }
 
 //------------------------------------------------------------
     
-TEST(buildVertexToEdgesTest, CorrectOutput)
+TEST(buildVertexToEdgesTestR2, CorrectOutput)
 {
     vvint vertexToEdges;
     rhombic::r2::buildVertexToEdges(vertexToEdges, 6);
@@ -58,9 +58,10 @@ TEST(buildVertexToEdgesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildEdgeToVerticesTest, CorrectOutput)
+TEST(buildEdgeToVerticesTestR2, CorrectOutput)
 {
-    vpint edgeToVertices = rhombic::r2::buildEdgeToVertices(6);
+    vpint edgeToVertices;
+    rhombic::r2::buildEdgeToVertices(edgeToVertices, 6);
 
     std::pair<int, int> vertices1 = {43, 223};
     std::pair<int, int> vertices2 = {43, 253};
@@ -75,48 +76,50 @@ TEST(buildEdgeToVerticesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildCellToFacesTest, CorrectOutput)
+TEST(buildCellToFacesTestR2, CorrectOutput)
 {
-    Lattice lattice; 
-    rhombic::r2::buildFaces(lattice, 6);
-    vvint cellToFaces = rhombic::r2::buildCellToFaces(vertexToFaces, faceToVertices, 6);
+    Lattice lattice(6); 
+    rhombic::r2::buildFaces(lattice);
+    rhombic::r2::buildCellToFaces(lattice.cellToFaces, 
+            lattice.vertexToFaces, lattice.faceToVertices, 6);
 
-    EXPECT_EQ(cellToFaces[44][0], 155);
-    EXPECT_EQ(cellToFaces[44][1], 116);
-    EXPECT_EQ(cellToFaces[44][2], 122);
-    EXPECT_EQ(cellToFaces[44][3], 125);
-    EXPECT_EQ(cellToFaces[44][4], 244);
-    EXPECT_EQ(cellToFaces[44][5], 121);
-    EXPECT_EQ(cellToFaces[44][6], 243);
-    EXPECT_EQ(cellToFaces[44][7], 114);
-    EXPECT_EQ(cellToFaces[44][8], 25);
-    EXPECT_EQ(cellToFaces[44][9], 124);
-    EXPECT_EQ(cellToFaces[44][10], 24);
-    EXPECT_EQ(cellToFaces[44][11], 117);
+    EXPECT_EQ(lattice.cellToFaces[44][0], 155);
+    EXPECT_EQ(lattice.cellToFaces[44][1], 116);
+    EXPECT_EQ(lattice.cellToFaces[44][2], 122);
+    EXPECT_EQ(lattice.cellToFaces[44][3], 125);
+    EXPECT_EQ(lattice.cellToFaces[44][4], 244);
+    EXPECT_EQ(lattice.cellToFaces[44][5], 121);
+    EXPECT_EQ(lattice.cellToFaces[44][6], 243);
+    EXPECT_EQ(lattice.cellToFaces[44][7], 114);
+    EXPECT_EQ(lattice.cellToFaces[44][8], 25);
+    EXPECT_EQ(lattice.cellToFaces[44][9], 124);
+    EXPECT_EQ(lattice.cellToFaces[44][10], 24);
+    EXPECT_EQ(lattice.cellToFaces[44][11], 117);
 }
 
 
 //------------------------------------------------------------
 
-TEST(buildQubitIndicesTest, CorrectOutput)
+TEST(buildQubitIndicesTestR2, CorrectOutput)
 {
-    Lattice lattice;
-    rhombic::r2::buildQubitIndices(lattice, 6);
+    vint outerQubitIndices;
+    vint innerQubitIndices;
+    rhombic::r2::buildQubitIndices(outerQubitIndices, innerQubitIndices, 6);
 
-    vint outerQubitIndices = {18, 108, 111, 144, 147, 234, 237, 327, 363};
-    vint innerQubitIndices = {0, 19, 24, 36, 37, 110, 114, 117, 126, 127, 
+    vint outerQubitIndicesExpected = {18, 108, 111, 144, 147, 234, 237, 327, 363};
+    vint innerQubitIndicesExpected = {0, 19, 24, 36, 37, 110, 114, 117, 126, 127, 
                               128, 129, 130, 131, 145, 146, 148, 149, 150, 
                               153, 167, 216, 218, 219, 235, 236, 238, 239, 
                               240, 243, 252, 253, 254, 255, 256, 257, 275, 
                               333, 345, 346, 364, 369};
 
-    EXPECT_EQ(lattice.outerQubitIndices, outerQubitIndicesExpected);
-    EXPECT_EQ(lattice.innerQubitIndices, innerQubitIndicesExpected);
+    EXPECT_EQ(outerQubitIndices, outerQubitIndicesExpected);
+    EXPECT_EQ(innerQubitIndices, innerQubitIndicesExpected);
 }
 
 //------------------------------------------------------------
 
-TEST(buildXSyndIndicesTest, CorrectOutput)
+TEST(buildXSyndIndicesTestR2, CorrectOutput)
 {
     vint xSyndIndices = {};
     rhombic::r2::buildXSyndIndices(xSyndIndices, 6);
@@ -127,7 +130,7 @@ TEST(buildXSyndIndicesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildZSyndIndicesTest, CorrectOutput)
+TEST(buildZSyndIndicesTestR2, CorrectOutput)
 {
     vint zSyndIndices = {};
     rhombic::r2::buildZSyndIndices(zSyndIndices, 6);
@@ -143,10 +146,10 @@ TEST(buildZSyndIndicesTest, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildLogicalsTest, CorrectOutput)
+TEST(buildLogicalsTestR2, CorrectOutput)
 {
-    Lattice lattice;
-    buildLogicals(lattice, 6);
+    Lattice lattice(6);
+    rhombic::r2::buildLogicals(lattice);
 
     vint xLogicalExpected = {0, 18, 19, 24, 36, 40, 111, 117, 129, 130, 147, 148, 153};
     vint zLogicalExpected = {108, 111, 327};

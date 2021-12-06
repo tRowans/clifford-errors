@@ -19,6 +19,8 @@ typedef std::pair<std::pair<int,int>,std::pair<int,int>> ppint;
 class Lattice
 {
     public:
+        int L;
+
         vvint faceToVertices;   
         vvint vertexToFaces;    //This one not used in cubic lattice
         vvint faceToEdges;
@@ -42,7 +44,7 @@ class Lattice
         vint syndromeZ;   //Z stabiliser syndromes
         vint defects;
 
-        Lattice(L)
+        Lattice(int L)
         {
             qubitsX = vint(3*L*L*L, 0);
             qubitsZ = vint(3*L*L*L, 0);
@@ -60,7 +62,7 @@ class Lattice
                                 std::uniform_real_distribution<double>& dist, char pauli);
         void applyZStab(int edge);
         void zStabPattern(std::mt19937& engine, 
-                            std::uniform_real_distribution<double>& dist)
+                            std::uniform_real_distribution<double>& dist);
         void calcSynd(char pauli, int useOuter, int useInner);
         void findDefects();
         void checkInBounds();

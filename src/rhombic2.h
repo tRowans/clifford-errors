@@ -7,7 +7,7 @@ namespace rhombic {
 
 namespace r2 {
 
-void buildFaces(Lattice &lattice, int L);
+void buildFaces(Lattice &lattice);
 
 int faceToBaseVertex(int face, int L);
 
@@ -17,13 +17,15 @@ void buildEdgeToVertices(vpint &edgeToVertices, int L);
 
 void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVertices, int L);
 
-void buildQubitIndices(Lattice &lattice, int L);
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L);
 
 void buildXSyndIndices(vint &xSyndIndices, int L);
 
 void buildZSyndIndices(vint &zSyndIndices, int L);
 
-void buildLogicals(Lattice &lattice, int L);
+void buildLogicals(Lattice &lattice);
+
+void buildLattice(Lattice &lattice);
 
 }
 

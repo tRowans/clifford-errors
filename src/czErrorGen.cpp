@@ -1,24 +1,27 @@
 #include "czErrorGen.h"
 
-std::map<pint,ppint> buildOverlappingFaces(std::vector<Lattice> &lattices, int L)
+std::map<pint,ppint> buildOverlappingFaces(std::vector<Lattice> &lattices)
 {
     std::map<pint,ppint> overlappingFaces;
-    int fC, fR1, fR2
-    for (int v = 0; v < L*L*L; v++)
+    int fC, fR1, fR2;
+    for (int v = 0; v < lattices[0].L*lattices[0].L*lattices[0].L; v++)
     {
         for (int i = 0; i < 3; i++)
         fC = 3*v + i;
-        vint verts = lattices[0].faceToVertices[fC];
-        fR1 = findFace({verts[0],verts[3]}, 
+        vint verts03 = {lattices[0].faceToVertices[fC][0], 
+                           lattices[0].faceToVertices[fC][3]};
+        vint verts12 = {lattices[0].faceToVertices[fC][1], 
+                           lattices[0].faceToVertices[fC][2]};
+        fR1 = rhombic::findFace(verts03, 
                 lattices[1].vertexToFaces, lattices[1].faceToVertices);
         if (fR1 == -1)
         {
-            fR1 = findFace({verts[1],verts[2]}, 
+            fR1 = rhombic::findFace(verts12, 
                     lattices[1].vertexToFaces, lattices[1].faceToVertices);
-            fR2 = findFace({verts[0],verts[3]}, 
+            fR2 = rhombic::findFace(verts03, 
                     lattices[2].vertexToFaces, lattices[2].faceToVertices);
         }
-        else fR2 = findFace({verts[1],verts[2]}, 
+        else fR2 = rhombic::findFace(verts12, 
                 lattices[2].vertexToFaces, lattices[2].faceToVertices);
         overlappingFaces[{0,fC}] = {{1,fR1}, {2,fR2}};
         overlappingFaces[{1,fR1}] = {{0,fC}, {2,fR2}};
@@ -30,13 +33,13 @@ std::map<pint,ppint> buildOverlappingFaces(std::vector<Lattice> &lattices, int L
 vvint getSyndromeVertices(std::vector<Lattice> &lattices)
 {
     std::vector<std::set<int>> syndromeVerticesSets = {{},{},{}};
-    for (Lattice &l : lattices)
+    for (int i = 0; i < 3; i++)
     {
-        for (int e = 0; e < 8*L*L*L; e++)
+        for (int e = 0; e < 8*lattices[i].L*lattices[i].L*lattices[i].L; e++)
         {
-            if (l.syndromesZ[e] == 1)
+            if (lattices[i].syndromeZ[e] == 1)
             {
-                pint vertices = l.edgeToVertices[e];
+                pint vertices = lattices[i].edgeToVertices[e];
                 syndromeVerticesSets[i].insert(vertices.first);
                 syndromeVerticesSets[i].insert(vertices.second);
             }
@@ -74,7 +77,7 @@ int latticeWhereCell(int v, int latticeA, int L)
     return latticeC;
 }
 
-void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingFaces, int L, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, int link)
+void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingFaces, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, int link)
 {
     //membrane boundary errors
     vvint syndromeVertices = getSyndromeVertices(lattices);
@@ -82,15 +85,15 @@ void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingF
     {
         for (int v : syndromeVertices[i])
         {
-            pint cell = {latticeWhereCell(v,i,L), v};
+            pint cell = {latticeWhereCell(v,i,lattices[i].L), v};
             if (dist(engine) < 0.5)
             {
                 vint faces = lattices[cell.first].cellToFaces[cell.second];
                 for (int face : faces)
                 {
                     auto overlap = overlappingFaces[{cell.first,face}];
-                    pint &xFace;
-                    pint &zFace;
+                    pint xFace;
+                    pint zFace;
                     if (overlap.first.first == i)
                     {
                         xFace = overlap.first;
@@ -114,7 +117,7 @@ void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingF
     //linking charge
     if (link)
     {
-        for (int fC = 0; fC < 3*L*L*L; fC++)
+        for (int fC = 0; fC < 3*lattices[0].L*lattices[0].L*lattices[0].L; fC++)
         {
             auto overlap = overlappingFaces[{0,fC}];
             int fR1 = overlap.first.second;
