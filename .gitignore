@@ -33,3 +33,9 @@
 
 # Blender models
 *.blend
+
+# Build
+build/
+
+# Visual studio code
+.vscode/
