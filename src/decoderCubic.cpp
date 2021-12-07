@@ -151,6 +151,26 @@ vint shortestPathToZBoundary(int cell, int L)
 //||LOOP DECODER GOES HERE||
 //!!!--------------------!!!
 
+void bposd(bp_osd &decoderHz, mod2sparse *hz)
+{
+    int m = mod2sparse_rows(hz);
+    int n = mod2sparse_rows(hz);
+    char *synd = new char[m]();
+    char *corr;
+
+    // Todo: convert syndrome into BP-OSD format
+    
+    corr = decoderHz.bp_osd_decode(synd);
+    
+    // Todo: convert correction 
+
+    // Cleanup
+    delete[] synd;
+    delete[] corr;
+
+    // Return converted correction?
+}
+
 vpint mwpm(vint &defects, int L, int dual, int yOnly)
 {
     vint edges;

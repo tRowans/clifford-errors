@@ -18,7 +18,7 @@ vvint listToBin(vvint &in)
     }
     for (auto const &vec : in)
     {
-        vint row(maxIndex, 0);
+        vint row(maxIndex + 1, 0);
         for (auto const &index : vec)
         {
             row[index] = 1;
@@ -36,7 +36,7 @@ void saveHz(Lattice &lat, int L, std::string file) // Save in numpy readable for
 
     std::ofstream out(file);
     std::streambuf *coutbuf = std::cout.rdbuf(); // Save old buffer
-    std::cout.rdbuf(out.rdbuf());                // Redirect std::cout to out
+    std::cout.rdbuf(out.rdbuf()); // Redirect std::cout to out
 
     vvint hz;
     for (auto const &e : lat.zSyndIndices)
@@ -67,6 +67,7 @@ void saveHz(Lattice &lat, int L, std::string file) // Save in numpy readable for
         }
         std::cout << std::endl;
     }
+    std::cout.rdbuf(coutbuf);
 }
 
 void saveHzLs(vint Ls)
@@ -77,14 +78,15 @@ void saveHzLs(vint Ls)
         Lattice latRhombic1 = Lattice(L);
         Lattice latRhombic2 = Lattice(L);
         cubic::buildLattice(latCubic);
-        rhombic::r1::buildLattice(latRhombic1);
-        rhombic::r2::buildLattice(latRhombic2);
+        // rhombic::r1::buildLattice(latRhombic1);
+        // rhombic::r2::buildLattice(latRhombic2);
 
-        std::string file = "~/dev/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".txt";
+        std::string file = "/home/mvasmer/dev/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".txt";
+        // std::string file = "/mnt/c/Users/mvasmer/Downloads/cubic_L=" + std::to_string(L) + ".txt";
         saveHz(latCubic, L, file);
-        file = "~/dev/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".txt";
-        saveHz(latRhombic1, L, file);
-        file = "~/dev/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".txt";
-        saveHz(latRhombic2, L, file);
+        // file = "~/dev/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".txt";
+        // saveHz(latRhombic1, L, file);
+        // file = "~/dev/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".txt";
+        // saveHz(latRhombic2, L, file);
     }
 }

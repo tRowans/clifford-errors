@@ -3,10 +3,11 @@
 #include "decoderRhombic2.h"
 #include "czErrorGen.h"
 #include "vis.h"
+#include "saveHz.h"
 
 int main(int argc, char *argv[])
 {
-    if (argc != 8)
+    if (argc != 11)
     {
         std::cout << "Invalid number of arguments." << '\n';
         return 1;
@@ -19,6 +20,9 @@ int main(int argc, char *argv[])
     int linking = std::atoi(argv[5]);
     int debug = std::atoi(argv[6]);
     int vis = std::atoi(argv[7]);
+    int maxIter = std::atoi(argv[8]);
+    int osdOrder = std::atoi(argv[9]);
+    int osdMethod = std::atoi(argv[10]);
     
     std::vector<Lattice> lattices(3,L);
     Lattice &latCubic = lattices[0];
@@ -38,6 +42,18 @@ int main(int argc, char *argv[])
     }
 
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
+
+    // Setup BP-OSD
+    std::string fileS = "alist/cubic_L=" + std::to_string(L) + ".alist";
+    char *file = new char[fileS.length() + 1]();
+    for (int i = 0; i < fileS.length(); ++i) {
+        file[i] = fileS[i];
+    }
+    file[fileS.length()] = '\0';
+    mod2sparse *hz;
+    hz = load_alist(file);
+    delete[] file;
+    bp_osd decoderHz(hz, p, maxIter, osdOrder, osdMethod);
 
     vint cFailures = {0,0};
     vint r1Failures = {0,0};
@@ -224,9 +240,24 @@ int main(int argc, char *argv[])
         r2Failures[1] += latRhombic2.checkLogicalError('z');
     }
     
+    // BP-OSD cleanup
+    mod2sparse_free(hz);
+    free(hz);
+
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
 
     return 0;
 }
+
+void saveCodes()
+{
+    vint Ls;
+    int Lstart = 6;
+    int Lmax = 8;
+    int Lstep = 1;
+    for (int i = Lstart; i <= Lmax; i += Lstep) Ls.push_back(i);
+    saveHzLs(Ls);
+}
+

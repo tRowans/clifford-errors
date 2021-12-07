@@ -3,6 +3,7 @@
 
 #include "cubic.h"
 #include "PerfectMatching.h"
+#include "bp_osd_c.hpp"
 
 namespace cubic {
 
