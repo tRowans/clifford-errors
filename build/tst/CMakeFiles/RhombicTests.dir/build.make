@@ -157,9 +157,9 @@ tst/RhombicTests: tst/CMakeFiles/RhombicTests.dir/decoderRhombic1-test.cpp.o
 tst/RhombicTests: tst/CMakeFiles/RhombicTests.dir/decoderRhombic2-test.cpp.o
 tst/RhombicTests: tst/CMakeFiles/RhombicTests.dir/build.make
 tst/RhombicTests: src/librhombic_lib.a
-tst/RhombicTests: lib/libgtest_main.a
+tst/RhombicTests: lib/libgtest_maind.a
 tst/RhombicTests: lib/blossom5/libPerfectMatching.a
-tst/RhombicTests: lib/libgtest.a
+tst/RhombicTests: lib/libgtestd.a
 tst/RhombicTests: tst/CMakeFiles/RhombicTests.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable RhombicTests"
 	cd /Users/tom/Documents/clifford-errors/build/tst && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/RhombicTests.dir/link.txt --verbose=$(VERBOSE)

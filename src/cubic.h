@@ -40,6 +40,8 @@ void buildXSyndIndices(vint &xSyndIndices, int L);
 
 void buildZSyndIndices(vint &zSyndIndices, int L);
 
+void buildDefectIndices(vint &defectIndices, int L);
+
 void buildXLogical(vint &xLogical, int L);
 
 void buildZLogical(vint &zLogical, int L);

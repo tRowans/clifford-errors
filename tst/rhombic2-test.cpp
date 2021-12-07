@@ -146,6 +146,17 @@ TEST(buildZSyndIndicesTestR2, CorrectOutput)
 
 //------------------------------------------------------------
 
+TEST(buildDefectIndicesTestR2, CorrectOutput)
+{
+    vint defectIndices;
+    rhombic::r2::buildDefectIndices(defectIndices, 6);
+
+    vint defectIndicesExpected = {13, 43, 85, 115, 222, 223, 258, 259, 294, 295};
+    EXPECT_EQ(defectIndices, defectIndicesExpected);
+}
+
+//------------------------------------------------------------
+
 TEST(buildLogicalsTestR2, CorrectOutput)
 {
     Lattice lattice(6);

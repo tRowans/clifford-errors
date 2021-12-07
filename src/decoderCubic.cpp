@@ -81,8 +81,8 @@ vint distanceToClosestXBoundary(int v, int L)
 
     if (abs(dists[0]) < abs(dists[1])) distInfo[0] = y;
     else distInfo[0] = z;
-    distInfo[1] = (0 < dists[distInfo[0]]) - (0 > dists[distInfo[0]]);
-    distInfo[2] = abs(dists[distInfo[0]]);
+    distInfo[1] = (0 < dists[distInfo[0]-1]) - (0 > dists[distInfo[0]-1]);
+    distInfo[2] = abs(dists[distInfo[0]-1]);
 
     return distInfo;
 }
@@ -251,9 +251,9 @@ void jumpCorrection(Lattice &lattice)
 {
     for (int z = lattice.L-4; z > 0; z--)
     {
-        for (int x = 0; x < lattice.L-4; x++)
+        for (int x = 0; x < lattice.L-3; x++)
         {
-            for (int y = 0; y < lattice.L-4; y++)
+            for (int y = 0; y < lattice.L-3; y++)
             {
                 int faceXZ = 3*(x + y*lattice.L + z*lattice.L*lattice.L) + 1;
                 int faceYZ = 3*(x + y*lattice.L + z*lattice.L*lattice.L) + 2;

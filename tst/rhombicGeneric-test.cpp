@@ -21,14 +21,14 @@ TEST(coordToIndexTest, HandlesCorrectInput)
     c1.xi[2] = 1;
     c1.xi[3] = 1;
 
-    c2.xi[0] = 15;
-    c2.xi[1] = 3;
+    c2.xi[0] = 0;
+    c2.xi[1] = 0;
     c2.xi[2] = 0;
     c2.xi[3] = 0;
     
     EXPECT_EQ(rhombic::coordToIndex(c0, 6), 64);
     EXPECT_EQ(rhombic::coordToIndex(c1, 6), 280);
-    EXPECT_EQ(rhombic::coordToIndex(c2, 6), 33);
+    EXPECT_EQ(rhombic::coordToIndex(c2, 6), 0);
 } 
 TEST(coordToIndexTest, HandlesOutOfRangeInput)
 {
@@ -69,7 +69,7 @@ TEST(indexToCoordTest, HandlesExpectedInput)
 {
     rhombic::coord c0 = rhombic::indexToCoord(64, 6);
     rhombic::coord c1 = rhombic::indexToCoord(280, 6);
-    rhombic::coord c2 = rhombic::indexToCoord(33, 6);
+    rhombic::coord c2 = rhombic::indexToCoord(0, 6);
 
     EXPECT_EQ(c0.xi[0], 4);
     EXPECT_EQ(c0.xi[1], 4);
@@ -81,8 +81,8 @@ TEST(indexToCoordTest, HandlesExpectedInput)
     EXPECT_EQ(c1.xi[2], 1);
     EXPECT_EQ(c1.xi[3], 1);
 
-    EXPECT_EQ(c2.xi[0], 15);
-    EXPECT_EQ(c2.xi[1], 3);
+    EXPECT_EQ(c2.xi[0], 0);
+    EXPECT_EQ(c2.xi[1], 0);
     EXPECT_EQ(c2.xi[2], 0);
     EXPECT_EQ(c2.xi[3], 0);
 }
@@ -157,15 +157,15 @@ TEST(edgeIndexTest, CorrectOutput)
 
 TEST(addFaceTest, CorrectOutput)
 {
-    vvint faceToVertices;
-    vvint faceToEdges;
-    vpint faceToCells;
-    vvint vertexToFaces;
-    vvint edgeToFaces;
-    vvint cellToFaces;
-    
     Lattice lattice(6);
 
+    lattice.faceToVertices.assign(3*6*6*6,{});
+    lattice.faceToEdges.assign(3*6*6*6,{});
+    lattice.faceToCells.assign(3*6*6*6,{});
+    lattice.vertexToFaces.assign(2*6*6*6,{});
+    lattice.edgeToFaces.assign(8*6*6*6,{});
+    lattice.cellToFaces.assign(6*6*6,{});
+    
     //v=44 is (2,1,1,0)
     rhombic::addFace(44, 0, {3, 1, 1, 3}, {0, 2}, {1, 1, 1, 1}, {1, 1},  lattice);
     rhombic::addFace(44, 1, {0, 1, 1, 0}, {1, 2}, {1, -1, -1, 1}, {1, -1},  lattice);
@@ -173,24 +173,24 @@ TEST(addFaceTest, CorrectOutput)
     vint vertices1 = {44, 81, 254, 260};
     vint edges1 = {177, 179, 1019, 1041};
     pint cells1 = {45, 80};
-    vint vertices2 = {2, 44, 223, 224};
-    vint edges2 = {9, 176, 892, 893};
+    vint vertices2 = {14, 44, 223, 224};
+    vint edges2 = {57, 176, 892, 893};
     pint cells2 = {8, 50};
     vint faces1 = {0,1};
     vint faces2 = {0};
     vint faces3 = {1};
 
-    EXPECT_EQ(faceToVertices[0], vertices1);
-    EXPECT_EQ(faceToEdges[0], edges1);
-    EXPECT_EQ(faceToCells[0], cells1);
-    EXPECT_EQ(faceToVertices[1], vertices2);
-    EXPECT_EQ(faceToEdges[1], edges2);
-    EXPECT_EQ(faceToCells[1], cells2);
-    EXPECT_EQ(vertexToFaces[212], faces1);
-    EXPECT_EQ(vertexToFaces[393], faces2);
-    EXPECT_EQ(vertexToFaces[62], faces3);
-    EXPECT_EQ(edgeToFaces[849], faces2);
-    EXPECT_EQ(edgeToFaces[848], faces3);
+    EXPECT_EQ(lattice.faceToVertices[0], vertices1);
+    EXPECT_EQ(lattice.faceToEdges[0], edges1);
+    EXPECT_EQ(lattice.faceToCells[0], cells1);
+    EXPECT_EQ(lattice.faceToVertices[1], vertices2);
+    EXPECT_EQ(lattice.faceToEdges[1], edges2);
+    EXPECT_EQ(lattice.faceToCells[1], cells2);
+    EXPECT_EQ(lattice.vertexToFaces[44], faces1);
+    EXPECT_EQ(lattice.vertexToFaces[81], faces2);
+    EXPECT_EQ(lattice.vertexToFaces[14], faces3);
+    EXPECT_EQ(lattice.edgeToFaces[177], faces2);
+    EXPECT_EQ(lattice.edgeToFaces[57], faces3);
 }
 
 //------------------------------------------------------------
@@ -199,11 +199,18 @@ TEST(findFaceTest, CorrectOutput)
 {
     Lattice lattice(6);
 
+    lattice.faceToVertices.assign(3*6*6*6,{});
+    lattice.faceToEdges.assign(3*6*6*6,{});
+    lattice.faceToCells.assign(3*6*6*6,{});
+    lattice.vertexToFaces.assign(2*6*6*6,{});
+    lattice.edgeToFaces.assign(8*6*6*6,{});
+    lattice.cellToFaces.assign(6*6*6,{});
+
     rhombic::addFace(44, 0, {3, 1, 1, 3}, {0, 2}, {1, 1, 1, 1}, {1, 1},  lattice);
     rhombic::addFace(44, 1, {0, 1, 1, 0}, {1, 2}, {1, -1, -1, 1}, {1, -1},  lattice);
 
     EXPECT_EQ(rhombic::findFace({44,81}, lattice.vertexToFaces, lattice.faceToVertices), 0);
-    EXPECT_EQ(rhombic::findFace({2,44}, lattice.vertexToFaces, lattice.faceToVertices), 1);
+    EXPECT_EQ(rhombic::findFace({14,44}, lattice.vertexToFaces, lattice.faceToVertices), 1);
 }
 
 //------------------------------------------------------------
@@ -252,28 +259,31 @@ TEST(shortestPathTest, CorrectOutputNoBuild)
     Lattice lattice(6);
     lattice.zSyndIndices = {3, 865, 148};
 
+    lattice.vertexToEdges.assign(2*6*6*6,{});
+    lattice.edgeToVertices.assign(8*6*6*6,{});
+
     lattice.vertexToEdges[0] = {3};
     lattice.vertexToEdges[216] = {3,865};
-    lattice.vertexToEdges[36] = {148, 865};
+    lattice.vertexToEdges[37] = {148, 865};
     lattice.vertexToEdges[217] = {148};
 
     lattice.edgeToVertices[3] = {0,216};
-    lattice.edgeToVertices[865] = {36, 216};
-    lattice.edgeToVertices[148] = {36, 217};
+    lattice.edgeToVertices[865] = {37, 216};
+    lattice.edgeToVertices[148] = {37, 217};
 
     EXPECT_EQ(rhombic::shortestPath(0, 216, lattice), path1);
-    EXPECT_EQ(rhombic::shortestPath(0, 36, lattice), path2);
+    EXPECT_EQ(rhombic::shortestPath(0, 37, lattice), path2);
     EXPECT_EQ(rhombic::shortestPath(0, 217, lattice), path3);
 }
-TEST(shortestPathTest, CorrectOutputBuild_)
+TEST(shortestPathTest, CorrectOutputBuild)
 {
     //Uses the vector building functions so is not independent but can capture more complex errors
     //Result only matters if lattice building functions pass all their individual tests
    
     //bulk paths
-    vint path1 = {3};
-    vint path2 = {3, 865};
-    vint path3 = {3, 865, 148};
+    vint path1 = {171};
+    vint path2 = {171, 1033};
+    vint path3 = {171, 1033, 316};
 
     Lattice lattice(6);
     rhombic::r1::buildLattice(lattice);
@@ -286,7 +296,7 @@ TEST(shortestPathTest, CorrectOutputBuild_)
     vint path4 = {865};
     vint path5 = {865, 148};
    
-    EXPECT_EQ(rhombic::shortestPath(216, 36, lattice), path4);
+    EXPECT_EQ(rhombic::shortestPath(216, 37, lattice), path4);
     EXPECT_EQ(rhombic::shortestPath(216, 217, lattice), path5);
 }
 
@@ -300,9 +310,14 @@ TEST(shortestDualPathTest, CorrectOutputNoBuild)
 
     Lattice lattice(6);
     lattice.outerQubitIndices = {126, 129};
-    lattice.cellToFaces[6] = {129};
-    lattice.cellToFaces[48] = {126, 129};
-    lattice.cellToFaces[78] = {126};
+
+    lattice.cellToFaces.assign(6*6*6,{});
+
+    //These things need 12 elements or we get a segfault
+    //and also ordering is used to infer direction so need to be in the right place
+    lattice.cellToFaces[6] = {0,0,0,0,0,0,129,0,0,0,0,0};
+    lattice.cellToFaces[48] = {0,0,0,0,0,0,0,126,0,0,0,129,};
+    lattice.cellToFaces[78] = {0,0,0,0,0,0,0,0,0,0,126,0};
 
     EXPECT_EQ(rhombic::shortestDualPath(6, 48, lattice, 1, 1), path1);
     EXPECT_EQ(rhombic::shortestDualPath(6, 78, lattice, 1, 1), path2);

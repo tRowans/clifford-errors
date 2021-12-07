@@ -44,8 +44,10 @@ class Lattice
         vint syndromeZ;   //Z stabiliser syndromes
         vint defects;
 
-        Lattice(int L)
+        Lattice(int lVal)
         {
+            L = lVal;
+
             qubitsX = vint(3*L*L*L, 0);
             qubitsZ = vint(3*L*L*L, 0);
             syndromeX = vint(L*L*L, 0);

@@ -3,7 +3,7 @@
 #include "rhombic1.h"
 #include "rhombic2.h"
 #include "czErrorGen.h"
-#include "prepLattices.h"
+#include "prepCZ.h"
 
 //------------------------------------------------------------
 

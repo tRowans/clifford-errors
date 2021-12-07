@@ -208,6 +208,7 @@ void buildFaceToVertices(vvint &faceToVertices, int L)
             vertices = {v, neigh(v,y,1,L), 
                         neigh(v,z,1,L), neigh(neigh(v,y,1,L),z,1,L)};
         }
+        faceToVertices.push_back(vertices);
     }
 }
 
@@ -269,11 +270,22 @@ void buildZSyndIndices(vint &zSyndIndices, int L)
     }
 }
 
+void buildDefectIndices(vint &defectIndices, int L)
+{
+    for (int v = 0; v < L * L * L; v++)
+    {
+        coord cd = indexToCoord(v, L);
+        if (cd.xi[0] < (L-3) &&
+            cd.xi[1] < (L-3) && cd.xi[1] > 0 &&
+            cd.xi[2] < (L-3) && cd.xi[2] > 0) defectIndices.push_back(v);
+    }
+}    
+
 void buildXLogical(vint &xLogical, int L)
 {
-    for (int z; z < (L-3); z++)
+    for (int z = 0; z < (L-3); z++)
     {
-        for (int y; y < (L-3); y++)
+        for (int y = 0; y < (L-3); y++)
         {
             int f = 3*(y*L + z*L*L) + 2;
             xLogical.push_back(f);
@@ -283,7 +295,7 @@ void buildXLogical(vint &xLogical, int L)
 
 void buildZLogical(vint &zLogical, int L)
 {
-    for (int x; x < (L-3); x++)
+    for (int x = 0; x < (L-3); x++)
     {
         int f = 3*x + 2;
         zLogical.push_back(f);
@@ -302,6 +314,7 @@ void buildLattice(Lattice &lattice)
     buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.L);
     buildXSyndIndices(lattice.xSyndIndices, lattice.L);
     buildZSyndIndices(lattice.zSyndIndices, lattice.L);
+    buildDefectIndices(lattice.defectIndices, lattice.L);
     buildXLogical(lattice.xLogical, lattice.L);
     buildZLogical(lattice.zLogical, lattice.L);
 }

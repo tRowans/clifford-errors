@@ -6,7 +6,7 @@
 //This is just a hack to make the testing software build the index vectors
 //Means they don't have to be build individually in every test
 
-TEST(indexBuildingC, build)
+TEST(indexBuilding, build)
 {
     cubic::buildLattice(latCubic);
     ASSERT_TRUE(true);
@@ -14,7 +14,7 @@ TEST(indexBuildingC, build)
 
 //------------------------------------------------------------
 
-TEST(taxiTestC, CorrectOutput)
+TEST(taxiTest, CorrectOutput)
 {
     vint dists1 = {-1, -1, 2};
     vint dists2 = {1, 1, -2};
@@ -26,7 +26,7 @@ TEST(taxiTestC, CorrectOutput)
     EXPECT_EQ(cubic::taxi(93, 88, 6), dists1);
     EXPECT_EQ(cubic::taxi(88, 93, 6), dists2);
 }
-TEST(taxiTestC, sameVertex)
+TEST(taxiTest, sameVertex)
 {
     vint dists = {0, 0, 0};
     EXPECT_EQ(cubic::taxi(58, 58, 6), dists);
@@ -34,19 +34,19 @@ TEST(taxiTestC, sameVertex)
 
 //------------------------------------------------------------
 
-TEST(shortestPathTestC, OneAxis)
+TEST(shortestPathTest, OneAxis)
 {
     vint path = cubic::shortestPath(0, 2, 6);
     vint pathExpected = {0, 3};
     EXPECT_EQ(path, pathExpected);
 }
-TEST(shortestPathTestC, MultipleAxes)
+TEST(shortestPathTest, MultipleAxes)
 {
     vint path = cubic::shortestPath(0, 43, 6);
     vint pathExpected = {0, 4, 23};
     EXPECT_EQ(path, pathExpected);
 }
-TEST(shortestPathTestC, sameVertex)
+TEST(shortestPathTest, sameVertex)
 {
     vint path = cubic::shortestPath(58, 58, 6);
     vint pathExpected = {};
@@ -55,13 +55,13 @@ TEST(shortestPathTestC, sameVertex)
 
 //------------------------------------------------------------
 
-TEST(shortestDualPathTestC, length1)
+TEST(shortestDualPathTest, length1)
 {
     vint path = cubic::shortestDualPath(0, 1, 6);
     vint pathExpected = {5};
     EXPECT_EQ(path, pathExpected);
 }
-TEST(shortestDualPathTestC, length2)
+TEST(shortestDualPathTest, length2)
 {
     vint path = cubic::shortestDualPath(0, 43, 6); 
     vint pathExpected = {5, 22, 129};
@@ -70,28 +70,28 @@ TEST(shortestDualPathTestC, length2)
 
 //------------------------------------------------------------ 
 
-TEST(distanceToClosestXBoundaryTestC, CorrectOutput)
+TEST(distanceToClosestXBoundaryTest, CorrectOutput)
 {
-    vint distInfoExpected1 = {1, -1, 1};
-    vint distInfoExpected2 = {1, 1, 1};
+    vint distInfoExpected1 = {2, -1, 1};
+    vint distInfoExpected2 = {2, 1, 1};
     
     EXPECT_EQ(cubic::distanceToClosestXBoundary(43, 6), distInfoExpected1);
-    EXPECT_EQ(cubic::distanceToClosestXBoundary(49, 6), distInfoExpected2);
+    EXPECT_EQ(cubic::distanceToClosestXBoundary(79, 6), distInfoExpected2);
 }
 
 //------------------------------------------------------------
 
-TEST(shortestPathToXBoundaryTestC, correctOutput)
+TEST(shortestPathToXBoundaryTest, correctOutput)
 {
-    vint pathExpected1 = {112};
-    vint pathExpected2 = {148};
+    vint pathExpected1 = {23};
+    vint pathExpected2 = {239};
     EXPECT_EQ(cubic::shortestPathToXBoundary(43, 6), pathExpected1);
-    EXPECT_EQ(cubic::shortestPathToXBoundary(49, 6), pathExpected2);
+    EXPECT_EQ(cubic::shortestPathToXBoundary(79, 6), pathExpected2);
 }
 
 //------------------------------------------------------------
 
-TEST(distanceToClosestZBoundaryC, correctOutput)
+TEST(distanceToClosestZBoundary, correctOutput)
 {
     vint distanceExpected1 = {-1, 1};
     vint distanceExpected2 = {1, 1};
@@ -101,7 +101,7 @@ TEST(distanceToClosestZBoundaryC, correctOutput)
 
 //------------------------------------------------------------
 
-TEST(shortestPathToZBoundaryTestC, correctOutput)
+TEST(shortestPathToZBoundaryTest, correctOutput)
 {
     vint pathExpected1 = {2};
     vint pathExpected2 = {8};
@@ -111,103 +111,97 @@ TEST(shortestPathToZBoundaryTestC, correctOutput)
 
 //------------------------------------------------------------
 
-TEST(mwpmTestC, matchingToDefects)
+TEST(mwpmTest, matchingToDefects)
 {
-    vint defects = {88, 123};
-    vpint defectPairsExpected = {{88, 123}};
+    vint defects = {42, 48};
+    vpint defectPairsExpected = {{42, 48}};
     EXPECT_EQ(cubic::mwpm(defects, 6, 0), defectPairsExpected);
 }
-TEST(mwpmTestC, matchingToBoundaries)
+TEST(mwpmTest, matchingToBoundaries)
 {
-    vint defects = {57, 158};
-    vpint defectPairsExpected = {{57, -1}, {158, -1}};
+    vint defects = {42, 86};
+    vpint defectPairsExpected = {{42, -1}, {86, -1}};
     EXPECT_EQ(cubic::mwpm(defects, 6, 0), defectPairsExpected);
 }
-TEST(mwpmTestC, dualMatching)
+TEST(mwpmTest, dualMatching)
 {
     vint cells = {0, 6};
     vpint cellPairsExpected = {{0, 6}};
     EXPECT_EQ(cubic::mwpm(cells, 6, 1), cellPairsExpected);
 }
-TEST(mwpmTestC, dualMatchingToBoundaries)
+TEST(mwpmTest, dualMatchingToBoundaries)
 {
-    vint cells = {0, 1};
-    vpint cellPairsExpected = {{0, -1}, {1, -1}};
+    vint cells = {0, 73};
+    vpint cellPairsExpected = {{0, -1}, {73, -1}};
     EXPECT_EQ(cubic::mwpm(cells, 6, 1), cellPairsExpected);
 }
 
 //------------------------------------------------------------
 
-TEST(joinPairTestC, joinToDefect)
+TEST(joinPairTest, joinToDefect)
 {
-    vint syndrome(3*6*6*6, 0);
-    vint syndromeExpected(3*6*6*6, 0);
-    syndrome[281] = 1;
-    syndrome[370] = 1;
-    cubic::joinPair(93, 123, latCubic);
-    EXPECT_EQ(syndrome, syndromeExpected);
+    vint syndromeExpected(8*6*6*6, 0);
+    latCubic.syndromeZ[127] = 1;
+    cubic::joinPair(42, 48, latCubic);
+    EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
-TEST(joinPairTestC, joinToBoundary)
+TEST(joinPairTest, joinToBoundary)
 {
-    vint syndrome(3*6*6*6, 0);
-    vint syndromeExpected(3*6*6*6, 0);
-    syndrome[280] = 1;
-    cubic::joinPair(93, -1, latCubic);
-    EXPECT_EQ(syndrome, syndromeExpected);
+    vint syndromeExpected(8*6*6*6, 0);
+    latCubic.syndromeZ[20] = 1;
+    cubic::joinPair(42, -1, latCubic);
+    EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
 
 //------------------------------------------------------------
 
-TEST(joinDualPairTestC, joinInBulk)
+TEST(joinDualPairTest, joinInBulk)
 {
-    vint qubits(3*6*6*6, 0);
     vint qubitsExpected(3*6*6*6, 0);
-    qubits[279] = 1;
-    qubits[387] = 1;
-    cubic::joinDualPair(57, 129, latCubic);
-    EXPECT_EQ(qubits, qubitsExpected);
+    latCubic.qubitsZ[19] = 1;
+    cubic::joinDualPair(0, 6, latCubic);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
-TEST(joinDualPairTestC, joinToBoundary)
+TEST(joinDualPairTest, joinToBoundary)
 {
-    vint qubits(3*6*6*6, 0);
     vint qubitsExpected(3*6*6*6, 0);
-    qubits[176] = 1;
-    cubic::joinDualPair(57, -1, latCubic);
-    EXPECT_EQ(qubits, qubitsExpected);
+    latCubic.qubitsZ[2] = 1;
+    cubic::joinDualPair(0, -1, latCubic);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 
 //------------------------------------------------------------
 
-TEST(zErrorDecoderTestC, matchPair)
+TEST(zErrorDecoderTest, matchPair)
 {
     latCubic.wipe();
-    latCubic.qubitsZ[279] = 1; 
-    latCubic.syndromeX[57] = 1;
-    latCubic.syndromeX[93] = 1;
+    latCubic.qubitsZ[19] = 1; 
+    latCubic.syndromeX[0] = 1;
+    latCubic.syndromeX[6] = 1;
 
     cubic::zErrorDecoder(latCubic);
     vint qubitsExpected(3*6*6*6, 0);
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
-TEST(zErrorDecoderTestC, matchTwoPairs)
+TEST(zErrorDecoderTest, matchTwoPairs)
 {  
     latCubic.wipe();
-    latCubic.qubitsZ[279] = 1;
-    latCubic.syndromeX[57] = 1;
-    latCubic.syndromeX[93] = 1;
-    latCubic.qubitsZ[461] = 1;
-    latCubic.syndromeX[152] = 1;
-    latCubic.syndromeX[153] = 1;
+    latCubic.qubitsZ[19] = 1;
+    latCubic.syndromeX[0] = 1;
+    latCubic.syndromeX[6] = 1;
+    latCubic.qubitsZ[256] = 1;
+    latCubic.syndromeX[79] = 1;
+    latCubic.syndromeX[85] = 1;
 
     cubic::zErrorDecoder(latCubic);
     vint qubitsExpected(3*6*6*6, 0);
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
-TEST(zErrorDecoderTestC, matchToBoundary)
+TEST(zErrorDecoderTest, matchToBoundary)
 {
     latCubic.wipe();
-    latCubic.qubitsZ[176] = 1;
-    latCubic.syndromeX[57] = 1;
+    latCubic.qubitsZ[2] = 1;
+    latCubic.syndromeX[0] = 1;
 
     cubic::zErrorDecoder(latCubic);
     vint qubitsExpected(3*6*6*6, 0);
@@ -216,7 +210,7 @@ TEST(zErrorDecoderTestC, matchToBoundary)
 
 //------------------------------------------------------------
 
-TEST(measErrorDecoderTestC, matchPair)
+TEST(measErrorDecoderTest, matchPair)
 {
     latCubic.wipe();
     latCubic.syndromeZ[127] = 1;
@@ -226,7 +220,7 @@ TEST(measErrorDecoderTestC, matchPair)
     vint syndromeExpected(8*6*6*6, 0);
     EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
-TEST(measErrorDecoderTestC, matchTwoPair)
+TEST(measErrorDecoderTest, matchTwoPair)
 {
     latCubic.wipe();
     latCubic.syndromeZ[127] = 1;
@@ -237,10 +231,10 @@ TEST(measErrorDecoderTestC, matchTwoPair)
     vint syndromeExpected(8*6*6*6, 0);
     EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
-TEST(measErrorDecoderTestC, matchToBoundary)
+TEST(measErrorDecoderTest, matchToBoundary)
 {
     latCubic.wipe();
-    latCubic.syndromeZ[109] = 1;
+    latCubic.syndromeZ[20] = 1;
     latCubic.defects = {42};
 
     cubic::measErrorDecoder(latCubic);
@@ -252,7 +246,7 @@ TEST(measErrorDecoderTestC, matchToBoundary)
 //X ERROR DECODER TEST HERE?
 //------------------------------------------------------------
 
-TEST(jumpCorrectionTestC, CorrectOutputExample)
+TEST(jumpCorrectionTest, CorrectOutputExample)
 {
     //Tests a specific example
     latCubic.wipe();
@@ -264,7 +258,7 @@ TEST(jumpCorrectionTestC, CorrectOutputExample)
     vint qubitsExpected(3*6*6*6, 0);
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
-TEST(jumpCorrectionTestC, CorrectOutput)
+TEST(jumpCorrectionTest, CorrectOutput)
 {
     latCubic.wipe();
 
@@ -274,6 +268,8 @@ TEST(jumpCorrectionTestC, CorrectOutput)
 
     latCubic.zStabPattern(engine, dist);
     cubic::jumpCorrection(latCubic);
-    vint qubitsExpected(3*6*6*6, 0);
-    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
+    //These all tested separately in lattice-test.cpp
+    EXPECT_NO_THROW(latCubic.checkJumpCorrection());
+    EXPECT_NO_THROW(latCubic.checkInCodespace('z',1,1));
+    EXPECT_EQ(latCubic.checkLogicalError('z'), 0);
 }
