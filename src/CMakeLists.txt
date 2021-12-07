@@ -8,5 +8,8 @@ add_library(rhombic_lib decoderRhombic1.cpp decoderRhombic2.cpp rhombic1.cpp rho
 add_library(cz_lib czErrorGen.cpp decoderCubic.cpp decoderRhombic1.cpp decoderRhombic2.cpp cubic.cpp rhombic1.cpp rhombic2.cpp rhombicGeneric.cpp vis.cpp lattice.cpp)
 
 include_directories(../lib/blossom5)
-
+include_directories(../lib/bp_osd)
 target_link_libraries(czErrors PUBLIC PerfectMatching)
+target_link_libraries(czErrors PUBLIC bp_osd)
+target_link_libraries(cz_lib PUBLIC bp_osd)
+target_link_libraries(cubic_lib PUBLIC bp_osd)
