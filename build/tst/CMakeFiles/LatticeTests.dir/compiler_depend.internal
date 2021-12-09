@@ -289,4 +289,5 @@ tst/CMakeFiles/LatticeTests.dir/lattice-test.cpp.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/math.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/math.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/numeric
+ /Users/tom/Documents/clifford-errors/tst/prepLattice.h
 

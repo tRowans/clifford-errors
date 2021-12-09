@@ -15,6 +15,36 @@ TEST(indexBuildingR1, build)
 
 //------------------------------------------------------------
 
+TEST(w1ToW0TestR1, CorrectOutput)
+{
+    rhombic::coord cIn = {0,0,0,1};
+    rhombic::coord cOut = rhombic::r1::w1ToW0(cIn, 6);
+    EXPECT_EQ(cOut.xi[0], 0);
+    EXPECT_EQ(cOut.xi[1], 0);
+    EXPECT_EQ(cOut.xi[2], 0);
+    EXPECT_EQ(cOut.xi[3], 0);
+
+    cIn.xi[0] = 1;
+    cOut = rhombic::r1::w1ToW0(cIn,6);
+    EXPECT_EQ(cOut.xi[0], 2);
+    EXPECT_EQ(cOut.xi[1], 1);
+    EXPECT_EQ(cOut.xi[2], 1);
+    EXPECT_EQ(cOut.xi[3], 0);
+}
+
+//------------------------------------------------------------
+
+TEST(shortestPathLengthTestR1, CorrectOutput)
+{
+    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 216, 6), 1);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 36, 6), 2);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 217, 6), 3);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(79, 265, 6), 3);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(79, 252, 6), 1);
+}
+
+//------------------------------------------------------------
+
 TEST(distanceToClosestXBoundaryTestR1, CorrectOutput)
 {
     vint distInfo1 = {0, -1, 1};
@@ -47,13 +77,13 @@ TEST(shortestPathToXBoundaryTestR1, CorrectOutput)
 
 TEST(distanceToClosestZBoundaryTestR1, CorrectOutput)
 {
-    vint distInfoExpected1 = {1,1};
-    vint distInfoExpected2 = {-1,1};
+    vint distInfoExpected1 = {-1,1};
+    vint distInfoExpected2 = {1,1};
     EXPECT_EQ(rhombic::r1::distanceToClosestZBoundary(43, 6), distInfoExpected1);
     EXPECT_EQ(rhombic::r1::distanceToClosestZBoundary(85, 6), distInfoExpected2);
     EXPECT_EQ(rhombic::r1::distanceToClosestZBoundary(6, 6), distInfoExpected1);
     EXPECT_EQ(rhombic::r1::distanceToClosestZBoundary(120, 6), distInfoExpected2);
-    EXPECT_EQ(rhombic::r1::distanceToClosestZBoundary(115, 6), distInfoExpected2);
+    EXPECT_EQ(rhombic::r1::distanceToClosestZBoundary(115, 6), distInfoExpected1);
 }
 
 //------------------------------------------------------------
@@ -84,7 +114,7 @@ TEST(mwpmTestR1, PrimalLattice)
     EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0), expectedMatching);
 
     defects = {49, 79, 252, 265};
-    expectedMatching = {{79, 258}, {49, 265}};
+    expectedMatching = {{49, 265}, {79, 252}};
     EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0), expectedMatching);
 
     defects = {49, 252};
@@ -101,7 +131,7 @@ TEST(mwpmTestR1, DualLattice)
     EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1), expectedMatching);
 
     violatedStabs = {8, 43, 48, 50};
-    expectedMatching = {{43, 48}, {8, 50}};
+    expectedMatching = {{8, 50}, {43, 48}};
     EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1), expectedMatching);
 
     violatedStabs = {6};
@@ -241,6 +271,7 @@ TEST(measErrorDecoderTestR1, matchToBoundary)
 
     latRhombic1.wipe();
     latRhombic1.syndromeZ[171] = 1;
+    latRhombic1.defects = {258};
     rhombic::r1::measErrorDecoder(latRhombic1);
     EXPECT_EQ(latRhombic1.syndromeZ, syndromeExpected);
 }

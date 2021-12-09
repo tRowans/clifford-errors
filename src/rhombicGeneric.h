@@ -30,7 +30,9 @@ int findFace(vint vertices, vvint &vertexToFaces, vvint &faceToVertices);
 
 int scalarProduct(std::vector<float> vec, int dir, int sign);
 
-int shortestPathLength(int v1, int v2, int L);
+std::vector<float> differenceVector(coord c1, coord c2);
+
+float magnitude(std::vector<float> diff);
 
 vint shortestPath(int v1, int v2, Lattice &lattice);
 

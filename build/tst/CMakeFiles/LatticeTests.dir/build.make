@@ -93,9 +93,9 @@ LatticeTests_EXTERNAL_OBJECTS =
 tst/LatticeTests: tst/CMakeFiles/LatticeTests.dir/lattice-test.cpp.o
 tst/LatticeTests: tst/CMakeFiles/LatticeTests.dir/build.make
 tst/LatticeTests: src/liblattice_lib.a
-tst/LatticeTests: lib/libgtest_main.a
+tst/LatticeTests: lib/libgtest_maind.a
 tst/LatticeTests: lib/blossom5/libPerfectMatching.a
-tst/LatticeTests: lib/libgtest.a
+tst/LatticeTests: lib/libgtestd.a
 tst/LatticeTests: tst/CMakeFiles/LatticeTests.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable LatticeTests"
 	cd /Users/tom/Documents/clifford-errors/build/tst && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/LatticeTests.dir/link.txt --verbose=$(VERBOSE)

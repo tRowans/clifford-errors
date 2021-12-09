@@ -287,7 +287,8 @@ tst/CMakeFiles/LatticeTests.dir/lattice-test.cpp.o: ../tst/lattice-test.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/cmath \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/math.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/math.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/numeric
+  /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/numeric \
+  ../tst/prepLattice.h
 
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/math.h:
@@ -545,6 +546,8 @@ tst/CMakeFiles/LatticeTests.dir/lattice-test.cpp.o: ../tst/lattice-test.cpp \
 /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/c++/v1/stdexcept:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/_types/_uintmax_t.h:
+
+../tst/prepLattice.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/sys/_types/_intptr_t.h:
 

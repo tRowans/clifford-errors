@@ -109,9 +109,9 @@ tst/CubicTests: tst/CMakeFiles/CubicTests.dir/cubic-test.cpp.o
 tst/CubicTests: tst/CMakeFiles/CubicTests.dir/decoderCubic-test.cpp.o
 tst/CubicTests: tst/CMakeFiles/CubicTests.dir/build.make
 tst/CubicTests: src/libcubic_lib.a
-tst/CubicTests: lib/libgtest_main.a
+tst/CubicTests: lib/libgtest_maind.a
 tst/CubicTests: lib/blossom5/libPerfectMatching.a
-tst/CubicTests: lib/libgtest.a
+tst/CubicTests: lib/libgtestd.a
 tst/CubicTests: tst/CMakeFiles/CubicTests.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable CubicTests"
 	cd /Users/tom/Documents/clifford-errors/build/tst && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/CubicTests.dir/link.txt --verbose=$(VERBOSE)

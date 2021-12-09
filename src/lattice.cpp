@@ -70,16 +70,16 @@ void Lattice::calcSynd(char pauli, int useOuter, int useInner)
 {
     vint whichQubits = {useOuter, useInner};
     int j = 0;
-    for (const vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
+    //X stabilisers/Z errors
+    if (pauli == 'x' || pauli == 'X')
     {
-        if (whichQubits[j] == 1)
+        std::fill(syndromeX.begin(), syndromeX.end(), 0);
+        for (const vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
         {
-            //X stabilisers/Z errors
-            if (pauli == 'x' || pauli == 'X')
+            if (whichQubits[j] == 1)
             {
                 for (int i : qubitIndices)
                 {
-                    std::fill(syndromeX.begin(), syndromeX.end(), 0);
                     if (qubitsZ[i] == 1)
                     {
                         pint &cells = faceToCells[i];
@@ -92,12 +92,19 @@ void Lattice::calcSynd(char pauli, int useOuter, int useInner)
                     }
                 }
             }
-            //Z stabilisers/X errors
-            else if (pauli == 'z' || pauli == 'Z')
+            j = 1;
+        }
+    }
+    //Z stabilisers/X errors
+    else if (pauli == 'z' || pauli == 'Z')
+    {
+        std::fill(syndromeZ.begin(), syndromeZ.end(), 0);
+         for (const vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
+        {
+            if (whichQubits[j] == 1)
             {
                 for (int i : qubitIndices)
                 {
-                    std::fill(syndromeZ.begin(), syndromeZ.end(), 0);
                     if (qubitsX[i] == 1)
                     {
                         vint &edges = faceToEdges[i];
@@ -110,10 +117,10 @@ void Lattice::calcSynd(char pauli, int useOuter, int useInner)
                     }
                 }
             }
-            else throw std::invalid_argument("Invalid Pauli given for calcSynd");
+            j = 1;
         }
-        j = 1;
     }
+    else throw std::invalid_argument("Invalid Pauli given for calcSynd");
 }
 
 void Lattice::findDefects()
@@ -242,7 +249,7 @@ void Lattice::checkJumpCorrection()
 {
     for (int i : innerQubitIndices)
     {
-        if (qubitsZ[i] == 1) std::runtime_error("Bad jump correction");
+        if (qubitsZ[i] == 1) throw std::runtime_error("Bad jump correction");
     }
 }
 

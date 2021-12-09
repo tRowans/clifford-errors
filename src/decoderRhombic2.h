@@ -8,9 +8,13 @@ namespace rhombic {
 
 namespace r2 {
 
-std::vector<int> distanceToClosestXBoundary(int v, int L);
+coord w1ToW0(coord cd, int L);
 
-std::vector<int> shortestPathToXBoundary(int v, int L);
+int shortestPathLength(int v1, int v2, int L);
+
+vint distanceToClosestXBoundary(int v, int L);
+
+vint shortestPathToXBoundary(int v, int L);
 
 vint distanceToClosestZBoundary(int cell, int L);
 

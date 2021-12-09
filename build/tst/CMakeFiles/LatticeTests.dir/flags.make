@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/Users/tom/Documents/clifford-errors/tst/../src -I/Users/tom/Documents/clifford-errors/tst/../lib/blossom5 -isystem /Users/tom/Documents/clifford-errors/lib/googletest/googletest/include -isystem /Users/tom/Documents/clifford-errors/lib/googletest/googletest
 
-CXX_FLAGS =  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk -std=gnu++17
+CXX_FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk -std=gnu++17
 

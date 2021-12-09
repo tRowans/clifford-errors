@@ -7,25 +7,27 @@ std::map<pint,ppint> buildOverlappingFaces(std::vector<Lattice> &lattices)
     for (int v = 0; v < lattices[0].L*lattices[0].L*lattices[0].L; v++)
     {
         for (int i = 0; i < 3; i++)
-        fC = 3*v + i;
-        vint verts03 = {lattices[0].faceToVertices[fC][0], 
-                           lattices[0].faceToVertices[fC][3]};
-        vint verts12 = {lattices[0].faceToVertices[fC][1], 
-                           lattices[0].faceToVertices[fC][2]};
-        fR1 = rhombic::findFace(verts03, 
-                lattices[1].vertexToFaces, lattices[1].faceToVertices);
-        if (fR1 == -1)
         {
-            fR1 = rhombic::findFace(verts12, 
+            fC = 3*v + i;
+            vint verts03 = {lattices[0].faceToVertices[fC][0], 
+                               lattices[0].faceToVertices[fC][3]};
+            vint verts12 = {lattices[0].faceToVertices[fC][1], 
+                               lattices[0].faceToVertices[fC][2]};
+            fR1 = rhombic::findFace(verts03, 
                     lattices[1].vertexToFaces, lattices[1].faceToVertices);
-            fR2 = rhombic::findFace(verts03, 
+            if (fR1 == -1)
+            {
+                fR1 = rhombic::findFace(verts12, 
+                        lattices[1].vertexToFaces, lattices[1].faceToVertices);
+                fR2 = rhombic::findFace(verts03, 
+                        lattices[2].vertexToFaces, lattices[2].faceToVertices);
+            }
+            else fR2 = rhombic::findFace(verts12, 
                     lattices[2].vertexToFaces, lattices[2].faceToVertices);
+            overlappingFaces[{0,fC}] = {{1,fR1}, {2,fR2}};
+            overlappingFaces[{1,fR1}] = {{0,fC}, {2,fR2}};
+            overlappingFaces[{2,fR2}] = {{0,fC}, {1,fR1}};
         }
-        else fR2 = rhombic::findFace(verts12, 
-                lattices[2].vertexToFaces, lattices[2].faceToVertices);
-        overlappingFaces[{0,fC}] = {{1,fR1}, {2,fR2}};
-        overlappingFaces[{1,fR1}] = {{0,fC}, {2,fR2}};
-        overlappingFaces[{2,fR2}] = {{0,fC}, {1,fR1}};
     }
     return overlappingFaces;
 }
@@ -85,7 +87,12 @@ void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingF
     {
         for (int v : syndromeVertices[i])
         {
-            pint cell = {latticeWhereCell(v,i,lattices[i].L), v};
+            int cellIndex = v;
+            if (v >= lattices[i].L*lattices[i].L*lattices[i].L)
+            {
+                cellIndex -= lattices[i].L*lattices[i].L*lattices[i].L;
+            }
+            pint cell = {latticeWhereCell(v,i,lattices[i].L), cellIndex};
             if (dist(engine) < 0.5)
             {
                 vint faces = lattices[cell.first].cellToFaces[cell.second];

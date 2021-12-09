@@ -93,9 +93,9 @@ CZTests_EXTERNAL_OBJECTS =
 tst/CZTests: tst/CMakeFiles/CZTests.dir/czErrorGen-test.cpp.o
 tst/CZTests: tst/CMakeFiles/CZTests.dir/build.make
 tst/CZTests: src/libcz_lib.a
-tst/CZTests: lib/libgtest_main.a
+tst/CZTests: lib/libgtest_maind.a
 tst/CZTests: lib/blossom5/libPerfectMatching.a
-tst/CZTests: lib/libgtest.a
+tst/CZTests: lib/libgtestd.a
 tst/CZTests: tst/CMakeFiles/CZTests.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable CZTests"
 	cd /Users/tom/Documents/clifford-errors/build/tst && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/CZTests.dir/link.txt --verbose=$(VERBOSE)

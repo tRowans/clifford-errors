@@ -23,6 +23,8 @@ void buildXSyndIndices(vint &xSyndIndices, int L);
 
 void buildZSyndIndices(vint &zSyndIndices, int L);
 
+void buildDefectIndices(vint &defectIndices, int L);
+
 void buildLogicals(Lattice &lattice);
 
 void buildLattice(Lattice &lattice);

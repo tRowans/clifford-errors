@@ -3,7 +3,7 @@
 #include "rhombic1.h"
 #include "rhombic2.h"
 #include "czErrorGen.h"
-#include "prepLattices.h"
+#include "prepCZ.h"
 
 //------------------------------------------------------------
 
@@ -37,6 +37,19 @@ TEST(buildOverlappingFacesTest, CorrectOutput)
     EXPECT_EQ(overlap1, overlapExpected1);
     EXPECT_EQ(overlap2, overlapExpected2);
     EXPECT_EQ(overlap3, overlapExpected3);
+
+    overlap1 = overlappingFaces[{0,108}];
+    overlap2 = overlappingFaces[{1,131}];
+    overlap3 = overlappingFaces[{2,110}];
+
+    overlapExpected1 = {{1,131},{2,110}}; 
+    overlapExpected2 = {{0,108},{2,110}}; 
+    overlapExpected3 = {{0,108},{1,131}}; 
+    
+    EXPECT_EQ(overlap1, overlapExpected1);
+    EXPECT_EQ(overlap2, overlapExpected2);
+    EXPECT_EQ(overlap3, overlapExpected3);
+
 }
 
 //------------------------------------------------------------
@@ -54,12 +67,12 @@ TEST(getSyndromeVerticesTest, correctOutput)
     syndromeVerticesExpected[0].push_back(48);
     syndromeVerticesExpected[0].push_back(78);
     syndromeVerticesExpected[0].push_back(84);
-    
+  
     latRhombic1.syndromeZ[169] = 1;
     latRhombic1.syndromeZ[171] = 1;
     latRhombic1.syndromeZ[1011] = 1;
-    latRhombic1.syndromeZ[1032] = 1;
-    
+    latRhombic1.syndromeZ[1033] = 1;
+
     syndromeVerticesExpected[1].push_back(42);
     syndromeVerticesExpected[1].push_back(79); 
     syndromeVerticesExpected[1].push_back(252);
@@ -106,24 +119,35 @@ TEST(applyCCZTest, singleCubicXError)
     vint qubitsZExpectedR1(3*6*6*6, 0);
     vint qubitsZExpectedR2(3*6*6*6, 0);
 
+    latCubic.wipe();
     latCubic.qubitsX[2] = 1;
-    qubitsZExpectedR1[0] = 1;
-    qubitsZExpectedR2[111] = 1;
-    
+    latCubic.calcSynd('z',1,1);
+   
+    int r1QubitTotal = 0;
+    int r2QubitTotal = 0; 
+    std::set<int> r1WrongQubits;
+    std::set<int> r2WrongQubits;
     for (int i = 0; i < 100; i++)
     {
         latRhombic1.wipe();
         latRhombic2.wipe();
-        
+    
         applyCCZ(lattices, overlappingFaces, engine, dist, 0);
-        EXPECT_TRUE(latRhombic1.qubitsZ == qubitsZExpectedEmpty
-                    || latRhombic1.qubitsZ == qubitsZExpectedR1);
-        EXPECT_TRUE(latRhombic2.qubitsZ == qubitsZExpectedEmpty
-                    || latRhombic2.qubitsZ == qubitsZExpectedR2);
-
+        r1QubitTotal += latRhombic1.qubitsZ[0];
+        r2QubitTotal += latRhombic2.qubitsZ[111];
+        for (int j = 0; j < 3*6*6*6; j++)
+        {
+            if (latRhombic1.qubitsZ[j] == 1 && j != 0) r1WrongQubits.insert(j);
+            if (latRhombic2.qubitsZ[j] == 1 && j != 111) r2WrongQubits.insert(j);
+        }
     }
+    std::cout << "#R1 Z errors: " << r1QubitTotal << '\n';
+    std::cout << "#R2 Z errors: " << r2QubitTotal << '\n';
+    std::set<int> emptySet = {};
+    EXPECT_EQ(r1WrongQubits, emptySet);
+    EXPECT_EQ(r2WrongQubits, emptySet);
 }
-TEST(applyCCZTest, multipleCubicErrors)
+TEST(applyCCZTest, membraneCubic)
 {
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
     
@@ -131,26 +155,48 @@ TEST(applyCCZTest, multipleCubicErrors)
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
 
+    latCubic.wipe();
     latCubic.qubitsX[2] = 1;
     latCubic.qubitsX[20] = 1;
     latCubic.qubitsX[110] = 1;
     latCubic.qubitsX[128] = 1;
     latCubic.qubitsX[218] = 1;
     latCubic.qubitsX[236] = 1;
-
+    latCubic.calcSynd('z',1,1);
+    
+    vint r1QubitTotals = {0,0,0};
+    vint r2QubitTotals = {0,0,0};
+    std::set<int> r1WrongQubits;
+    std::set<int> r2WrongQubits;
     for (int i = 0; i < 100; i++)
     {
         latRhombic1.wipe();
         latRhombic2.wipe();
         
         applyCCZ(lattices, overlappingFaces, engine, dist, 0);
-        if (latRhombic1.qubitsZ[0] == 1
-            || latRhombic1.qubitsZ[216] == 1
-            || latRhombic1.qubitsZ[219] == 1) FAIL();
-        if (latRhombic2.qubitsZ[111] == 1
-            || latRhombic2.qubitsZ[108] == 1
-            || latRhombic2.qubitsZ[327] == 1) FAIL();
+        r1QubitTotals[0] += latRhombic1.qubitsZ[126];
+        r1QubitTotals[1] += latRhombic1.qubitsZ[129];
+        r1QubitTotals[2] += latRhombic1.qubitsZ[345];
+        r2QubitTotals[0] += latRhombic2.qubitsZ[18];
+        r2QubitTotals[1] += latRhombic2.qubitsZ[234];
+        r2QubitTotals[2] += latRhombic2.qubitsZ[237];
+        for (int j = 0; j < 3*6*6*6; j++)
+        {
+            if (latRhombic1.qubitsZ[j] == 1 &&
+                    j != 126 && j != 129 && j != 345) r1WrongQubits.insert(j);
+            if (latRhombic2.qubitsZ[j] == 1 &&
+                    j != 18 && j != 234 && j != 237) r2WrongQubits.insert(j);
+        }
     }
+    std::cout << "R1 Z errors: ";
+    for (int i : r1QubitTotals) std::cout << i << ' ';
+    std::cout << '\n';
+    std::cout << "R2 Z errors: ";
+    for (int i : r2QubitTotals) std::cout << i << ' ';
+    std::cout << '\n';
+    std::set<int> emptySet = {};
+    EXPECT_EQ(r1WrongQubits, emptySet);
+    EXPECT_EQ(r2WrongQubits, emptySet);
 }
 TEST(applyCCZTest, singleR1XError)
 {
@@ -164,25 +210,35 @@ TEST(applyCCZTest, singleR1XError)
     vint qubitsZExpectedC(3*6*6*6, 0);
     vint qubitsZExpectedR2(3*6*6*6, 0);
 
+    latRhombic1.wipe();
     latRhombic1.qubitsX[0] = 1;
-    qubitsZExpectedC[2] = 1;
-    qubitsZExpectedR2[111] = 1;
+    latRhombic1.calcSynd('z',1,1);
     
+    int cQubitTotal = 0;
+    int r2QubitTotal = 0; 
+    std::set<int> cWrongQubits;
+    std::set<int> r2WrongQubits;
     for (int i = 0; i < 100; i++)
     {
         latCubic.wipe();
         latRhombic2.wipe();
         
         applyCCZ(lattices, overlappingFaces, engine, dist, 0);
-        EXPECT_TRUE(latCubic.qubitsZ == qubitsZExpectedEmpty
-                    ||
-                    latCubic.qubitsZ == qubitsZExpectedC);
-        EXPECT_TRUE(latRhombic2.qubitsZ == qubitsZExpectedEmpty
-                    ||
-                    latRhombic2.qubitsZ == qubitsZExpectedR2);
+        cQubitTotal += latCubic.qubitsZ[2];
+        r2QubitTotal += latRhombic2.qubitsZ[111];
+        for (int j = 0; j < 3*6*6*6; j++)
+        {
+            if (latCubic.qubitsZ[j] == 1 && j != 2) cWrongQubits.insert(j);
+            if (latRhombic2.qubitsZ[j] == 1 && j != 111) r2WrongQubits.insert(j);
+        }
     }
+    std::cout << "#Cb Z errors: " << cQubitTotal << '\n';
+    std::cout << "#R2 Z errors: " << r2QubitTotal << '\n';
+    std::set<int> emptySet = {};
+    EXPECT_EQ(cWrongQubits, emptySet);
+    EXPECT_EQ(r2WrongQubits, emptySet);
 }
-TEST(applyCCZTest, multipleR1XError)
+TEST(applyCCZTest, membraneR1)
 {
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
     
@@ -190,25 +246,46 @@ TEST(applyCCZTest, multipleR1XError)
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
 
+    latRhombic1.wipe();
     latRhombic1.qubitsX[0] = 1;
-    latRhombic1.qubitsX[216] = 1;
+    latRhombic1.qubitsX[111] = 1;
+    latRhombic1.qubitsX[131] = 1;
     latRhombic1.qubitsX[219] = 1;
-    latRhombic1.qubitsX[126] = 1;
-    latRhombic1.qubitsX[129] = 1;
-    latRhombic1.qubitsX[345] = 1;
+    latRhombic1.calcSynd('z',1,1);
 
+    vint cQubitTotals = {0,0,0};
+    vint r2QubitTotals = {0,0,0};
+    std::set<int> cWrongQubits;
+    std::set<int> r2WrongQubits;
     for (int i = 0; i < 100; i++)
     {
         latCubic.wipe();
         latRhombic2.wipe();
+        
         applyCCZ(lattices, overlappingFaces, engine, dist, 0);
-        if (latCubic.qubitsZ[2] == 1
-            || latCubic.qubitsZ[110] == 1
-            || latCubic.qubitsZ[218] == 1) FAIL();
-        if (latRhombic2.qubitsZ[111] == 1
-            || latRhombic2.qubitsZ[108] == 1
-            || latRhombic2.qubitsZ[327] == 1) FAIL();
+        cQubitTotals[0] += latCubic.qubitsZ[5];
+        cQubitTotals[1] += latCubic.qubitsZ[108];
+        cQubitTotals[2] += latCubic.qubitsZ[110];
+        r2QubitTotals[0] += latRhombic2.qubitsZ[0];
+        r2QubitTotals[1] += latRhombic2.qubitsZ[110];
+        r2QubitTotals[2] += latRhombic2.qubitsZ[108];
+        for (int j = 0; j < 3*6*6*6; j++)
+        {
+            if (latCubic.qubitsZ[j] == 1 &&
+                    j != 5 && j != 108 && j != 110) cWrongQubits.insert(j);
+            if (latRhombic2.qubitsZ[j] == 1 &&
+                    j != 0 && j != 110 && j != 108) r2WrongQubits.insert(j);
+        }
     }
+    std::cout << "Cb Z errors: ";
+    for (int i : cQubitTotals) std::cout << i << ' ';
+    std::cout << '\n';
+    std::cout << "R2 Z errors: ";
+    for (int i : r2QubitTotals) std::cout << i << ' ';
+    std::cout << '\n';
+    std::set<int> emptySet = {};
+    EXPECT_EQ(cWrongQubits, emptySet);
+    EXPECT_EQ(r2WrongQubits, emptySet);
 }
 TEST(applyCCZTest, singleR2XError)
 {
@@ -222,24 +299,35 @@ TEST(applyCCZTest, singleR2XError)
     vint qubitsZExpectedC(3*6*6*6, 0);
     vint qubitsZExpectedR1(3*6*6*6, 0);
 
+    latRhombic2.wipe();
     latRhombic2.qubitsX[111] = 1;
-    qubitsZExpectedC[2] = 1;
-    qubitsZExpectedR1[0] = 1;
-    
+    latRhombic2.calcSynd('z',1,1);
+
+    int cQubitTotal = 0;
+    int r1QubitTotal = 0; 
+    std::set<int> cWrongQubits;
+    std::set<int> r1WrongQubits;
     for (int i = 0; i < 100; i++)
     {
         latCubic.wipe();
         latRhombic1.wipe();
+        
         applyCCZ(lattices, overlappingFaces, engine, dist, 0);
-        EXPECT_TRUE(latCubic.qubitsZ == qubitsZExpectedEmpty
-                    ||
-                    latCubic.qubitsZ == qubitsZExpectedC);
-        EXPECT_TRUE(latRhombic1.qubitsZ == qubitsZExpectedEmpty
-                    ||
-                    latRhombic1.qubitsZ == qubitsZExpectedR1);
+        cQubitTotal += latCubic.qubitsZ[2];
+        r1QubitTotal += latRhombic1.qubitsZ[0];
+        for (int j = 0; j < 3*6*6*6; j++)
+        {
+            if (latCubic.qubitsZ[j] == 1 && j != 2) cWrongQubits.insert(j);
+            if (latRhombic1.qubitsZ[j] == 1 && j != 0) r1WrongQubits.insert(j);
+        }
     }
+    std::cout << "#Cb Z errors: " << cQubitTotal << '\n';
+    std::cout << "#R1 Z errors: " << r1QubitTotal << '\n';
+    std::set<int> emptySet = {};
+    EXPECT_EQ(cWrongQubits, emptySet);
+    EXPECT_EQ(r1WrongQubits, emptySet);
 }
-TEST(applyCCZTest, multipleR2XError)
+TEST(applyCCZTest, membraneR2)
 {
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
     
@@ -247,25 +335,46 @@ TEST(applyCCZTest, multipleR2XError)
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
 
+    latRhombic2.wipe();
     latRhombic2.qubitsX[111] = 1;
-    latRhombic2.qubitsX[108] = 1;
-    latRhombic2.qubitsX[327] = 1;
+    latRhombic2.qubitsX[0] = 1;
     latRhombic2.qubitsX[18] = 1;
-    latRhombic2.qubitsX[234] = 1;
-    latRhombic2.qubitsX[237] = 1;
+    latRhombic2.qubitsX[19] = 1;
+    latRhombic2.calcSynd('z',1,1);
 
+    vint cQubitTotals = {0,0,0};
+    vint r1QubitTotals = {0,0,0};
+    std::set<int> cWrongQubits;
+    std::set<int> r1WrongQubits;
     for (int i = 0; i < 100; i++)
     {
         latCubic.wipe();
         latRhombic1.wipe();
+        
         applyCCZ(lattices, overlappingFaces, engine, dist, 0);
-        if (latCubic.qubitsZ[2] == 1
-            || latCubic.qubitsZ[110] == 1
-            || latCubic.qubitsZ[218] == 1) FAIL();
-        if (latRhombic1.qubitsZ[0] == 1
-            || latRhombic1.qubitsZ[216] == 1
-            || latRhombic1.qubitsZ[219] == 1) FAIL();
+        cQubitTotals[0] += latCubic.qubitsZ[5];
+        cQubitTotals[1] += latCubic.qubitsZ[19];
+        cQubitTotals[2] += latCubic.qubitsZ[20];
+        r1QubitTotals[0] += latRhombic1.qubitsZ[111];
+        r1QubitTotals[1] += latRhombic1.qubitsZ[129];
+        r1QubitTotals[2] += latRhombic1.qubitsZ[130];
+        for (int j = 0; j < 3*6*6*6; j++)
+        {
+            if (latCubic.qubitsZ[j] == 1 &&
+                    j != 5 && j != 19 && j != 20) cWrongQubits.insert(j);
+            if (latRhombic1.qubitsZ[j] == 1 &&
+                    j != 111 && j != 129 && j != 130) r1WrongQubits.insert(j);
+        }
     }
+    std::cout << "Cb Z errors: ";
+    for (int i : cQubitTotals) std::cout << i << ' ';
+    std::cout << '\n';
+    std::cout << "R1 Z errors: ";
+    for (int i : r1QubitTotals) std::cout << i << ' ';
+    std::cout << '\n';
+    std::set<int> emptySet = {};
+    EXPECT_EQ(cWrongQubits, emptySet);
+    EXPECT_EQ(r1WrongQubits, emptySet);
 }
 TEST(applyCCZTest, link)
 {
@@ -280,6 +389,12 @@ TEST(applyCCZTest, link)
     latRhombic2.qubitsX[111] = 1;
 
     applyCCZ(lattices, overlappingFaces, engine, dist, 0);
+
+    EXPECT_EQ(latCubic.qubitsZ[2], 0);
+    EXPECT_EQ(latRhombic1.qubitsZ[0], 0);
+    EXPECT_EQ(latRhombic2.qubitsZ[111], 0);
+
+    applyCCZ(lattices, overlappingFaces, engine, dist, 1);
 
     EXPECT_EQ(latCubic.qubitsZ[2], 1);
     EXPECT_EQ(latRhombic1.qubitsZ[0], 1);

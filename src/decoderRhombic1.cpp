@@ -4,6 +4,46 @@ namespace rhombic {
 
 namespace r1 {
 
+coord w1ToW0(coord cd, int L)
+{
+    int v = coordToIndex(cd, L);
+    //Moves from w1 vertex to w0, either in xyz or -xyz 
+    //depending on which is possible
+    if ((cd.xi[0] + cd.xi[1] + cd.xi[2]) % 2 == 0) cd = indexToCoord(neigh(v,3,-1,L), L);
+    else cd = indexToCoord(neigh(v,3,1,L), L);
+    return cd;
+}
+
+int shortestPathLength(int v1, int v2, int L)
+{
+    coord c1 = indexToCoord(v1, L);
+    coord c2 = indexToCoord(v2, L);
+    std::vector<float> diff = differenceVector(c1,c2);
+    int dist = 0;
+    if (c1.xi[3] == 1)
+    {
+        c1 = w1ToW0(c1,L);
+        std::vector<float> newDiff = differenceVector(c1,c2);
+        if (magnitude(newDiff) > magnitude(diff)) dist -= 1;
+        else if (magnitude(newDiff) < magnitude(diff)) dist += 1;
+        diff = newDiff;
+    }
+    if (c2.xi[3] == 1)
+    {
+        c2 = w1ToW0(c2,L);
+        std::vector<float> newDiff = differenceVector(c1,c2);
+        if (magnitude(newDiff) > magnitude(diff)) dist -= 1;
+        else if (magnitude(newDiff) < magnitude(diff)) dist += 1;
+        diff = newDiff;
+    }
+        
+    for (float &i : diff) i = abs(i);
+    std::sort(diff.begin(), diff.end());
+    if ((diff[0] + diff[1]) > diff[2]) dist += 2*(diff[0] + diff[1]);
+    else dist += 2*diff[2];
+    return dist; 
+}
+
 std::vector<int> distanceToClosestXBoundary(int v, int L)
 {
     //strings of edges can terminate at w=0 vertices at +/- x and w=1 at +/- z
@@ -13,19 +53,19 @@ std::vector<int> distanceToClosestXBoundary(int v, int L)
     if (cd.xi[3] == 0)
     {
         if (cd.xi[0] < (L-4)/2) xDist = -2*cd.xi[0];
-        else xDist = 2*((L-4)/2 - cd.xi[0]);
+        else xDist = 2*((L-4) - cd.xi[0]);
 
-        if (cd.xi[2] < (L-4)/2) zDist = -2*cd.xi[2] - 1;
-        else zDist = 2*((L-4)/2 - cd.xi[2]) + 1;
+        if (cd.xi[2] <= (L-4)/2) zDist = -2*cd.xi[2] + 1;
+        else zDist = 2*((L-4) - cd.xi[2]) + 1;
     }
 
     else
     {
-        if (cd.xi[0] < (L-4)/2) xDist = -2*cd.xi[0] + 1;
-        else xDist = 2*((L-4)/2 - cd.xi[0]) - 1;
+        if (cd.xi[0] < (L-4)/2) xDist = -2*cd.xi[0] - 1;
+        else xDist = 2*((L-4) - cd.xi[0]) - 1;
 
         if (cd.xi[2] < (L-4)/2) zDist = -2*cd.xi[2];
-        else zDist = 2*((L-4)/2 - cd.xi[2]);
+        else zDist = 2*((L-4) - cd.xi[2]);
     }
 
     vint distInfo = {0,0,0}; //dir, sign, dist

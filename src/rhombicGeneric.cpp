@@ -131,7 +131,6 @@ int neighXYZ(int v, int dir, int sign, int L)
     return coordToIndex(c, L);
 }
 
-
 int edgeIndex(int v, int dir, int sign, int L)
 {
     if (sign < 0)
@@ -204,29 +203,21 @@ int scalarProduct(std::vector<float> vec, int dir, int sign)
     else throw std::invalid_argument("Invalid direction");
 }
 
-int shortestPathLength(int v1, int v2, int L)
+std::vector<float> differenceVector(coord c1, coord c2)
 {
-    coord c1 = indexToCoord(v1, L);
-    coord c2 = indexToCoord(v2, L);
-    int dist = 0;
-    vint diff = {c2.xi[0] - c1.xi[0],
-                 c2.xi[1] - c1.xi[1],
-                 c2.xi[2] - c1.xi[2]};
-    if (c1.xi[3] == 1)
-    {
-        if ((diff[0] + diff[1] + diff[2]) > 0) dist -= 1;
-        else dist += 1;
-    }
-    if (c2.xi[3] == 1)
-    {
-        if((diff[0] + diff[1] + diff[2]) > 0) dist += 1;
-        else dist -= 1;
-    }
-    for (int &i : diff) i = abs(i);
-    std::sort(diff.begin(), diff.end());
-    if ((diff[0] + diff[1]) > diff[2]) dist += 2*(diff[0] + diff[1]);
-    else dist += 2*diff[2];
-    return abs(dist); //can be -1 if both vertices have the same first 3 coords
+    std::vector<float> diff = {c2.xi[0] - c1.xi[0] + 
+                              (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
+                              c2.xi[1] - c1.xi[1] + 
+                              (static_cast<float>(c2.xi[3] - c1.xi[3])/2),
+                              c2.xi[2] - c1.xi[2] + 
+                              (static_cast<float>(c2.xi[3] - c1.xi[3])/2)};
+    return diff;
+}
+
+float magnitude(std::vector<float> diff)
+{
+    float mag = sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]);
+    return mag;
 }
 
 vint shortestPath(int v1, int v2, Lattice &lattice)
@@ -383,7 +374,7 @@ vint shortestDualPath(int cell1, int cell2, Lattice &lattice,
 void jumpCorrection(Lattice &lattice, std::mt19937& engine, 
                         std::uniform_real_distribution<double>& dist, int r)
 {
-    for (int x = lattice.L-4; x > 0; x--)
+    for (int x = lattice.L-4; x >= 0; x--)
     {
         for (int cycle = 0; cycle < 2; cycle++)
         {
@@ -450,7 +441,7 @@ void jumpCorrection(Lattice &lattice, std::mt19937& engine,
                             }
                         }
                     }
-                    else
+                    else if (x != 0)
                     {
                         vint faces(2);
                         vvint edges(2);

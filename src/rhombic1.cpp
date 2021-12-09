@@ -270,11 +270,31 @@ void buildZSyndIndices(vint &zSyndIndices, int L)
         for (int i = 0; i < 4; i++)
         {
             if (dirs[i] == 1) zSyndIndices.push_back(edgeIndex(v,i,1,L));
-            if (dirs[i+4] == 1) zSyndIndices.push_back(edgeIndex(v,i+4,-1,L));
+            if (dirs[i+4] == 1) zSyndIndices.push_back(edgeIndex(v,i,-1,L));
         }
     }
     std::sort(zSyndIndices.begin(), zSyndIndices.end());
 }
+
+void buildDefectIndices(vint &defectIndices, int L)
+{
+    for (int v = 0; v < L * L * L; v++)
+    {
+        coord cdw0 = indexToCoord(v, L);
+        coord cdw1 = indexToCoord(v+L*L*L, L);
+        if ((cdw0.xi[0] + cdw0.xi[1] + cdw0.xi[2]) % 2 == 0)
+        {
+            if (cdw0.xi[0] < (L-4) && cdw0.xi[0] > 0 &&
+                cdw0.xi[1] < (L-2) &&
+                cdw0.xi[2] < (L-3) && cdw0.xi[2] > 0) defectIndices.push_back(v);
+        }
+        if (cdw1.xi[0] < (L-4) &&
+            cdw1.xi[1] < (L-3) &&
+            cdw1.xi[2] < (L-4) && cdw1.xi[2] > 0) defectIndices.push_back(v+L*L*L);
+    }
+    std::sort(defectIndices.begin(), defectIndices.end());
+} 
+
 
 void buildLogicals(Lattice &lattice)
 {
@@ -287,7 +307,8 @@ void buildLogicals(Lattice &lattice)
             coord cd1 = indexToCoord(vertices[0], lattice.L);
             coord cd2 = indexToCoord(vertices[1], lattice.L);
             if (cd1.xi[1] == 0 || cd2.xi[1] == 0) lattice.xLogical.push_back(q);
-            if (cd1.xi[0] == 0 && cd1.xi[2] == 0)lattice.zLogical.push_back(q);
+            if (cd1.xi[0] == 0 && cd1.xi[2] == 0
+                && cd2.xi[0] == 0 && cd2.xi[2] == 1) lattice.zLogical.push_back(q);
         }
     }
 }
@@ -301,6 +322,7 @@ void buildLattice(Lattice &lattice)
     buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.L);
     buildXSyndIndices(lattice.xSyndIndices, lattice.L);
     buildZSyndIndices(lattice.zSyndIndices, lattice.L);
+    buildDefectIndices(lattice.defectIndices, lattice.L);
     buildLogicals(lattice);  //this needs to come after index building functions
                  
 }

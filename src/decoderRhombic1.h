@@ -8,6 +8,10 @@ namespace rhombic {
 
 namespace r1 {
 
+coord w1ToW0(coord cd, int L);
+
+int shortestPathLength(int v1, int v2, int L);
+
 vint distanceToClosestXBoundary(int v, int L);
 
 vint shortestPathToXBoundary(int v, int L);
