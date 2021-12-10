@@ -14,7 +14,7 @@ coord w1ToW0(coord cd, int L)
     return cd;
 }
 
-int shortestPathLength(int v1, int v2, int L)
+int shortestPathLength(int v1, int v2, int L, int twoD)
 {
     coord c1 = indexToCoord(v1, L);
     coord c2 = indexToCoord(v2, L);
@@ -41,10 +41,11 @@ int shortestPathLength(int v1, int v2, int L)
     std::sort(diff.begin(), diff.end());
     if ((diff[0] + diff[1]) > diff[2]) dist += 2*(diff[0] + diff[1]);
     else dist += 2*diff[2];
+    if (twoD == 1) dist = dist/2;
     return dist; 
 }
 
-std::vector<int> distanceToClosestXBoundary(int v, int L)
+std::vector<int> distanceToClosestXBoundary(int v, int L, int twoD)
 {
     //strings of edges can terminate at w=0 vertices at +/- x and w=1 at +/- z
     coord cd = indexToCoord(v, L);
@@ -69,25 +70,26 @@ std::vector<int> distanceToClosestXBoundary(int v, int L)
     }
 
     vint distInfo = {0,0,0}; //dir, sign, dist
-    if (abs(xDist) < abs(zDist))
+    
+    if (twoD == 1 || abs(xDist) >= abs(zDist))
+    {
+        distInfo[0] = 2;
+        distInfo[1] = (0 < zDist) - (0 > zDist);
+        if (twoD == 1) distInfo[2] = (abs(zDist) - 1)/2 + 1;
+        else distInfo[2] = abs(zDist);
+    }
+    else 
     {
         distInfo[0] = 0;
         distInfo[1] = (0 < xDist) - (0 > xDist);
         distInfo[2] = abs(xDist);
     }
-    else 
-    {
-        distInfo[0] = 2;
-        distInfo[1] = (0 < zDist) - (0 > zDist);
-        distInfo[2] = abs(zDist);
-    }
-    
     return distInfo;
 }
 
-std::vector<int> shortestPathToXBoundary(int v, int L)   
+std::vector<int> shortestPathToXBoundary(int v, int L, int twoD)   
 {
-    vint distInfo = distanceToClosestXBoundary(v, L);
+    vint distInfo = distanceToClosestXBoundary(v, L, twoD);
     int &dir = distInfo[0];
     int &sign = distInfo[1];
     int &dist = distInfo[2];
@@ -185,8 +187,8 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
             {
                 if (sign == 1)
                 {
-                    moveDir1 = {xz, 1};
-                    moveDir2 = {yz, 1};
+                    moveDir1 = {yz, 1};
+                    moveDir2 = {xz, 1};
                 }
                 else 
                 {
@@ -204,8 +206,8 @@ std::vector<int> shortestPathToXBoundary(int v, int L)
                 }
                 else
                 {
-                    moveDir1 = {yz, -1};
-                    moveDir2 = {xz, -1};
+                    moveDir1 = {xz, -1};
+                    moveDir2 = {yz, -1};
                 }
             }
             
@@ -301,7 +303,7 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
 //and then functions from rhombic1 or 2 namespace as needed
 //but I'm not sure it's worth it as all the extra if statements would slow things down
 
-vpint mwpm(vint &defects, int L, int dual)
+vpint mwpm(vint &defects, int L, int dual, int twoD)
 {
     std::vector<int> edges;
     std::vector<int> weights;
@@ -312,8 +314,8 @@ vpint mwpm(vint &defects, int L, int dual)
         {
             edges.push_back(i);
             edges.push_back(j);
-            if (dual == 0) weights.push_back(shortestPathLength(defects[i], defects[j], L));
-            else weights.push_back(shortestPathLength(defects[i], defects[j], L)/2);
+            if (dual == 0) weights.push_back(shortestPathLength(defects[i], defects[j], L, twoD));
+            else weights.push_back(shortestPathLength(defects[i], defects[j], L, 0)/2);
             // Add boundary node edges with wt = 0 so they can be matched for no cost
             edges.push_back(nodeNum + i);
             edges.push_back(nodeNum + j);
@@ -322,7 +324,7 @@ vpint mwpm(vint &defects, int L, int dual)
         // Add edge to boundary node
         edges.push_back(i);
         edges.push_back(nodeNum + i);
-        if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L)[2]);
+        if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L, twoD)[2]);
         else weights.push_back(distanceToClosestZBoundary(defects[i], L)[1]);
     }
     int edgeNum = edges.size() / 2;
@@ -362,7 +364,7 @@ void joinPair(int v1, int v2, Lattice &lattice)
 {
     vint path;
     //If matched to boundary
-    if (v2 == -1) path = shortestPathToXBoundary(v1, lattice.L);
+    if (v2 == -1) path = shortestPathToXBoundary(v1, lattice.L, 0);
     else path = shortestPath(v1, v2, lattice);
     for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
@@ -383,16 +385,57 @@ void zErrorDecoder(Lattice &lattice, int useOuter, int useInner)
     {
         if (lattice.syndromeX[j] == 1) violatedXStabs.push_back(j);
     }
-    xStabPairs = mwpm(violatedXStabs, lattice.L, 1);
+    xStabPairs = mwpm(violatedXStabs, lattice.L, 1, 0);
     for (auto &pair : xStabPairs)
     {
         joinDualPair(pair.first, pair.second, lattice, useOuter, useInner);
     }
 }
 
+void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices)
+{
+    //This is a similar idea to the cubic 2D X decoder so check that for more explanation
+    //main difference here is edge -> face conversion method after finding path
+    vint x0Vertices;
+    for (int v : syndromeVertices)
+    {
+        coord cd = indexToCoord(v, lattice.L);
+        if (cd.xi[0] == 0 && cd.xi[3] == 0) x0Vertices.push_back(v);
+    }
+    vpint defectPairs = mwpm(x0Vertices, lattice.L, 0, 1);
+    for (auto &pair : defectPairs)
+    {
+        vint path;
+        if (pair.second == -1)
+        {
+            path = shortestPathToXBoundary(pair.first, lattice.L, 1);
+            int edgeAtBoundary = path.back();
+            vint faces = lattice.edgeToFaces[edgeAtBoundary];
+            for (int f : faces)
+            {
+                if (std::find(lattice.outerQubitIndices.begin(),
+                              lattice.outerQubitIndices.end(), f)
+                    != lattice.outerQubitIndices.end()) 
+                {
+                    lattice.qubitsX[f] = (lattice.qubitsX[f] + 1) % 2;
+                }
+            }
+            path.pop_back();
+        }
+        else path = shortestPath(pair.first, pair.second, lattice);
+        for (int i = 0; i < path.size(); i+=2)
+        {
+            pint vs1 = lattice.edgeToVertices[path[i]];
+            pint vs2 = lattice.edgeToVertices[path[i+1]];
+            int f = findFace({vs1.first,vs2.first}, lattice.vertexToFaces, lattice.faceToVertices);
+            lattice.qubitsX[f] = (lattice.qubitsX[f] + 1) % 2;
+        }
+    }
+}
+
 void measErrorDecoder(Lattice &lattice)
 {
-    vpint defectPairs = mwpm(lattice.defects, lattice.L, 0);
+    vpint defectPairs = mwpm(lattice.defects, lattice.L, 0, 0);
     for (auto& pair : defectPairs)
     {
         joinPair(pair.first, pair.second, lattice);

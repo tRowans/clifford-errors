@@ -34,44 +34,66 @@ TEST(w1ToW0TestR1, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(shortestPathLengthTestR1, CorrectOutput)
+TEST(shortestPathLengthTestR1, threeD)
 {
-    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 216, 6), 1);
-    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 36, 6), 2);
-    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 217, 6), 3);
-    EXPECT_EQ(rhombic::r1::shortestPathLength(79, 265, 6), 3);
-    EXPECT_EQ(rhombic::r1::shortestPathLength(79, 252, 6), 1);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 216, 6, 0), 1);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 36, 6, 0), 2);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(0, 217, 6, 0), 3);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(79, 265, 6, 0), 3);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(79, 252, 6, 0), 1);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(216, 252, 6, 0), 2);
+}
+TEST(shortestPathLengthTestR1, twoD)
+{
+    EXPECT_EQ(rhombic::r1::shortestPathLength(42, 84, 6, 1), 1);
+    EXPECT_EQ(rhombic::r1::shortestPathLength(42, 54, 6, 1), 2);
 }
 
 //------------------------------------------------------------
 
-TEST(distanceToClosestXBoundaryTestR1, CorrectOutput)
+TEST(distanceToClosestXBoundaryTestR1, threeD)
 {
     vint distInfo1 = {0, -1, 1};
     vint distInfo2 = {0, 1, 1};
     vint distInfo3 = {2, -1, 1};
     vint distInfo4 = {2, 1, 1};
     
-    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(258, 6), distInfo1);
-    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(253, 6), distInfo2);
-    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(49, 6), distInfo3);
-    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(79, 6), distInfo4);
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(258, 6, 0), distInfo1);
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(253, 6, 0), distInfo2);
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(49, 6, 0), distInfo3);
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(79, 6, 0), distInfo4);
+}
+TEST(distanceToClosestXBoundaryTestR1, twoD)
+{
+    vint distInfo1 = {2, -1, 1};
+    vint distInfo2 = {2, 1, 1};
+
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(42, 6, 1), distInfo1);
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(84, 6, 1), distInfo2);
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(54, 6, 1), distInfo1);
+    EXPECT_EQ(rhombic::r1::distanceToClosestXBoundary(72, 6, 1), distInfo2);
 }
 
 //------------------------------------------------------------
 
-TEST(shortestPathToXBoundaryTestR1, CorrectOutput)
+TEST(shortestPathToXBoundaryTestR1, threeD)
 {
-    //These might be wrong because I'm not sure which path it will choose
     vint path1 = {171};
     vint path2 = {1012};
     vint path3 = {894};
     vint path4 = {317};
-    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(258, 6), path1);
-    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(253, 6), path2);
-    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(49, 6), path3);
-    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(79, 6), path4);
+    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(258, 6, 0), path1);
+    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(253, 6, 0), path2);
+    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(49, 6, 0), path3);
+    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(79, 6, 0), path4);
 }
+TEST(shortestPathToXBoundaryTestR1, twoD)
+{
+    vint path1 = {866};
+    vint path2 = {337};
+    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(42, 6, 1), path1);
+    EXPECT_EQ(rhombic::r1::shortestPathToXBoundary(84, 6, 1), path2);
+} 
 
 //------------------------------------------------------------
 
@@ -111,15 +133,15 @@ TEST(mwpmTestR1, PrimalLattice)
 
     defects = {79, 258};
     expectedMatching = {{79, 258}};
-    EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0), expectedMatching);
+    EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0, 0), expectedMatching);
 
     defects = {49, 79, 252, 265};
     expectedMatching = {{49, 265}, {79, 252}};
-    EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0), expectedMatching);
+    EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0, 0), expectedMatching);
 
     defects = {49, 252};
     expectedMatching = {{49, -1}, {252, -1}};
-    EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0), expectedMatching);
+    EXPECT_EQ(rhombic::r1::mwpm(defects, 6, 0, 0), expectedMatching);
 }
 TEST(mwpmTestR1, DualLattice)
 {
@@ -128,15 +150,15 @@ TEST(mwpmTestR1, DualLattice)
 
     violatedStabs = {43, 48};
     expectedMatching = {{43, 48}};
-    EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1), expectedMatching);
+    EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1, 0), expectedMatching);
 
     violatedStabs = {8, 43, 48, 50};
     expectedMatching = {{8, 50}, {43, 48}};
-    EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1), expectedMatching);
+    EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1, 0), expectedMatching);
 
     violatedStabs = {6};
     expectedMatching = {{6, -1}};
-    EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1), expectedMatching);
+    EXPECT_EQ(rhombic::r1::mwpm(violatedStabs, 6, 1, 0), expectedMatching);
 }
 
 //------------------------------------------------------------
@@ -240,6 +262,40 @@ TEST(zErrorDecoderTestR1, matchToBoundary)
 
     rhombic::r1::zErrorDecoder(latRhombic1, 1, 1);
     EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
+}
+
+//------------------------------------------------------------
+
+TEST(xErrorDecoder2DTestR1, matchPair)
+{
+    vint qubitsExpected(3*6*6*6, 0);
+
+    latRhombic1.wipe();
+    latRhombic1.qubitsX[126] = 1;
+    vint syndromeVertices = {42, 84, 258};
+
+    rhombic::r1::xErrorDecoder2D(latRhombic1, syndromeVertices);
+    EXPECT_EQ(latRhombic1.qubitsX, qubitsExpected);
+}
+//Not enough space for matching two pairs in the bulk
+TEST(xErrorDecoder2DTestR1, matchTwoToBoundary) 
+{
+    vint qubitsExpected(3*6*6*6, 0);
+
+    latRhombic1.wipe();
+    latRhombic1.qubitsX[36] = 1;
+    latRhombic1.qubitsX[216] = 1;
+    vint syndromeVertices = {54, 72, 228, 288};
+
+    rhombic::r1::xErrorDecoder2D(latRhombic1, syndromeVertices);
+    std::cout << "Non-zero qubits: ";
+    for (int i = 0; i < latRhombic1.qubitsX.size(); i++)
+    {
+        if (latRhombic1.qubitsX[i] == 1) std::cout << i << ' ';
+    }
+    std::cout << '\n';
+
+    EXPECT_EQ(latRhombic1.qubitsX, qubitsExpected);
 }
 
 //------------------------------------------------------------

@@ -140,12 +140,13 @@ int main(int argc, char *argv[])
         //because it will still have errors from the CZ + depolarising error
         //so we need a measurement-error free 2D decoding step before checking for success.
 
+        vvint syndromeVertices = getSyndromeVertices(lattices);
         latCubic.calcSynd('z',1,0);
-        cubic::xErrorDecoder2D(latCubic, getSyndromeVertices(lattices)[0]);
+        cubic::xErrorDecoder2D(latCubic, syndromeVertices[0]);
         latRhombic1.calcSynd('x',1,0);
-        //rhombic::r1::xErrorDecoder2D(latRhombic1);
+        rhombic::r1::xErrorDecoder2D(latRhombic1, syndromeVertices[1]);
         latRhombic2.calcSynd('x',1,0);
-        //rhombic::r2::xErrorDecoder2D(latRhombic2);
+        rhombic::r2::xErrorDecoder2D(latRhombic2, syndromeVertices[2]);
         
         //Check X logical errors
         cFailures[0] += latCubic.checkLogicalError('x');

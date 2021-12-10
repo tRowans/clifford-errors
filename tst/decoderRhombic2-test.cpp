@@ -33,41 +33,63 @@ TEST(w1ToW0TestR2, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(shortestPathLengthTestR2, CorrectOutptut)
+TEST(shortestPathLengthTestR2, threeD)
 {
-    EXPECT_EQ(rhombic::r2::shortestPathLength(1, 217, 6), 1);
-    EXPECT_EQ(rhombic::r2::shortestPathLength(1, 37, 6), 2);
-    EXPECT_EQ(rhombic::r2::shortestPathLength(1, 218, 6), 3);
-    EXPECT_EQ(rhombic::r2::shortestPathLength(85, 252, 6), 3);
-    EXPECT_EQ(rhombic::r2::shortestPathLength(85, 258, 6), 1);
+    EXPECT_EQ(rhombic::r2::shortestPathLength(1, 217, 6, 0), 1);
+    EXPECT_EQ(rhombic::r2::shortestPathLength(1, 37, 6, 0), 2);
+    EXPECT_EQ(rhombic::r2::shortestPathLength(1, 218, 6, 0), 3);
+    EXPECT_EQ(rhombic::r2::shortestPathLength(85, 252, 6, 0), 3);
+    EXPECT_EQ(rhombic::r2::shortestPathLength(85, 258, 6, 0), 1);
+    EXPECT_EQ(rhombic::r2::shortestPathLength(216, 252, 6, 0), 2);
+}
+TEST(shortestPathLengthTestR2, twoD)
+{
+    EXPECT_EQ(rhombic::r2::shortestPathLength(48, 78, 6, 1), 1);
+    EXPECT_EQ(rhombic::r2::shortestPathLength(36, 48, 6, 1), 2);
 }
 
 //------------------------------------------------------------
 
-TEST(distanceToClosestXBoundaryTestR2, CorrectOutput)
+TEST(distanceToClosestXBoundaryTestR2, threeD)
 {
     vint distInfo1 = {0, -1, 1};
     vint distInfo2 = {0, 1, 1};
     vint distInfo3 = {1, -1, 1};
     vint distInfo4 = {1, 1, 1};
-    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(222, 6), distInfo1);
-    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(223, 6), distInfo2);
-    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(43, 6), distInfo3);
-    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(85, 6), distInfo4);
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(222, 6, 0), distInfo1);
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(223, 6, 0), distInfo2);
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(43, 6, 0), distInfo3);
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(85, 6, 0), distInfo4);
+}
+TEST(distanceToClosestXBoundaryTestR2, twoD)
+{
+    vint distInfo1 = {1, -1, 1};
+    vint distInfo2 = {1, 1, 1};
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(78, 6, 1), distInfo1);
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(48, 6, 1), distInfo2);
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(6, 6, 1), distInfo1);
+    EXPECT_EQ(rhombic::r2::distanceToClosestXBoundary(120, 6, 1), distInfo2);
 }
 
 //------------------------------------------------------------
 
-TEST(shortestPathToXBoundaryTestR2, CorrectOutput)
+TEST(shortestPathToXBoundaryTestR2, threeD)
 {
     vint path1 = {27};
     vint path2 = {895};
-    vint path3 = {867};
+    vint path3 = {870};
     vint path4 = {340};
-    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(222, 6), path1);
-    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(223, 6), path2);
-    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(43, 6), path3);
-    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(85, 6), path4);
+    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(222, 6, 0), path1);
+    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(223, 6, 0), path2);
+    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(43, 6, 0), path3);
+    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(85, 6, 0), path4);
+}
+TEST(shortestPathToXBoundaryTestR2, twoD)
+{
+    vint path1 = {25};
+    vint path2 = {480};
+    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(6, 6, 1), path1);
+    EXPECT_EQ(rhombic::r2::shortestPathToXBoundary(120, 6, 1), path2);
 }
 
 //------------------------------------------------------------

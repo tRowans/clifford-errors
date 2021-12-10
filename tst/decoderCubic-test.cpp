@@ -232,9 +232,6 @@ TEST(xErrorDecoder2DTest, matchPair)
 {
     latCubic.wipe();
     latCubic.qubitsX[20] = 1;
-    latCubic.syndromeZ[20] = 1;
-    latCubic.syndromeZ[38] = 1;
-    latCubic.syndromeZ[127] = 1;
     vint syndromeVertices = {6, 12, 42, 48};
 
     cubic::xErrorDecoder2D(latCubic, syndromeVertices);
@@ -246,12 +243,6 @@ TEST(xErrorDecoder2DTest, matchTwoPairs)
     latCubic.wipe();
     latCubic.qubitsX[20] = 1;
     latCubic.qubitsX[26] = 1;
-    latCubic.syndromeZ[20] = 1;
-    latCubic.syndromeZ[38] = 1;
-    latCubic.syndromeZ[127] = 1;
-    latCubic.syndromeZ[26] = 1;
-    latCubic.syndromeZ[44] = 1;
-    latCubic.syndromeZ[133] = 1;
     vint syndromeVertices = {6, 12, 42, 48, 8, 14, 44, 50};
 
     cubic::xErrorDecoder2D(latCubic, syndromeVertices);
@@ -262,8 +253,6 @@ TEST(xErrorDecoder2DTest, matchToBoundary)
 {
     latCubic.wipe();
     latCubic.qubitsX[2] = 1;
-    latCubic.syndromeZ[20] = 1;
-    latCubic.syndromeZ[109] = 1;
     vint syndromeVertices = {6, 36};
 
     cubic::xErrorDecoder2D(latCubic, syndromeVertices);

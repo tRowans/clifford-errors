@@ -458,8 +458,8 @@ lib/googletest/googletest/CMakeFiles/gtest_main.dir/clean:
 # Target rules for target tst/CMakeFiles/LatticeTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/LatticeTests.dir/all: src/CMakeFiles/lattice_lib.dir/all
 tst/CMakeFiles/LatticeTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
+tst/CMakeFiles/LatticeTests.dir/all: src/CMakeFiles/lattice_lib.dir/all
 tst/CMakeFiles/LatticeTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/LatticeTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/LatticeTests.dir/build.make tst/CMakeFiles/LatticeTests.dir/depend
@@ -487,8 +487,8 @@ tst/CMakeFiles/LatticeTests.dir/clean:
 # Target rules for target tst/CMakeFiles/CubicTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/CubicTests.dir/all: src/CMakeFiles/cubic_lib.dir/all
 tst/CMakeFiles/CubicTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
+tst/CMakeFiles/CubicTests.dir/all: src/CMakeFiles/cubic_lib.dir/all
 tst/CMakeFiles/CubicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/CubicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/depend
@@ -516,8 +516,8 @@ tst/CMakeFiles/CubicTests.dir/clean:
 # Target rules for target tst/CMakeFiles/RhombicTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/RhombicTests.dir/all: src/CMakeFiles/rhombic_lib.dir/all
 tst/CMakeFiles/RhombicTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
+tst/CMakeFiles/RhombicTests.dir/all: src/CMakeFiles/rhombic_lib.dir/all
 tst/CMakeFiles/RhombicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/RhombicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/depend
@@ -545,8 +545,8 @@ tst/CMakeFiles/RhombicTests.dir/clean:
 # Target rules for target tst/CMakeFiles/CZTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/CZTests.dir/all: src/CMakeFiles/cz_lib.dir/all
 tst/CMakeFiles/CZTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
+tst/CMakeFiles/CZTests.dir/all: src/CMakeFiles/cz_lib.dir/all
 tst/CMakeFiles/CZTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/CZTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CZTests.dir/build.make tst/CMakeFiles/CZTests.dir/depend
