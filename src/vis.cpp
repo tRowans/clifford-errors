@@ -1,5 +1,4 @@
-
-//------------------------------Z ERROR VISUALISER------------------------------
+#include "vis.h"
 
 std::vector<int> getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector)
 {

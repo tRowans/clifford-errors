@@ -82,11 +82,6 @@ int main(int argc, char *argv[])
             latRhombic2.checkInCodespace('x', 1, 1);
         }
 
-        //Check X logical errors
-        cFailures[0] += latCubic.checkLogicalError('x');
-        r1Failures[0] += latRhombic1.checkLogicalError('x');
-        r2Failures[0] += latRhombic2.checkLogicalError('x');
-
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
         //so equivalently could do a biased error with prob 2*p/3
@@ -143,15 +138,28 @@ int main(int argc, char *argv[])
         
         //We do not expect the 2D code to be error free even if we make no mistakes
         //because it will still have errors from the CZ + depolarising error
-        //so we need a measurement-error free decoding step before checking for success.
-        //Can use the same decoder as for 3D here as long as errors are only on outer qubits
+        //so we need a measurement-error free 2D decoding step before checking for success.
+
+        latCubic.calcSynd('z',1,0);
+        cubic::xErrorDecoder2D(latCubic, getSyndromeVertices(lattices)[0]);
+        latRhombic1.calcSynd('x',1,0);
+        //rhombic::r1::xErrorDecoder2D(latRhombic1);
+        latRhombic2.calcSynd('x',1,0);
+        //rhombic::r2::xErrorDecoder2D(latRhombic2);
+        
+        //Check X logical errors
+        cFailures[0] += latCubic.checkLogicalError('x');
+        r1Failures[0] += latRhombic1.checkLogicalError('x');
+        r2Failures[0] += latRhombic2.checkLogicalError('x');
+
+        //Can use the same decoder as for 3D here but restricted to outer qubits
         latCubic.calcSynd('x', 1, 0); 
         cubic::zErrorDecoder(latCubic);
         latRhombic1.calcSynd('x', 1, 0);
         rhombic::r1::zErrorDecoder(latRhombic1, 1, 0);
         latRhombic2.calcSynd('x', 1, 0);
         rhombic::r2::zErrorDecoder(latRhombic2, 1, 0);
-
+        
         //Check Z logical errors 
         cFailures[1] += latCubic.checkLogicalError('z');
         r1Failures[1] += latRhombic1.checkLogicalError('z');

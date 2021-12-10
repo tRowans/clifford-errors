@@ -66,7 +66,7 @@ vint shortestDualPath(int c1, int c2, int L)
     return path;
 }
 
-vint distanceToClosestXBoundary(int v, int L)
+vint distanceToClosestXBoundary(int v, int L, int yOnly)
 {
     coord cd = indexToCoord(v, L);
     vint dists = {0,0}; //y dist, z dist
@@ -79,7 +79,8 @@ vint distanceToClosestXBoundary(int v, int L)
 
     vint distInfo = {0,0,0}; //dir, sign, dist
 
-    if (abs(dists[0]) < abs(dists[1])) distInfo[0] = y;
+    if (yOnly == 1) distInfo[0] = y;    //For matching in 2D code
+    else if (abs(dists[0]) < abs(dists[1])) distInfo[0] = y;
     else distInfo[0] = z;
     distInfo[1] = (0 < dists[distInfo[0]-1]) - (0 > dists[distInfo[0]-1]);
     distInfo[2] = abs(dists[distInfo[0]-1]);
@@ -87,9 +88,9 @@ vint distanceToClosestXBoundary(int v, int L)
     return distInfo;
 }
 
-vint shortestPathToXBoundary(int v, int L)   
+vint shortestPathToXBoundary(int v, int L, int yOnly)   
 {
-    vint distInfo = distanceToClosestXBoundary(v, L);
+    vint distInfo = distanceToClosestXBoundary(v, L, yOnly);
     vint path;
 
     while (distInfo[2] > 0)
@@ -150,7 +151,7 @@ vint shortestPathToZBoundary(int cell, int L)
 //||LOOP DECODER GOES HERE||
 //!!!--------------------!!!
 
-vpint mwpm(vint &defects, int L, int dual)
+vpint mwpm(vint &defects, int L, int dual, int yOnly)
 {
     vint edges;
     vint weights;
@@ -170,7 +171,7 @@ vpint mwpm(vint &defects, int L, int dual)
         } // Add edge to boundary node 
         edges.push_back(i);
         edges.push_back(nodeNum + i);
-        if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L)[2]);
+        if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L, yOnly)[2]);
         else weights.push_back(distanceToClosestZBoundary(defects[i], L)[1]);
     }
     int edgeNum = edges.size() / 2;
@@ -210,7 +211,7 @@ void joinPair(int v1, int v2, Lattice &lattice)
 {
     vint path;
     //If matched to boundary
-    if (v2 == -1) path = shortestPathToXBoundary(v1, lattice.L);
+    if (v2 == -1) path = shortestPathToXBoundary(v1, lattice.L, 0);
     else path = shortestPath(v1, v2, lattice.L);
     for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
@@ -231,16 +232,41 @@ void zErrorDecoder(Lattice &lattice)
     {
         if (lattice.syndromeX[j] == 1) violatedXStabs.push_back(j);
     }
-    xStabPairs = mwpm(violatedXStabs,lattice.L, 1);
+    xStabPairs = mwpm(violatedXStabs,lattice.L, 1, 0);
     for (auto &pair : xStabPairs) 
     {
         joinDualPair(pair.first, pair.second, lattice);
     }
 }
 
+void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices)
+{
+    //Used to check for decoding of X errors in 2D code at end to check for success/failure.
+    //Before running this function we find the syndrome using only the outer qubits 
+    //and then find all the vertices of this syndrome. 
+    //Then we take all the vertices of this syndrome with z=0 and interpret these as a syndrome for the 2D code
+    //Then we can run MWPM to find a correction
+    vint z0Vertices;
+    for (int v : syndromeVertices)
+    {
+        if (indexToCoord(v, lattice.L).xi[2] == 0) z0Vertices.push_back(v);
+    }
+    vpint defectPairs = mwpm(z0Vertices, lattice.L, 0, 1);
+    for (auto &pair : defectPairs)
+    {
+        vint path;
+        if (pair.second == -1) path = shortestPathToXBoundary(pair.first, lattice.L, 1);
+        else path = shortestPath(pair.first, pair.second, lattice.L);
+        //This path is along the bottom edges of the faces we want to flip
+        //So use that 3*v is the edge on the bottom of face 3*v + 1
+        //and 3*v + 1 is the edge on the bottom of face 3*v + 2
+        for (int i : path) lattice.qubitsX[i+1] = (lattice.qubitsX[i+1] + 1) % 2;
+    }
+}
+
 void measErrorDecoder(Lattice &lattice)
 {
-    vpint defectPairs = mwpm(lattice.defects, lattice.L, 0);
+    vpint defectPairs = mwpm(lattice.defects, lattice.L, 0, 0);
     for (auto &pair : defectPairs)
     {
         joinPair(pair.first, pair.second, lattice);

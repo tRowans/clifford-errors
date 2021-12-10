@@ -70,23 +70,41 @@ TEST(shortestDualPathTest, length2)
 
 //------------------------------------------------------------ 
 
-TEST(distanceToClosestXBoundaryTest, CorrectOutput)
+TEST(distanceToClosestXBoundaryTest, AllDirections)
 {
     vint distInfoExpected1 = {2, -1, 1};
     vint distInfoExpected2 = {2, 1, 1};
     
-    EXPECT_EQ(cubic::distanceToClosestXBoundary(43, 6), distInfoExpected1);
-    EXPECT_EQ(cubic::distanceToClosestXBoundary(79, 6), distInfoExpected2);
+    EXPECT_EQ(cubic::distanceToClosestXBoundary(43, 6, 0), distInfoExpected1);
+    EXPECT_EQ(cubic::distanceToClosestXBoundary(79, 6, 0), distInfoExpected2);
+}
+TEST(distanceToClosestXBoundaryTest, yOnly)
+{
+    vint distInfoExpected1 = {1, -1, 1};
+    vint distInfoExpected2 = {1, 1, 1};
+
+    EXPECT_EQ(cubic::distanceToClosestXBoundary(42, 6, 1), distInfoExpected1);
+    EXPECT_EQ(cubic::distanceToClosestXBoundary(48, 6, 1), distInfoExpected2);
+    EXPECT_EQ(cubic::distanceToClosestXBoundary(6, 6, 1), distInfoExpected1);
 }
 
 //------------------------------------------------------------
 
-TEST(shortestPathToXBoundaryTest, correctOutput)
+TEST(shortestPathToXBoundaryTest, AllDirections)
 {
     vint pathExpected1 = {23};
     vint pathExpected2 = {239};
-    EXPECT_EQ(cubic::shortestPathToXBoundary(43, 6), pathExpected1);
-    EXPECT_EQ(cubic::shortestPathToXBoundary(79, 6), pathExpected2);
+    EXPECT_EQ(cubic::shortestPathToXBoundary(43, 6, 0), pathExpected1);
+    EXPECT_EQ(cubic::shortestPathToXBoundary(79, 6, 0), pathExpected2);
+}
+TEST(shortestPathToXBoundary, yOnly)
+{
+    vint pathExpected1 = {109};
+    vint pathExpected2 = {145};
+    vint pathExpected3 = {1};
+    EXPECT_EQ(cubic::shortestPathToXBoundary(42, 6, 1), pathExpected1);
+    EXPECT_EQ(cubic::shortestPathToXBoundary(48, 6, 1), pathExpected2);
+    EXPECT_EQ(cubic::shortestPathToXBoundary(6, 6, 1), pathExpected3);
 }
 
 //------------------------------------------------------------
@@ -115,25 +133,25 @@ TEST(mwpmTest, matchingToDefects)
 {
     vint defects = {42, 48};
     vpint defectPairsExpected = {{42, 48}};
-    EXPECT_EQ(cubic::mwpm(defects, 6, 0), defectPairsExpected);
+    EXPECT_EQ(cubic::mwpm(defects, 6, 0, 0), defectPairsExpected);
 }
 TEST(mwpmTest, matchingToBoundaries)
 {
     vint defects = {42, 86};
     vpint defectPairsExpected = {{42, -1}, {86, -1}};
-    EXPECT_EQ(cubic::mwpm(defects, 6, 0), defectPairsExpected);
+    EXPECT_EQ(cubic::mwpm(defects, 6, 0, 0), defectPairsExpected);
 }
 TEST(mwpmTest, dualMatching)
 {
     vint cells = {0, 6};
     vpint cellPairsExpected = {{0, 6}};
-    EXPECT_EQ(cubic::mwpm(cells, 6, 1), cellPairsExpected);
+    EXPECT_EQ(cubic::mwpm(cells, 6, 1, 0), cellPairsExpected);
 }
 TEST(mwpmTest, dualMatchingToBoundaries)
 {
     vint cells = {0, 73};
     vpint cellPairsExpected = {{0, -1}, {73, -1}};
-    EXPECT_EQ(cubic::mwpm(cells, 6, 1), cellPairsExpected);
+    EXPECT_EQ(cubic::mwpm(cells, 6, 1, 0), cellPairsExpected);
 }
 
 //------------------------------------------------------------
@@ -210,6 +228,51 @@ TEST(zErrorDecoderTest, matchToBoundary)
 
 //------------------------------------------------------------
 
+TEST(xErrorDecoder2DTest, matchPair)
+{
+    latCubic.wipe();
+    latCubic.qubitsX[20] = 1;
+    latCubic.syndromeZ[20] = 1;
+    latCubic.syndromeZ[38] = 1;
+    latCubic.syndromeZ[127] = 1;
+    vint syndromeVertices = {6, 12, 42, 48};
+
+    cubic::xErrorDecoder2D(latCubic, syndromeVertices);
+    vint qubitsExpected(3*6*6*6, 0);
+    EXPECT_EQ(latCubic.qubitsX, qubitsExpected);
+}
+TEST(xErrorDecoder2DTest, matchTwoPairs)
+{
+    latCubic.wipe();
+    latCubic.qubitsX[20] = 1;
+    latCubic.qubitsX[26] = 1;
+    latCubic.syndromeZ[20] = 1;
+    latCubic.syndromeZ[38] = 1;
+    latCubic.syndromeZ[127] = 1;
+    latCubic.syndromeZ[26] = 1;
+    latCubic.syndromeZ[44] = 1;
+    latCubic.syndromeZ[133] = 1;
+    vint syndromeVertices = {6, 12, 42, 48, 8, 14, 44, 50};
+
+    cubic::xErrorDecoder2D(latCubic, syndromeVertices);
+    vint qubitsExpected(3*6*6*6, 0);
+    EXPECT_EQ(latCubic.qubitsX, qubitsExpected);
+}
+TEST(xErrorDecoder2DTest, matchToBoundary)
+{
+    latCubic.wipe();
+    latCubic.qubitsX[2] = 1;
+    latCubic.syndromeZ[20] = 1;
+    latCubic.syndromeZ[109] = 1;
+    vint syndromeVertices = {6, 36};
+
+    cubic::xErrorDecoder2D(latCubic, syndromeVertices);
+    vint qubitsExpected(3*6*6*6, 0);
+    EXPECT_EQ(latCubic.qubitsX, qubitsExpected);
+}
+
+//------------------------------------------------------------
+
 TEST(measErrorDecoderTest, matchPair)
 {
     latCubic.wipe();
@@ -220,7 +283,7 @@ TEST(measErrorDecoderTest, matchPair)
     vint syndromeExpected(8*6*6*6, 0);
     EXPECT_EQ(latCubic.syndromeZ, syndromeExpected);
 }
-TEST(measErrorDecoderTest, matchTwoPair)
+TEST(measErrorDecoderTest, matchTwoPairs)
 {
     latCubic.wipe();
     latCubic.syndromeZ[127] = 1;

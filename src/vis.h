@@ -1,6 +1,4 @@
-
 #include <fstream>
-
 
 std::vector<int> getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector);
 
