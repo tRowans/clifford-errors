@@ -227,7 +227,7 @@ void Lattice::checkInCodespace(char pauli, int useOuter, int useInner)
         {
             if (syndromeZ[i] == 1)
             {
-                throw std::runtime_error("Out of codespace (bad Z correction)");
+                throw std::runtime_error("Out of codespace (bad X correction)");
             }
         }
     }
@@ -238,7 +238,7 @@ void Lattice::checkInCodespace(char pauli, int useOuter, int useInner)
         {
             if (syndromeX[i] == 1)
             {
-                throw std::runtime_error("Out of codespace (bad X Correction)");
+                throw std::runtime_error("Out of codespace (bad Z Correction)");
             }
         }
     }

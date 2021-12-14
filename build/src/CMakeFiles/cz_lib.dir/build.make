@@ -181,10 +181,24 @@ src/CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.s"
 	cd /Users/tom/Documents/clifford-errors/build/src && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tom/Documents/clifford-errors/src/rhombicGeneric.cpp -o CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.s
 
+src/CMakeFiles/cz_lib.dir/vis.cpp.o: src/CMakeFiles/cz_lib.dir/flags.make
+src/CMakeFiles/cz_lib.dir/vis.cpp.o: ../src/vis.cpp
+src/CMakeFiles/cz_lib.dir/vis.cpp.o: src/CMakeFiles/cz_lib.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object src/CMakeFiles/cz_lib.dir/vis.cpp.o"
+	cd /Users/tom/Documents/clifford-errors/build/src && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/cz_lib.dir/vis.cpp.o -MF CMakeFiles/cz_lib.dir/vis.cpp.o.d -o CMakeFiles/cz_lib.dir/vis.cpp.o -c /Users/tom/Documents/clifford-errors/src/vis.cpp
+
+src/CMakeFiles/cz_lib.dir/vis.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cz_lib.dir/vis.cpp.i"
+	cd /Users/tom/Documents/clifford-errors/build/src && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tom/Documents/clifford-errors/src/vis.cpp > CMakeFiles/cz_lib.dir/vis.cpp.i
+
+src/CMakeFiles/cz_lib.dir/vis.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cz_lib.dir/vis.cpp.s"
+	cd /Users/tom/Documents/clifford-errors/build/src && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tom/Documents/clifford-errors/src/vis.cpp -o CMakeFiles/cz_lib.dir/vis.cpp.s
+
 src/CMakeFiles/cz_lib.dir/lattice.cpp.o: src/CMakeFiles/cz_lib.dir/flags.make
 src/CMakeFiles/cz_lib.dir/lattice.cpp.o: ../src/lattice.cpp
 src/CMakeFiles/cz_lib.dir/lattice.cpp.o: src/CMakeFiles/cz_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object src/CMakeFiles/cz_lib.dir/lattice.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object src/CMakeFiles/cz_lib.dir/lattice.cpp.o"
 	cd /Users/tom/Documents/clifford-errors/build/src && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/cz_lib.dir/lattice.cpp.o -MF CMakeFiles/cz_lib.dir/lattice.cpp.o.d -o CMakeFiles/cz_lib.dir/lattice.cpp.o -c /Users/tom/Documents/clifford-errors/src/lattice.cpp
 
 src/CMakeFiles/cz_lib.dir/lattice.cpp.i: cmake_force
@@ -205,6 +219,7 @@ cz_lib_OBJECTS = \
 "CMakeFiles/cz_lib.dir/rhombic1.cpp.o" \
 "CMakeFiles/cz_lib.dir/rhombic2.cpp.o" \
 "CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.o" \
+"CMakeFiles/cz_lib.dir/vis.cpp.o" \
 "CMakeFiles/cz_lib.dir/lattice.cpp.o"
 
 # External object files for target cz_lib
@@ -218,10 +233,11 @@ src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/cubic.cpp.o
 src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/rhombic1.cpp.o
 src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/rhombic2.cpp.o
 src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.o
+src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/vis.cpp.o
 src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/lattice.cpp.o
 src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/build.make
 src/libcz_lib.a: src/CMakeFiles/cz_lib.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX static library libcz_lib.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX static library libcz_lib.a"
 	cd /Users/tom/Documents/clifford-errors/build/src && $(CMAKE_COMMAND) -P CMakeFiles/cz_lib.dir/cmake_clean_target.cmake
 	cd /Users/tom/Documents/clifford-errors/build/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cz_lib.dir/link.txt --verbose=$(VERBOSE)
 

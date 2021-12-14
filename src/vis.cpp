@@ -1,6 +1,6 @@
 #include "vis.h"
 
-std::vector<int> getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector)
+vint Outbox::getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector)
 {
     std::vector<int> nonZeroElements = {};
     for (int i : indexVector)
@@ -13,7 +13,7 @@ std::vector<int> getNonZeroElements(std::vector<int> &elements, std::vector<int>
     return nonZeroElements;
 }
 
-void writeCSV(std::ofstream &file, std::vector<int> &indices)
+void Outbox::writeCSV(std::vector<int> &indices)
 {
     if (indices.size())
     {
@@ -26,55 +26,72 @@ void writeCSV(std::ofstream &file, std::vector<int> &indices)
     file << '\n';
 }
 
-void openFiles(std::ofstream& qubitsOut, std::ofstream& xStabsOut, std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, int i, bool decoded)
+void Outbox::writeLatticeInfo(std::vector<Lattice> &lattices)
 {
-    if (i == 0 && decoded == 0)
+    std::vector<std::string> latticeNames = {"C", "R1", "R2"};
+    for (int i = 0; i < 3; i++)
     {
-        qubitsOut.open("qubits.csv");
-        xStabsOut.open("xStabs.csv");
-    }
-    if (decoded)
-    {
-        zErrorsOut.open("zErrors_" + std::to_string(i) + "_decoded.csv");
-        violatedXStabsOut.open("violatedXStabs_" + std::to_string(i) + "_decoded.csv");
-    }
-    else 
-    {
-        zErrorsOut.open("zErrors_" + std::to_string(i) + "_undecoded.csv");
-        violatedXStabsOut.open("violatedXStabs_" + std::to_string(i) + "_undecoded.csv");
+        Lattice &lattice = lattices[i];
+        std::string latticeName = latticeNames[i];
+        std::set<int> latticeVerticesSet;
+        std::set<pint> latticeEdgesSet;
+        for (const vint qubitIndices : {lattice.outerQubitIndices, lattice.innerQubitIndices})
+        {
+            for (int i : qubitIndices)
+            {
+                vint corners = lattice.faceToVertices[i];
+                for (int j : corners) latticeVerticesSet.insert(j);
+                vint sides = lattice.faceToEdges[i];
+                for (int j : sides) latticeEdgesSet.insert(lattice.edgeToVertices[j]);
+            }
+        }
+        vint latticeVertices;
+        for (int i : latticeVerticesSet) latticeVertices.push_back(i);
+        file.open("vertices_" + latticeName + ".csv", std::ios::app);
+        writeCSV(latticeVertices);
+        file.close();
+        file.open("edges_" + latticeName + ".csv", std::ios::app);
+        for (pint i : latticeEdgesSet) file << i.first << ',' << i.second << '\n';
+        file.close();
     }
 }
 
-void writeLatticeInfo(std::ofstream& qubitsOut, std::ofstream& xStabsOut, vint& qubitIndices, vpint& faceToCells, vint& stabIndices)
+void Outbox::writeErrorInfo(std::vector<Lattice> &lattices)
 {
-    for (int qubit : qubitIndices)
+    std::vector<std::string> latticeNames = {"C", "R1", "R2"};
+    for (int i = 0; i < 3; i++)
     {
-        pint cells = faceToCells[qubit];
-        qubitsOut << cells.first << ',' << cells.second << '\n';
-    }
-    writeCSV(xStabsOut, stabIndices);
-}
+        Lattice &lattice = lattices[i];
+        std::string latticeName = latticeNames[i];
 
-void writeErrorInfo(std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, vint& qubits, vint& stabs, vint& qubitIndices, vpint& faceToCells, vint& stabIndices)
-{
-    vint nonZeroQubits = getNonZeroElements(qubits, qubitIndices);
-    vint nonZeroStabs = getNonZeroElements(stabs, stabIndices);
-    for (int qubit : nonZeroQubits)
-    {
-        pint cells = faceToCells[qubit];
-        zErrorsOut << cells.first << ',' << cells.second << '\n';
-    }
-    writeCSV(violatedXStabsOut, nonZeroStabs);
-}
+        vint xErrors = getNonZeroElements(lattice.qubitsX, lattice.outerQubitIndices);
+        vint innerErrors = getNonZeroElements(lattice.qubitsX, lattice.innerQubitIndices);
+        xErrors.insert(xErrors.end(), innerErrors.begin(), innerErrors.end());
+        vint zErrors = getNonZeroElements(lattice.qubitsZ, lattice.outerQubitIndices);
+        innerErrors = getNonZeroElements(lattice.qubitsZ, lattice.innerQubitIndices);
+        zErrors.insert(zErrors.end(), innerErrors.begin(), innerErrors.end());
 
-void closeFiles(std::ofstream& qubitsOut, std::ofstream& xStabsOut, std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, int i, bool decoded)
-{
-    if (i == 0 && decoded == 0)
-    {
-        qubitsOut.close();
-        xStabsOut.close();
-    }
-    zErrorsOut.close();
-    violatedXStabsOut.close();
-}
+        vint xSyndrome = getNonZeroElements(lattice.syndromeX, lattice.xSyndIndices);
+        vint zSyndrome = getNonZeroElements(lattice.syndromeZ, lattice.zSyndIndices);
 
+        file.open("xErrors_" + latticeName + ".csv", std::ios::app);
+        writeCSV(xErrors);
+        file.close();
+
+        file.open("zErrors_" + latticeName + ".csv", std::ios::app);
+        writeCSV(zErrors);
+        file.close();
+        
+        file.open("xSyndrome_" + latticeName + ".csv", std::ios::app);
+        writeCSV(xSyndrome);
+        file.close();
+        
+        file.open("zSyndrome_" + latticeName + ".csv", std::ios::app);
+        writeCSV(zSyndrome);
+        file.close();
+        
+        file.open("defects" + latticeName + ".csv", std::ios::app);
+        writeCSV(lattice.defects);
+        file.close();
+    }
+}

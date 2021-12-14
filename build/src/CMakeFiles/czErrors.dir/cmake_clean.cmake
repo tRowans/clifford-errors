@@ -19,6 +19,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/czErrors.dir/rhombic2.cpp.o.d"
   "CMakeFiles/czErrors.dir/rhombicGeneric.cpp.o"
   "CMakeFiles/czErrors.dir/rhombicGeneric.cpp.o.d"
+  "CMakeFiles/czErrors.dir/vis.cpp.o"
+  "CMakeFiles/czErrors.dir/vis.cpp.o.d"
   "czErrors"
   "czErrors.pdb"
 )

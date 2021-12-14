@@ -531,6 +531,33 @@ rhombicGeneric.cpp.s:
 	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.s
 .PHONY : rhombicGeneric.cpp.s
 
+vis.o: vis.cpp.o
+.PHONY : vis.o
+
+# target to build an object file
+vis.cpp.o:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/vis.cpp.o
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/vis.cpp.o
+.PHONY : vis.cpp.o
+
+vis.i: vis.cpp.i
+.PHONY : vis.i
+
+# target to preprocess a source file
+vis.cpp.i:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/vis.cpp.i
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/vis.cpp.i
+.PHONY : vis.cpp.i
+
+vis.s: vis.cpp.s
+.PHONY : vis.s
+
+# target to generate assembly for a file
+vis.cpp.s:
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/vis.cpp.s
+	cd /Users/tom/Documents/clifford-errors/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/vis.cpp.s
+.PHONY : vis.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -578,6 +605,9 @@ help:
 	@echo "... rhombicGeneric.o"
 	@echo "... rhombicGeneric.i"
 	@echo "... rhombicGeneric.s"
+	@echo "... vis.o"
+	@echo "... vis.i"
+	@echo "... vis.s"
 .PHONY : help
 
 

@@ -355,6 +355,41 @@ TEST(shortestDualPathTest, CorrectOutputOuterOnly)
 
 //------------------------------------------------------------
 
+TEST(checkIn2DCodespaceTest, NoErrors)
+{
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
+    EXPECT_NO_THROW(rhombic::checkIn2DCodespace(lattice));
+}
+TEST(checkIn2DCodepaceTest, Stabiliser)
+{
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
+    lattice.qubitsX[126] = 1;
+    lattice.qubitsX[216] = 1;
+    lattice.qubitsX[219] = 1;
+    lattice.qubitsX[345] = 1;
+    EXPECT_NO_THROW(rhombic::checkIn2DCodespace(lattice));
+}
+TEST(checkIn2DCodespaceTest, Logical)
+{
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
+    lattice.qubitsX[0] = 1;
+    lattice.qubitsX[216] = 1;
+    lattice.qubitsX[219] = 1;
+    EXPECT_NO_THROW(rhombic::checkIn2DCodespace(lattice));
+}
+TEST(checkIn2DCodespaceTest, Error)
+{
+    Lattice lattice(6);
+    rhombic::r1::buildLattice(lattice);
+    lattice.qubitsX[0] = 1;
+    EXPECT_THROW(rhombic::checkIn2DCodespace(lattice), std::runtime_error);
+}
+
+//------------------------------------------------------------
+
 TEST(rhombicJumpCorrectionTest, CorrectOutputExample)
 {
     //Tests action on a specific example
@@ -381,6 +416,7 @@ TEST(rhombicJumpCorrectionTest, CorrectOutputExample)
         if (lattice.qubitsZ[i] != 0) zErrors.push_back(i);
     }
     EXPECT_EQ(zErrors, zErrorsExpected);
+    EXPECT_NO_THROW(rhombic::checkIn2DCodespace(lattice));
 }
 TEST(rhombicJumpCorrectionTest, CorrectOutputR1)
 {
@@ -392,6 +428,12 @@ TEST(rhombicJumpCorrectionTest, CorrectOutputR1)
     std::uniform_real_distribution<double> dist(0,1);
 
     lattice.zStabPattern(engine, dist);     //tested separately
+    std::cout << "Initial stab pattern: " << '\n';
+    for (int i = 0; i < 3*6*6*6; i++)
+    {
+        if (lattice.qubitsZ[i] == 1) std::cout << i << ',';
+    }
+    std::cout << '\n';
     rhombic::jumpCorrection(lattice, engine, dist, 1);
     vint zErrors;
     vint zErrorsExpected = {};
@@ -400,6 +442,7 @@ TEST(rhombicJumpCorrectionTest, CorrectOutputR1)
         if (lattice.qubitsZ[i] != 0) zErrors.push_back(i);
     }
     EXPECT_EQ(zErrors, zErrorsExpected);
+    EXPECT_NO_THROW(rhombic::checkIn2DCodespace(lattice));
 }
 TEST(rhombicJumpCorrectionTest, CorrectOutputR2)
 {
@@ -419,6 +462,7 @@ TEST(rhombicJumpCorrectionTest, CorrectOutputR2)
         if (lattice.qubitsZ[i] != 0) zErrors.push_back(i);
     }
     EXPECT_EQ(zErrors, zErrorsExpected);
+    EXPECT_NO_THROW(rhombic::checkIn2DCodespace(lattice));
 }
 
 //------------------------------------------------------------

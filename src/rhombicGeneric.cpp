@@ -370,6 +370,32 @@ vint shortestDualPath(int cell1, int cell2, Lattice &lattice,
     return path;
 }
 
+void checkIn2DCodespace(Lattice &lattice)
+{
+    //We only need to check this for X errors/Z stabilisers
+    //Because 2D Z stabilisers are also 3D Z stabilisers
+    //So if there is no syndrome for 3D X stabilisers this means no 2D Z errors
+    lattice.calcSynd('z',1,0);
+    for (int y = 0; y < lattice.L-1; y++)
+    {
+        for (int z = 0; z < lattice.L-1; z++)
+        {
+            coord cd = {0,y,z,0};
+            int v = coordToIndex(cd,lattice.L);
+            vint edges = lattice.vertexToEdges[v];
+            int count = 0;
+            for (int e : edges)
+            {
+                if (lattice.syndromeZ[e] == 1) count += 1;
+            }
+            if (count % 2 == 1) 
+            {
+                throw std::runtime_error("Out of 2D codespace (bad X correction)");
+            }
+        }
+    }
+}
+
 //This assumes no out of bounds errors
 void jumpCorrection(Lattice &lattice, std::mt19937& engine, 
                         std::uniform_real_distribution<double>& dist, int r)

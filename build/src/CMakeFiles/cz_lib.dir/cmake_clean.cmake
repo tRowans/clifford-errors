@@ -17,6 +17,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cz_lib.dir/rhombic2.cpp.o.d"
   "CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.o"
   "CMakeFiles/cz_lib.dir/rhombicGeneric.cpp.o.d"
+  "CMakeFiles/cz_lib.dir/vis.cpp.o"
+  "CMakeFiles/cz_lib.dir/vis.cpp.o.d"
   "libcz_lib.a"
   "libcz_lib.pdb"
 )

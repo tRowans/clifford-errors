@@ -298,6 +298,36 @@ TEST(measErrorDecoderTest, matchToBoundary)
 //X ERROR DECODER TEST HERE?
 //------------------------------------------------------------
 
+TEST(checkIn2DCodespaceTest, NoErrors)
+{
+    latCubic.wipe();
+    EXPECT_NO_THROW(cubic::checkIn2DCodespace(latCubic));
+}
+TEST(checkIn2DCodespaceTest, Stabiliser)
+{
+    latCubic.wipe();
+    latCubic.qubitsX[2] = 1;
+    latCubic.qubitsX[5] = 1;
+    latCubic.qubitsX[19] = 1;
+    EXPECT_NO_THROW(cubic::checkIn2DCodespace(latCubic));
+}
+TEST(checkIn2DCodespaceTest, Logical)
+{
+    latCubic.wipe();
+    latCubic.qubitsX[2] = 1;
+    latCubic.qubitsX[20] = 1;
+    latCubic.qubitsX[38] = 1;
+    EXPECT_NO_THROW(cubic::checkIn2DCodespace(latCubic));
+}
+TEST(checkIn2DCodespaceTest, Error)
+{
+    latCubic.wipe();
+    latCubic.qubitsX[2] = 1;
+    EXPECT_THROW(cubic::checkIn2DCodespace(latCubic), std::runtime_error);
+}
+
+//------------------------------------------------------------
+
 TEST(jumpCorrectionTest, CorrectOutputExample)
 {
     //Tests a specific example

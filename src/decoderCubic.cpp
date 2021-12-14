@@ -273,6 +273,21 @@ void measErrorDecoder(Lattice &lattice)
     }
 }
 
+void checkIn2DCodespace(Lattice &lattice)
+{
+    //We only need to check this for X errors/Z stabilisers
+    //Because 2D Z stabilisers are also 3D Z stabilisers
+    //So if there is no syndrome for 3D X stabilisers this means no 2D Z errors
+    lattice.calcSynd('z', 1, 0);
+    for (int i : lattice.zSyndIndices)
+    {
+        if (lattice.syndromeZ[i] == 1 && (i % 3) == 2)
+        {
+            throw std::runtime_error("Out of 2D codespace (bad X correction)");
+        }
+    }
+}
+
 void jumpCorrection(Lattice &lattice)
 {
     for (int z = lattice.L-4; z > 0; z--)

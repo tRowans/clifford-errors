@@ -288,13 +288,6 @@ TEST(xErrorDecoder2DTestR1, matchTwoToBoundary)
     vint syndromeVertices = {54, 72, 228, 288};
 
     rhombic::r1::xErrorDecoder2D(latRhombic1, syndromeVertices);
-    std::cout << "Non-zero qubits: ";
-    for (int i = 0; i < latRhombic1.qubitsX.size(); i++)
-    {
-        if (latRhombic1.qubitsX[i] == 1) std::cout << i << ' ';
-    }
-    std::cout << '\n';
-
     EXPECT_EQ(latRhombic1.qubitsX, qubitsExpected);
 }
 

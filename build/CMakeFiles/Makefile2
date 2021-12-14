@@ -200,12 +200,12 @@ tst/clean: tst/CMakeFiles/CZTests.dir/clean
 src/CMakeFiles/czErrors.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/czErrors.dir/build.make src/CMakeFiles/czErrors.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=28,29,30,31,32,33,34,35,36,37,38 "Built target czErrors"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=28,29,30,31,32,33,34,35,36,37,38,39 "Built target czErrors"
 .PHONY : src/CMakeFiles/czErrors.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/czErrors.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 22
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/czErrors.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 0
 .PHONY : src/CMakeFiles/czErrors.dir/rule
@@ -226,7 +226,7 @@ src/CMakeFiles/czErrors.dir/clean:
 src/CMakeFiles/lattice_lib.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/lattice_lib.dir/build.make src/CMakeFiles/lattice_lib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=57,58,59 "Built target lattice_lib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=59,60,61 "Built target lattice_lib"
 .PHONY : src/CMakeFiles/lattice_lib.dir/all
 
 # Build rule for subdir invocation for target.
@@ -278,7 +278,7 @@ src/CMakeFiles/cubic_lib.dir/clean:
 src/CMakeFiles/rhombic_lib.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/rhombic_lib.dir/build.make src/CMakeFiles/rhombic_lib.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/rhombic_lib.dir/build.make src/CMakeFiles/rhombic_lib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=60,61,62,63,64,65,66 "Built target rhombic_lib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=62,63,64,65,66,67,68 "Built target rhombic_lib"
 .PHONY : src/CMakeFiles/rhombic_lib.dir/all
 
 # Build rule for subdir invocation for target.
@@ -304,12 +304,12 @@ src/CMakeFiles/rhombic_lib.dir/clean:
 src/CMakeFiles/cz_lib.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/cz_lib.dir/build.make src/CMakeFiles/cz_lib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=39,40,41,42,43,44,45,46,47,48 "Built target cz_lib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=40,41,42,43,44,45,46,47,48,49,50 "Built target cz_lib"
 .PHONY : src/CMakeFiles/cz_lib.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/cz_lib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/cz_lib.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 0
 .PHONY : src/CMakeFiles/cz_lib.dir/rule
@@ -356,7 +356,7 @@ lib/blossom5/CMakeFiles/PerfectMatching.dir/clean:
 lib/googletest/googlemock/CMakeFiles/gmock.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googlemock/CMakeFiles/gmock.dir/build.make lib/googletest/googlemock/CMakeFiles/gmock.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googlemock/CMakeFiles/gmock.dir/build.make lib/googletest/googlemock/CMakeFiles/gmock.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=49,50 "Built target gmock"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=51,52 "Built target gmock"
 .PHONY : lib/googletest/googlemock/CMakeFiles/gmock.dir/all
 
 # Build rule for subdir invocation for target.
@@ -383,7 +383,7 @@ lib/googletest/googlemock/CMakeFiles/gmock_main.dir/all: lib/googletest/googlemo
 lib/googletest/googlemock/CMakeFiles/gmock_main.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googlemock/CMakeFiles/gmock_main.dir/build.make lib/googletest/googlemock/CMakeFiles/gmock_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googlemock/CMakeFiles/gmock_main.dir/build.make lib/googletest/googlemock/CMakeFiles/gmock_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=51,52 "Built target gmock_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=53,54 "Built target gmock_main"
 .PHONY : lib/googletest/googlemock/CMakeFiles/gmock_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -409,7 +409,7 @@ lib/googletest/googlemock/CMakeFiles/gmock_main.dir/clean:
 lib/googletest/googletest/CMakeFiles/gtest.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googletest/CMakeFiles/gtest.dir/build.make lib/googletest/googletest/CMakeFiles/gtest.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googletest/CMakeFiles/gtest.dir/build.make lib/googletest/googletest/CMakeFiles/gtest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=53,54 "Built target gtest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=55,56 "Built target gtest"
 .PHONY : lib/googletest/googletest/CMakeFiles/gtest.dir/all
 
 # Build rule for subdir invocation for target.
@@ -435,7 +435,7 @@ lib/googletest/googletest/CMakeFiles/gtest.dir/clean:
 lib/googletest/googletest/CMakeFiles/gtest_main.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googletest/CMakeFiles/gtest_main.dir/build.make lib/googletest/googletest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/googletest/googletest/CMakeFiles/gtest_main.dir/build.make lib/googletest/googletest/CMakeFiles/gtest_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=55,56 "Built target gtest_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tom/Documents/clifford-errors/build/CMakeFiles --progress-num=57,58 "Built target gtest_main"
 .PHONY : lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -458,8 +458,8 @@ lib/googletest/googletest/CMakeFiles/gtest_main.dir/clean:
 # Target rules for target tst/CMakeFiles/LatticeTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/LatticeTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/LatticeTests.dir/all: src/CMakeFiles/lattice_lib.dir/all
+tst/CMakeFiles/LatticeTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/LatticeTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/LatticeTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/LatticeTests.dir/build.make tst/CMakeFiles/LatticeTests.dir/depend
@@ -487,8 +487,8 @@ tst/CMakeFiles/LatticeTests.dir/clean:
 # Target rules for target tst/CMakeFiles/CubicTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/CubicTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/CubicTests.dir/all: src/CMakeFiles/cubic_lib.dir/all
+tst/CMakeFiles/CubicTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/CubicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/CubicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CubicTests.dir/build.make tst/CMakeFiles/CubicTests.dir/depend
@@ -516,8 +516,8 @@ tst/CMakeFiles/CubicTests.dir/clean:
 # Target rules for target tst/CMakeFiles/RhombicTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/RhombicTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/RhombicTests.dir/all: src/CMakeFiles/rhombic_lib.dir/all
+tst/CMakeFiles/RhombicTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/RhombicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/RhombicTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/RhombicTests.dir/build.make tst/CMakeFiles/RhombicTests.dir/depend
@@ -545,8 +545,8 @@ tst/CMakeFiles/RhombicTests.dir/clean:
 # Target rules for target tst/CMakeFiles/CZTests.dir
 
 # All Build rule for target.
-tst/CMakeFiles/CZTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/CZTests.dir/all: src/CMakeFiles/cz_lib.dir/all
+tst/CMakeFiles/CZTests.dir/all: lib/blossom5/CMakeFiles/PerfectMatching.dir/all
 tst/CMakeFiles/CZTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest.dir/all
 tst/CMakeFiles/CZTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/CZTests.dir/build.make tst/CMakeFiles/CZTests.dir/depend
@@ -556,7 +556,7 @@ tst/CMakeFiles/CZTests.dir/all: lib/googletest/googletest/CMakeFiles/gtest_main.
 
 # Build rule for subdir invocation for target.
 tst/CMakeFiles/CZTests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 26
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 27
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/CZTests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tom/Documents/clifford-errors/build/CMakeFiles 0
 .PHONY : tst/CMakeFiles/CZTests.dir/rule

@@ -1,14 +1,23 @@
+#ifndef VIS_H
+#define VIS_H
+
 #include <fstream>
+#include "lattice.h"
 
-std::vector<int> getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector);
+class Outbox
+{
+    private:
+        std::ofstream file;
+        
+        vint getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector);
+        
+        void writeCSV(std::vector<int> &indices);
 
-void writeCSV(std::ofstream &file, std::vector<int> &indices);
+    public:
 
-void openFiles(std::ofstream& qubitsOut, std::ofstream& xStabsOut, std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, int i, bool decoded);
+        void writeLatticeInfo(std::vector<Lattice> &lattices);
 
-void writeLatticeInfo(std::ofstream& qubitsOut, std::ofstream& xStabsOut, vint& qubitIndices, vpint& faceToCells, vint& stabIndices);
+        void writeErrorInfo(std::vector<Lattice> &lattices);
+};
 
-void writeErrorInfo(std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, vint& qubits, vint& stabs, vint& qubitIndices, vpint& faceToCells, vint& stabIndices);
-
-void closeFiles(std::ofstream& qubitsOut, std::ofstream& xStabsOut, std::ofstream& zErrorsOut, std::ofstream& violatedXStabsOut, int i, bool decoded);
-
+#endif

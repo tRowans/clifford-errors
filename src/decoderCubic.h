@@ -36,6 +36,8 @@ void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices);
 
 void measErrorDecoder(Lattice &lattice);
 
+void checkIn2DCodespace(Lattice &lattice);
+
 void jumpCorrection(Lattice &lattice);
 
 }

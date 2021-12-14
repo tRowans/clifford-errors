@@ -2,10 +2,11 @@
 #include "decoderRhombic1.h"
 #include "decoderRhombic2.h"
 #include "czErrorGen.h"
+#include "vis.h"
 
 int main(int argc, char *argv[])
 {
-    if (argc != 7)
+    if (argc != 8)
     {
         std::cout << "Invalid number of arguments." << '\n';
         return 1;
@@ -15,8 +16,9 @@ int main(int argc, char *argv[])
     double p = std::atof(argv[2]);
     double q = std::atof(argv[3]);
     int runs = std::atoi(argv[4]);
-    int link = std::atoi(argv[5]);
+    int linking = std::atoi(argv[5]);
     int debug = std::atoi(argv[6]);
+    int vis = std::atoi(argv[7]);
     
     std::vector<Lattice> lattices(3,L);
     Lattice &latCubic = lattices[0];
@@ -27,11 +29,19 @@ int main(int argc, char *argv[])
     rhombic::r1::buildLattice(latRhombic1);
     rhombic::r2::buildLattice(latRhombic2);
 
+    Outbox out;
+
+    if (vis == 1) out.writeLatticeInfo(lattices);
+
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
 
     vint cFailures = {0,0};
     vint r1Failures = {0,0};
     vint r2Failures = {0,0};
+
+    std::random_device rd{};
+    std::mt19937 engine{rd()};
+    std::uniform_real_distribution<double> dist(0,1);
 
     for (int i = 0; i < runs; i++)
     {
@@ -40,10 +50,7 @@ int main(int argc, char *argv[])
         latRhombic1.wipe();
         latRhombic2.wipe();
         
-        //reset this stuff (is this necessary?)
-        std::random_device rd{};
-        std::mt19937 engine{rd()};
-        std::uniform_real_distribution<double> dist(0,1);
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //qubits start in |+> --> measure Z stabilisers = random X error distribution
         latCubic.biasedError(0.5, engine, dist, 'x', 0);
@@ -52,11 +59,16 @@ int main(int argc, char *argv[])
 
         //Z stabiliser syndrome + measurement errors
         latCubic.calcSynd('z', 1, 1);
-        latCubic.measError(q, engine, dist, 'z');
         latRhombic1.calcSynd('z', 1, 1);
-        latRhombic1.measError(q, engine, dist, 'z');
         latRhombic2.calcSynd('z', 1, 1);
+
+        if (vis == 1) out.writeErrorInfo(lattices);
+
+        latCubic.measError(q, engine, dist, 'z');
+        latRhombic1.measError(q, engine, dist, 'z');
         latRhombic2.measError(q, engine, dist, 'z');
+
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //Find and fix measurement errors
         latCubic.findDefects();
@@ -65,11 +77,15 @@ int main(int argc, char *argv[])
         rhombic::r1::measErrorDecoder(latRhombic1);
         latRhombic2.findDefects();
         rhombic::r2::measErrorDecoder(latRhombic2);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //Fix X errors (decoder for this not done yet)
         //cubic::xErrorDecoder(...);
         //rhombic::r1::xErrorDecoder(...);
         //rhombic::r2::xErrorDecoder(...);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //Check everything working as expected (debugging step)
         if (debug == 1)
@@ -85,29 +101,50 @@ int main(int argc, char *argv[])
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
         //so equivalently could do a biased error with prob 2*p/3
-        applyCCZ(lattices, overlappingFaces, engine, dist, link);
+      
+        //Need perfect syndromes for CZ error calculation
+        //This doesn't correspond to an actual stabiliser measurement 
+        latCubic.calcSynd('z',1,1);
+        latRhombic1.calcSynd('z',1,1);
+        latRhombic2.calcSynd('z',1,1); 
+        applyCCZ(lattices, overlappingFaces, engine, dist, linking);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
+
         latCubic.depolarisingError(p, engine, dist);
         latRhombic1.depolarisingError(p, engine, dist);
         latRhombic2.depolarisingError(p, engine, dist);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //Project to stabiliser distribution + random bit flips from measurement error
         latCubic.zStabPattern(engine, dist);
-        latCubic.biasedError(q, engine, dist, 'z', 1);
         latRhombic1.zStabPattern(engine, dist);
-        latRhombic1.biasedError(q, engine, dist, 'z', 1);
         latRhombic2.zStabPattern(engine, dist);
+
+        if (vis == 1) out.writeErrorInfo(lattices);
+
+        latCubic.biasedError(q, engine, dist, 'z', 1);
+        latRhombic1.biasedError(q, engine, dist, 'z', 1);
         latRhombic2.biasedError(q, engine, dist, 'z', 1);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //Z error decoding from single-qubit measurements (only on inner qubits)
         //cubic decoder does not need to specify inner/outer qubits
         //because if no z=0 stabilisers are violated no outer qubits will be used in pathing
         //and if only z=0 stabilisers are used then only outer qubits will be used
         latCubic.calcSynd('x', 0, 1);
-        cubic::zErrorDecoder(latCubic); 
         latRhombic1.calcSynd('x', 0, 1);
-        rhombic::r1::zErrorDecoder(latRhombic1, 0, 1);
         latRhombic2.calcSynd('x', 0, 1);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
+
+        cubic::zErrorDecoder(latCubic); 
+        rhombic::r1::zErrorDecoder(latRhombic1, 0, 1);
         rhombic::r2::zErrorDecoder(latRhombic2, 0, 1);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //Check step
         if (debug == 1)
@@ -124,6 +161,8 @@ int main(int argc, char *argv[])
         cubic::jumpCorrection(latCubic);
         rhombic::jumpCorrection(latRhombic1, engine, dist, 1);
         rhombic::jumpCorrection(latRhombic2, engine, dist, 2);
+        
+        if (vis == 1) out.writeErrorInfo(lattices);
 
         //Another check step
         if (debug == 1)
@@ -140,13 +179,25 @@ int main(int argc, char *argv[])
         //because it will still have errors from the CZ + depolarising error
         //so we need a measurement-error free 2D decoding step before checking for success.
 
-        vvint syndromeVertices = getSyndromeVertices(lattices);
         latCubic.calcSynd('z',1,0);
+        latRhombic1.calcSynd('z',1,0);
+        latRhombic2.calcSynd('z',1,0);
+        vvint syndromeVertices = getSyndromeVertices(lattices);
         cubic::xErrorDecoder2D(latCubic, syndromeVertices[0]);
-        latRhombic1.calcSynd('x',1,0);
         rhombic::r1::xErrorDecoder2D(latRhombic1, syndromeVertices[1]);
-        latRhombic2.calcSynd('x',1,0);
         rhombic::r2::xErrorDecoder2D(latRhombic2, syndromeVertices[2]);
+
+        if (vis == 1) out.writeErrorInfo(lattices);
+
+        if (debug == 1)
+        {
+            latCubic.checkInBounds();
+            cubic::checkIn2DCodespace(latCubic);
+            latRhombic1.checkInBounds();
+            rhombic::checkIn2DCodespace(latRhombic1);
+            latRhombic2.checkInBounds();
+            rhombic::checkIn2DCodespace(latRhombic2);
+        }
         
         //Check X logical errors
         cFailures[0] += latCubic.checkLogicalError('x');
@@ -160,6 +211,18 @@ int main(int argc, char *argv[])
         rhombic::r1::zErrorDecoder(latRhombic1, 1, 0);
         latRhombic2.calcSynd('x', 1, 0);
         rhombic::r2::zErrorDecoder(latRhombic2, 1, 0);
+
+        if (vis == 1) out.writeErrorInfo(lattices);
+
+        if (debug == 1)
+        {
+            latCubic.checkInBounds();
+            latCubic.checkInCodespace('z', 1, 0);
+            latRhombic1.checkInBounds();
+            latRhombic1.checkInCodespace('z', 1, 0);
+            latRhombic2.checkInBounds();
+            latRhombic2.checkInCodespace('z', 1, 0);
+        }
         
         //Check Z logical errors 
         cFailures[1] += latCubic.checkLogicalError('z');
@@ -167,10 +230,9 @@ int main(int argc, char *argv[])
         r2Failures[1] += latRhombic2.checkLogicalError('z');
     }
     
-    std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << link << '\n';
+    std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
 
     return 0;
 }
-
