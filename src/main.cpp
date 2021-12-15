@@ -8,8 +8,8 @@
 void saveCodes()
 {
     vint Ls;
-    int Lstart = 2;
-    int Lmax = 4;
+    int Lstart = 6;
+    int Lmax = 12;
     int Lstep = 2;
     for (int i = Lstart; i <= Lmax; i += Lstep) Ls.push_back(i);
     saveHzLs(Ls);
