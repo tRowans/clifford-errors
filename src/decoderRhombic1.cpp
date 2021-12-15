@@ -292,16 +292,49 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
     return path;
 }
 
-//!!!--------------------!!!
-//||LOOP DECODER GOES HERE||
-//!!!--------------------!!!
-
-
 //From here is technically the same code in both rhombic1 and 2
 //but they use different path to boundary functions as defined above
 //could merge the two from this point by adding an argument for rhombic1 or 2
 //and then functions from rhombic1 or 2 namespace as needed
 //but I'm not sure it's worth it as all the extra if statements would slow things down
+
+char* convertSyndrome(vint &in, vint &syndromeIndices)
+{
+    // I am assuming syndromeIndices is sorted (I checked a few cases)
+    int size = syndromeIndices.size();
+    char *out = new char[size];
+    for (int i = 0; i < size; ++i)
+    {
+        out[i] = in[syndromeIndices[i]];
+    }
+    return out;
+}
+
+void xErrorDecoder(bp_osd &decoderHz, mod2sparse *hz, Lattice &lattice)
+{
+    int m = mod2sparse_rows(hz);
+    int n = mod2sparse_cols(hz);
+    char *synd = new char[m]();
+    char *corr;
+
+    vint &qubitIndices = lattice.innerQubitIndices;
+    qubitIndices.insert(qubitIndices.end(), lattice.outerQubitIndices.begin(), lattice.outerQubitIndices.end()); 
+    std::sort(qubitIndices.begin(), qubitIndices.end()); // Important!
+    synd = convertSyndrome(lattice.syndromeZ, lattice.zSyndIndices); // Convert syndrome into BP-OSD format
+
+    corr = decoderHz.bp_osd_decode(synd);
+    for (int i = 0; i < n; ++i)
+    {
+        if (corr[i] == 1)
+        {
+            lattice.qubitsX[qubitIndices[i]] = (lattice.qubitsX[qubitIndices[i]] + 1) % 2;
+        }
+    }
+
+    // Cleanup
+    delete[] synd;
+    delete[] corr;
+}
 
 vpint mwpm(vint &defects, int L, int dual, int twoD)
 {

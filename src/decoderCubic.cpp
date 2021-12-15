@@ -147,28 +147,42 @@ vint shortestPathToZBoundary(int cell, int L)
     return path;
 }
 
-//!!!--------------------!!!
-//||LOOP DECODER GOES HERE||
-//!!!--------------------!!!
+char* convertSyndrome(vint &in, vint &syndromeIndices)
+{
+    // I am assuming syndromeIndices is sorted (I checked a few cases)
+    int size = syndromeIndices.size();
+    char *out = new char[size];
+    for (int i = 0; i < size; ++i)
+    {
+        out[i] = in[syndromeIndices[i]];
+    }
+    return out;
+}
 
-void bposd(bp_osd &decoderHz, mod2sparse *hz)
+void xErrorDecoder(bp_osd &decoderHz, mod2sparse *hz, Lattice &lattice)
 {
     int m = mod2sparse_rows(hz);
-    int n = mod2sparse_rows(hz);
+    int n = mod2sparse_cols(hz);
     char *synd = new char[m]();
     char *corr;
 
-    // Todo: convert syndrome into BP-OSD format
-    
+    vint &qubitIndices = lattice.innerQubitIndices;
+    qubitIndices.insert(qubitIndices.end(), lattice.outerQubitIndices.begin(), lattice.outerQubitIndices.end()); 
+    std::sort(qubitIndices.begin(), qubitIndices.end()); // Important!
+    synd = convertSyndrome(lattice.syndromeZ, lattice.zSyndIndices); // Convert syndrome into BP-OSD format
+
     corr = decoderHz.bp_osd_decode(synd);
-    
-    // Todo: convert correction 
+    for (int i = 0; i < n; ++i)
+    {
+        if (corr[i] == 1)
+        {
+            lattice.qubitsX[qubitIndices[i]] = (lattice.qubitsX[qubitIndices[i]] + 1) % 2;
+        }
+    }
 
     // Cleanup
     delete[] synd;
     delete[] corr;
-
-    // Return converted correction?
 }
 
 vpint mwpm(vint &defects, int L, int dual, int yOnly)

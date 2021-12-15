@@ -21,15 +21,13 @@ vint distanceToClosestZBoundary(int cell, int L);
 
 vint shortestPathToZBoundary(int cell, int L);
 
-//LOOP DECODER
-
 vpint mwpm(vint &defects, int L, int dual, int yOnly);
 
 void joinPair(int v1, int v2, Lattice &lattice);
 
 void joinDualPair(int cell1, int cell2, Lattice &lattice, int ignoreOuter);
 
-//void xErrorDecoder(...)
+void xErrorDecoder(bp_osd &decoderHz, mod2sparse *hz, Lattice &lattice);
 
 void zErrorDecoder(Lattice &lattice, int ignoreOuter);
 
