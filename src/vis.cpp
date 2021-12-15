@@ -47,11 +47,35 @@ void Outbox::writeLatticeInfo(std::vector<Lattice> &lattices)
         }
         vint latticeVertices;
         for (int i : latticeVerticesSet) latticeVertices.push_back(i);
-        file.open("vertices_" + latticeName + ".csv", std::ios::app);
+        file.open("vertices_" + latticeName + ".csv");
         writeCSV(latticeVertices);
         file.close();
-        file.open("edges_" + latticeName + ".csv", std::ios::app);
+        file.open("edges_" + latticeName + ".csv");
         for (pint i : latticeEdgesSet) file << i.first << ',' << i.second << '\n';
+        file.close();
+    }
+}
+
+void Outbox::prepErrorFiles()
+{
+    std::vector<std::string> latticeNames = {"C", "R1", "R2"};
+    for (int i = 0; i < 3; i++)
+    {
+        std::string latticeName = latticeNames[i];
+
+        file.open("xErrors_" + latticeName + ".csv", std::ios::app);
+        file.close();
+
+        file.open("zErrors_" + latticeName + ".csv", std::ios::app);
+        file.close();
+        
+        file.open("xSyndrome_" + latticeName + ".csv", std::ios::app);
+        file.close();
+        
+        file.open("zSyndrome_" + latticeName + ".csv", std::ios::app);
+        file.close();
+        
+        file.open("defects_" + latticeName + ".csv", std::ios::app);
         file.close();
     }
 }
@@ -90,7 +114,7 @@ void Outbox::writeErrorInfo(std::vector<Lattice> &lattices)
         writeCSV(zSyndrome);
         file.close();
         
-        file.open("defects" + latticeName + ".csv", std::ios::app);
+        file.open("defects_" + latticeName + ".csv", std::ios::app);
         writeCSV(lattice.defects);
         file.close();
     }

@@ -31,7 +31,11 @@ int main(int argc, char *argv[])
 
     Outbox out;
 
-    if (vis == 1) out.writeLatticeInfo(lattices);
+    if (vis == 1)
+    {
+        out.writeLatticeInfo(lattices);
+        out.prepErrorFiles();
+    }
 
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
 
@@ -52,10 +56,12 @@ int main(int argc, char *argv[])
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
+        /*
         //qubits start in |+> --> measure Z stabilisers = random X error distribution
         latCubic.biasedError(0.5, engine, dist, 'x', 0);
         latRhombic1.biasedError(0.5, engine, dist, 'x', 0);
         latRhombic2.biasedError(0.5, engine, dist, 'x', 0);
+        */
 
         //Z stabiliser syndrome + measurement errors
         latCubic.calcSynd('z', 1, 1);

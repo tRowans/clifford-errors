@@ -17,6 +17,8 @@ class Outbox
 
         void writeLatticeInfo(std::vector<Lattice> &lattices);
 
+        void prepErrorFiles();
+
         void writeErrorInfo(std::vector<Lattice> &lattices);
 };
 
