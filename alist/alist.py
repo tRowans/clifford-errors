@@ -85,8 +85,8 @@ def save_hz_from_txt(L):
     save_alist(file + '.alist', hz_zip)
 
 if __name__ == "__main__":
-    L_min = 2
-    L_max = 4
+    L_min = 6
+    L_max = 12
     for L in range(L_min, L_max + 1, 2):
         save_hz_from_txt(L)
 
