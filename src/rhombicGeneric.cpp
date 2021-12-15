@@ -292,8 +292,8 @@ vint shortestPath(int v1, int v2, Lattice &lattice)
     return path;
 }
 
-vint shortestDualPath(int cell1, int cell2, Lattice &lattice, 
-                                int useOuter, int useInner)
+vint shortestDualPath(int cell1, int cell2, Lattice &lattice, int decode2D)
+                                
 {
     int originalCell = cell1;
     coord cd1 = indexToCoord(cell1, lattice.L);
@@ -315,13 +315,10 @@ vint shortestDualPath(int cell1, int cell2, Lattice &lattice,
         {
             int q = lattice.cellToFaces[cell1][i];
             int allowedFace = 0;
-            if (useOuter == 1)
-            {
-                if (std::find(lattice.outerQubitIndices.begin(), 
-                              lattice.outerQubitIndices.end(), q) 
-                              != lattice.outerQubitIndices.end()) allowedFace = 1;
-            }
-            if (useInner == 1 && allowedFace == 0)
+            if (std::find(lattice.outerQubitIndices.begin(), 
+                          lattice.outerQubitIndices.end(), q) 
+                          != lattice.outerQubitIndices.end()) allowedFace = 1;
+            if (decode2D == 0 && allowedFace == 0)
             {
                 if (std::find(lattice.innerQubitIndices.begin(), 
                               lattice.innerQubitIndices.end(), q) 

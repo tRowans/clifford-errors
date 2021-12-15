@@ -186,12 +186,12 @@ TEST(joinDualPairTestR1, CorrectOutputAll)
 
     latRhombic1.wipe();
     latRhombic1.qubitsZ[128] = 1;
-    rhombic::r1::joinDualPair(43, 48, latRhombic1, 1, 1);
+    rhombic::r1::joinDualPair(43, 48, latRhombic1, 0, 0);
     EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
 
     latRhombic1.wipe();
     latRhombic1.qubitsZ[0] = 1;
-    rhombic::r1::joinDualPair(6, -1, latRhombic1, 1, 1);
+    rhombic::r1::joinDualPair(6, -1, latRhombic1, 0, 0);
     EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
 }
 TEST(joinDualPairTestR1, CorrectOutputOuterOnly)
@@ -234,7 +234,7 @@ TEST(zErrorDecoderTestR1, matchPair)
     latRhombic1.syndromeX[43] = 1;
     latRhombic1.syndromeX[48] = 1;
     
-    rhombic::r1::zErrorDecoder(latRhombic1, 1, 1);
+    rhombic::r1::zErrorDecoder(latRhombic1, 0, 0);
     EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
 }
 TEST(zErrorDecoderTestR1, matchTwoPairs)
@@ -249,7 +249,7 @@ TEST(zErrorDecoderTestR1, matchTwoPairs)
     latRhombic1.syndromeX[8] = 1;
     latRhombic1.syndromeX[50] = 1;
 
-    rhombic::r1::zErrorDecoder(latRhombic1, 1, 1);
+    rhombic::r1::zErrorDecoder(latRhombic1, 0, 0);
     EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
 }
 TEST(zErrorDecoderTestR1, matchToBoundary)
@@ -260,7 +260,37 @@ TEST(zErrorDecoderTestR1, matchToBoundary)
     latRhombic1.qubitsZ[0] = 1;
     latRhombic1.syndromeX[6] = 1;
 
-    rhombic::r1::zErrorDecoder(latRhombic1, 1, 1);
+    rhombic::r1::zErrorDecoder(latRhombic1, 0, 0);
+    EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
+}
+TEST(zErrorDecoderTestR1, decode2D)
+{
+    vint qubitsExpected(3*6*6*6, 0);
+
+    latRhombic1.wipe();
+    latRhombic1.qubitsZ[255] = 1;
+    latRhombic1.qubitsZ[252] = 1;
+    latRhombic1.syndromeX[48] = 1;
+    latRhombic1.syndromeX[120] = 1;
+
+    rhombic::r1::zErrorDecoder(latRhombic1, 1, 0);
+    EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
+}
+TEST(zErrorDecoderTestR1, ignoreOuter)
+{
+    vint qubitsExpected(3*6*6*6, 0);
+    qubitsExpected[126] = 1;
+    qubitsExpected[127] = 1;
+    qubitsExpected[128] = 1;
+
+    latRhombic1.wipe();
+    latRhombic1.qubitsZ[126] = 1;
+    latRhombic1.qubitsZ[127] = 1;
+    latRhombic1.qubitsZ[128] = 1;
+    latRhombic1.syndromeX[48] = 1;
+    latRhombic1.syndromeX[78] = 1;
+
+    rhombic::r1::zErrorDecoder(latRhombic1, 0, 1);
     EXPECT_EQ(latRhombic1.qubitsZ, qubitsExpected);
 }
 

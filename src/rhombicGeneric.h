@@ -36,8 +36,7 @@ float magnitude(std::vector<float> diff);
 
 vint shortestPath(int v1, int v2, Lattice &lattice);
 
-vint shortestDualPath(int cell1, int cell2, Lattice &lattice, 
-                                int useOuter, int useInner);
+vint shortestDualPath(int cell1, int cell2, Lattice &lattice, int decode2D);
 
 void checkIn2DCodespace(Lattice &lattice);
 

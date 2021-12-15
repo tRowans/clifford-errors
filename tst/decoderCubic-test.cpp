@@ -177,14 +177,14 @@ TEST(joinDualPairTest, joinInBulk)
 {
     vint qubitsExpected(3*6*6*6, 0);
     latCubic.qubitsZ[19] = 1;
-    cubic::joinDualPair(0, 6, latCubic);
+    cubic::joinDualPair(0, 6, latCubic, 0);
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 TEST(joinDualPairTest, joinToBoundary)
 {
     vint qubitsExpected(3*6*6*6, 0);
     latCubic.qubitsZ[2] = 1;
-    cubic::joinDualPair(0, -1, latCubic);
+    cubic::joinDualPair(0, -1, latCubic, 0);
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 
@@ -197,7 +197,7 @@ TEST(zErrorDecoderTest, matchPair)
     latCubic.syndromeX[0] = 1;
     latCubic.syndromeX[6] = 1;
 
-    cubic::zErrorDecoder(latCubic);
+    cubic::zErrorDecoder(latCubic, 0);
     vint qubitsExpected(3*6*6*6, 0);
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
@@ -211,7 +211,7 @@ TEST(zErrorDecoderTest, matchTwoPairs)
     latCubic.syndromeX[79] = 1;
     latCubic.syndromeX[85] = 1;
 
-    cubic::zErrorDecoder(latCubic);
+    cubic::zErrorDecoder(latCubic, 0);
     vint qubitsExpected(3*6*6*6, 0);
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
@@ -221,8 +221,20 @@ TEST(zErrorDecoderTest, matchToBoundary)
     latCubic.qubitsZ[2] = 1;
     latCubic.syndromeX[0] = 1;
 
-    cubic::zErrorDecoder(latCubic);
+    cubic::zErrorDecoder(latCubic, 0);
     vint qubitsExpected(3*6*6*6, 0);
+    EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
+}
+TEST(zErrorDecoderTest, ignoreOuter)
+{
+    latCubic.wipe();
+    latCubic.qubitsZ[19] = 1;
+    latCubic.syndromeX[0] = 1;
+    latCubic.syndromeX[6] = 1;
+
+    cubic::zErrorDecoder(latCubic, 1);
+    vint qubitsExpected(3*6*6*6, 0);
+    qubitsExpected[19] = 1;
     EXPECT_EQ(latCubic.qubitsZ, qubitsExpected);
 }
 

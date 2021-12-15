@@ -93,15 +93,11 @@ int main(int argc, char *argv[])
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
-        //Check everything working as expected (debugging step)
         if (debug == 1)
         {
             latCubic.checkInBounds();
-            latCubic.checkInCodespace('x', 1, 1);
             latRhombic1.checkInBounds();
-            latRhombic1.checkInCodespace('x', 1, 1);
             latRhombic2.checkInBounds();
-            latRhombic2.checkInCodespace('x', 1, 1);
         }
 
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
@@ -137,30 +133,23 @@ int main(int argc, char *argv[])
         if (vis == 1) out.writeErrorInfo(lattices);
 
         //Z error decoding from single-qubit measurements (only on inner qubits)
-        //cubic decoder does not need to specify inner/outer qubits
-        //because if no z=0 stabilisers are violated no outer qubits will be used in pathing
-        //and if only z=0 stabilisers are used then only outer qubits will be used
         latCubic.calcSynd('x', 0, 1);
         latRhombic1.calcSynd('x', 0, 1);
         latRhombic2.calcSynd('x', 0, 1);
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
-        cubic::zErrorDecoder(latCubic); 
+        cubic::zErrorDecoder(latCubic, 1);
         rhombic::r1::zErrorDecoder(latRhombic1, 0, 1);
         rhombic::r2::zErrorDecoder(latRhombic2, 0, 1);
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
-        //Check step
         if (debug == 1)
         {
             latCubic.checkInBounds();
-            latCubic.checkInCodespace('z', 0, 1);
             latRhombic1.checkInBounds();
-            latRhombic1.checkInCodespace('z', 0, 1);
             latRhombic2.checkInBounds();
-            latRhombic2.checkInCodespace('z', 0, 1);
         }
 
         //Find dimension jump corrections for 2D codes 
@@ -170,7 +159,6 @@ int main(int argc, char *argv[])
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
-        //Another check step
         if (debug == 1)
         {
             latCubic.checkInBounds();
@@ -212,7 +200,7 @@ int main(int argc, char *argv[])
 
         //Can use the same decoder as for 3D here but restricted to outer qubits
         latCubic.calcSynd('x', 1, 0); 
-        cubic::zErrorDecoder(latCubic);
+        cubic::zErrorDecoder(latCubic, 0);
         latRhombic1.calcSynd('x', 1, 0);
         rhombic::r1::zErrorDecoder(latRhombic1, 1, 0);
         latRhombic2.calcSynd('x', 1, 0);

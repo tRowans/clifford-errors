@@ -216,15 +216,21 @@ void joinPair(int v1, int v2, Lattice &lattice)
     for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
 
-void joinDualPair(int cell1, int cell2, Lattice &lattice)
+void joinDualPair(int cell1, int cell2, Lattice &lattice, int ignoreOuter)
 {
     vint path;
     if (cell2 == -1) path = shortestPathToZBoundary(cell1, lattice.L);
     else path = shortestDualPath(cell1, cell2, lattice.L);
-    for (int i : path) lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
+    for (int i : path)
+    {
+        if (ignoreOuter == 1 && std::find(lattice.outerQubitIndices.begin(),
+                                          lattice.outerQubitIndices.end(), i)
+                                != lattice.outerQubitIndices.end()) continue;
+        lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
+    }
 }
 
-void zErrorDecoder(Lattice &lattice)
+void zErrorDecoder(Lattice &lattice, int ignoreOuter)
 {
     vint violatedXStabs;
     vpint xStabPairs;
@@ -235,7 +241,7 @@ void zErrorDecoder(Lattice &lattice)
     xStabPairs = mwpm(violatedXStabs,lattice.L, 1, 0);
     for (auto &pair : xStabPairs) 
     {
-        joinDualPair(pair.first, pair.second, lattice);
+        joinDualPair(pair.first, pair.second, lattice, ignoreOuter);
     }
 }
 

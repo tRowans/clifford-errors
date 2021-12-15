@@ -305,6 +305,8 @@ vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L)
 
 vpint mwpm(vint &defects, int L, int dual, int twoD)
 {
+    //A bit confusing but twoD argument should be used only for 2D decoding of X errors
+    //2D Z error decoding can be done by running the 3D mwpm function with no modification
     std::vector<int> edges;
     std::vector<int> weights;
     int nodeNum = defects.size();
@@ -369,15 +371,21 @@ void joinPair(int v1, int v2, Lattice &lattice)
     for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
 
-void joinDualPair(int cell1, int cell2, Lattice &lattice, int useOuter, int useInner)
+void joinDualPair(int cell1, int cell2, Lattice &lattice, int decode2D, int ignoreOuter)
 {
     vint path;
     if (cell2 == -1) path = shortestPathToZBoundary(cell1, lattice.cellToFaces, lattice.L);
-    else path = shortestDualPath(cell1, cell2, lattice, useOuter, useInner);
-    for (int i : path) lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
+    else path = shortestDualPath(cell1, cell2, lattice, decode2D);
+    for (int i : path)
+    {
+        if (ignoreOuter == 1 && std::find(lattice.outerQubitIndices.begin(),
+                                          lattice.outerQubitIndices.end(), i)
+                                != lattice.outerQubitIndices.end()) continue;
+        lattice.qubitsZ[i] = (lattice.qubitsZ[i] + 1) % 2;
+    }
 }
 
-void zErrorDecoder(Lattice &lattice, int useOuter, int useInner)
+void zErrorDecoder(Lattice &lattice, int decode2D, int ignoreOuter)
 {
     vint violatedXStabs;
     vpint xStabPairs;
@@ -388,7 +396,7 @@ void zErrorDecoder(Lattice &lattice, int useOuter, int useInner)
     xStabPairs = mwpm(violatedXStabs, lattice.L, 1, 0);
     for (auto &pair : xStabPairs)
     {
-        joinDualPair(pair.first, pair.second, lattice, useOuter, useInner);
+        joinDualPair(pair.first, pair.second, lattice, decode2D, ignoreOuter);
     }
 }
 

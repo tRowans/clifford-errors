@@ -26,11 +26,11 @@ vpint mwpm(std::vector<int> &defects, int L, int dual, int twoD);
 
 void joinPair(int v1, int v2, Lattice &lattice);
 
-void joinDualPair(int cell1, int cell2, Lattice &lattice, int useOuter, int useInner);
+void joinDualPair(int cell1, int cell2, Lattice &lattice, int decode2D, int ignoreOuter);
 
 //void xErrorDecoder(...)
 
-void zErrorDecoder(Lattice &lattice, int useOuter, int useInner);
+void zErrorDecoder(Lattice &lattice, int decode2D, int ignoreOuter);
 
 void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices);
 

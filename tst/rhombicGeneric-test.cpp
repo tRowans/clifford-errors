@@ -318,8 +318,8 @@ TEST(shortestDualPathTest, CorrectOutputNoBuild)
     lattice.cellToFaces[48] = {0,0,0,0,0,0,0,126,0,0,0,129,};
     lattice.cellToFaces[78] = {0,0,0,0,0,0,0,0,0,0,126,0};
 
-    EXPECT_EQ(rhombic::shortestDualPath(6, 48, lattice, 1, 1), path1);
-    EXPECT_EQ(rhombic::shortestDualPath(6, 78, lattice, 1, 1), path2);
+    EXPECT_EQ(rhombic::shortestDualPath(6, 48, lattice, 0), path1);
+    EXPECT_EQ(rhombic::shortestDualPath(6, 78, lattice, 0), path2);
 }
 TEST(shortestDualPathTest, CorrectOutputBuild)
 {
@@ -330,27 +330,20 @@ TEST(shortestDualPathTest, CorrectOutputBuild)
     Lattice lattice(6);
     rhombic::r1::buildLattice(lattice);
 
-    EXPECT_EQ(rhombic::shortestDualPath(48, 78, lattice, 1, 1), path1);
-    EXPECT_EQ(rhombic::shortestDualPath(48, 120, lattice, 1, 1), path2);
+    EXPECT_EQ(rhombic::shortestDualPath(48, 78, lattice, 0), path1);
+    EXPECT_EQ(rhombic::shortestDualPath(48, 120, lattice, 0), path2);
 
     //boundary path
     vint path3 = {129, 37};
 
-    EXPECT_EQ(rhombic::shortestDualPath(6, 13, lattice, 1, 1), path3);
+    EXPECT_EQ(rhombic::shortestDualPath(6, 13, lattice, 0), path3);
 }
-TEST(shortestDualPathTest, CorrectOutputInnerOnly)
-{
-    Lattice lattice(6);
-    rhombic::r1::buildLattice(lattice);
-    vint path = rhombic::shortestDualPath(48, 78, lattice, 0, 1);
-    for (int i : path) {if (i == 126) FAIL();}
-}
-TEST(shortestDualPathTest, CorrectOutputOuterOnly)
+TEST(shortestDualPathTest, Decode2D)
 {
     Lattice lattice(6);
     rhombic::r1::buildLattice(lattice);
     vint path = {126};
-    EXPECT_EQ(rhombic::shortestDualPath(48, 78, lattice, 1, 0), path);
+    EXPECT_EQ(rhombic::shortestDualPath(48, 78, lattice, 1), path);
 }
 
 //------------------------------------------------------------
