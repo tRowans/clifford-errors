@@ -3,6 +3,7 @@
 
 #include "rhombic1.h"
 #include "PerfectMatching.h"
+#include "bp_osd_c.hpp"
 
 namespace rhombic {
 
@@ -20,15 +21,13 @@ vint distanceToClosestZBoundary(int cell, int L);
 
 vint shortestPathToZBoundary(int cell, vvint &cellToFaces, int L);
 
-//LOOP DECODER
-
 vpint mwpm(vint &defects, int L, int dual, int twoD);
 
 void joinPair(int v1, int v2, Lattice &lattice);
 
 void joinDualPair(int cell1, int cell2, Lattice &lattice, int useOuter, int useInner);
 
-//void xErrorDecoder(...)
+void xErrorDecoder(bp_osd &decoderHz, mod2sparse *hz, Lattice &lattice);
 
 void zErrorDecoder(Lattice &lattice, int useOuter, int useInner);
 

@@ -78,15 +78,14 @@ void saveHzLs(vint Ls)
         Lattice latRhombic1 = Lattice(L);
         Lattice latRhombic2 = Lattice(L);
         cubic::buildLattice(latCubic);
-        // rhombic::r1::buildLattice(latRhombic1);
-        // rhombic::r2::buildLattice(latRhombic2);
+        rhombic::r1::buildLattice(latRhombic1);
+        rhombic::r2::buildLattice(latRhombic2);
 
         std::string file = "/home/mvasmer/dev/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".txt";
-        // std::string file = "/mnt/c/Users/mvasmer/Downloads/cubic_L=" + std::to_string(L) + ".txt";
         saveHz(latCubic, L, file);
-        // file = "~/dev/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".txt";
-        // saveHz(latRhombic1, L, file);
-        // file = "~/dev/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".txt";
-        // saveHz(latRhombic2, L, file);
+        file = "/home/mvasmer/dev/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".txt";
+        saveHz(latRhombic1, L, file);
+        file = "/home/mvasmer/dev/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".txt";
+        saveHz(latRhombic2, L, file);
     }
 }

@@ -75,10 +75,18 @@ def save_hz_from_txt(L):
     hz = np.loadtxt(file + '.txt')
     hz_zip = hz[:,~np.all(hz == 0, axis=0)] # Remove 0 columns
     save_alist(file + '.alist', hz_zip)
+    file = 'rhombic1_L=' + str(L)
+    hz = np.loadtxt(file + '.txt')
+    hz_zip = hz[:,~np.all(hz == 0, axis=0)] # Remove 0 columns
+    save_alist(file + '.alist', hz_zip)
+    file = 'rhombic2_L=' + str(L)
+    hz = np.loadtxt(file + '.txt')
+    hz_zip = hz[:,~np.all(hz == 0, axis=0)] # Remove 0 columns
+    save_alist(file + '.alist', hz_zip)
 
 if __name__ == "__main__":
-    L_min = 6
-    L_max = 8
-    for L in range(L_min, L_max + 1):
+    L_min = 2
+    L_max = 4
+    for L in range(L_min, L_max + 1, 2):
         save_hz_from_txt(L)
 
