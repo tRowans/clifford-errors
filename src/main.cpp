@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
     mod2sparse_free(hzR2);
     free(hzC);
     free(hzR1);
-    free(hzR1);
+    free(hzR2);
 
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
