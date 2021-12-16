@@ -170,7 +170,8 @@ TEST(buildQubitIndicesTest, CorrectOutput)
                                       257,260};
     vint outerQubitIndices;
     vint innerQubitIndices;
-    cubic::buildQubitIndices(outerQubitIndices, innerQubitIndices, 6);
+    vint allQubitIndices;
+    cubic::buildQubitIndices(outerQubitIndices, innerQubitIndices, allQubitIndices, 6);
     EXPECT_EQ(outerQubitIndices, outerQubitIndicesExpected);
     EXPECT_EQ(innerQubitIndices, innerQubitIndicesExpected);
 }

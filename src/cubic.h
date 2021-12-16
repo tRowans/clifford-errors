@@ -34,7 +34,7 @@ void buildFaceToCells(vpint &faceToCells, int L);
 
 void buildFaceToVertices(vvint &faceToVertices, int L);
 
-void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L);
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, vint& allQubitIndices, int L);
 
 void buildXSyndIndices(vint &xSyndIndices, int L);
 

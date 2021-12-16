@@ -104,7 +104,7 @@ TEST(buildQubitIndicesTestR1, CorrectOutput)
 {
     Lattice lattice(6);
     rhombic::r1::buildQubitIndices(lattice.outerQubitIndices, 
-                                    lattice.innerQubitIndices, 6);
+                                    lattice.innerQubitIndices, lattice.allQubitIndices, 6);
 
     vint outerQubitIndicesExpected = {0,36,126,129,216,219,252,255,345};
     vint innerQubitIndicesExpected = {6,18,19,37,42,108,110,111,127,128, 
@@ -162,6 +162,7 @@ TEST(buildLogicalsTestR1, CorrectOutput)
     rhombic::r1::buildFaces(lattice);
     rhombic::r1::buildQubitIndices(lattice.outerQubitIndices,
                                    lattice.innerQubitIndices,
+                                   lattice.allQubitIndices,
                                    lattice.L);
     rhombic::r1::buildLogicals(lattice);
 

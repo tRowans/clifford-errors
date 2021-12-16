@@ -17,7 +17,7 @@ void buildEdgeToVertices(vpint &edgeToVertices, int L);
 
 void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVertices, int L);
 
-void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L);
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, vint &allQubitIndices, int L);
 
 void buildXSyndIndices(vint &xSyndIndices, int L);
 

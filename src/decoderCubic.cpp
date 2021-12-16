@@ -166,17 +166,13 @@ void xErrorDecoder(bp_osd &decoderHz, mod2sparse *hz, Lattice &lattice)
     char *synd = new char[m]();
     char *corr;
 
-    vint &qubitIndices = lattice.innerQubitIndices;
-    qubitIndices.insert(qubitIndices.end(), lattice.outerQubitIndices.begin(), lattice.outerQubitIndices.end()); 
-    std::sort(qubitIndices.begin(), qubitIndices.end()); // Important!
     synd = convertSyndrome(lattice.syndromeZ, lattice.zSyndIndices); // Convert syndrome into BP-OSD format
-
     corr = decoderHz.bp_osd_decode(synd);
     for (int i = 0; i < n; ++i)
     {
         if (corr[i] == 1)
         {
-            lattice.qubitsX[qubitIndices[i]] = (lattice.qubitsX[qubitIndices[i]] + 1) % 2;
+            lattice.qubitsX[lattice.allQubitIndices[i]] = (lattice.qubitsX[lattice.allQubitIndices[i]] + 1) % 2;
         }
     }
 

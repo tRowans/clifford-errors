@@ -32,6 +32,7 @@ class Lattice
 
         vint outerQubitIndices; //2D code
         vint innerQubitIndices; //3D code minus 2D code
+        vint allQubitIndices;
         vint xSyndIndices;
         vint zSyndIndices;
         vint defectIndices;

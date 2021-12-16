@@ -212,7 +212,7 @@ void buildFaceToVertices(vvint &faceToVertices, int L)
     }
 }
 
-void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L)
+void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, vint &allQubitIndices, int L)
 {
     for (int f = 0; f < 3 * L * L * L; f++)
     {
@@ -237,6 +237,9 @@ void buildQubitIndices(vint &outerQubitIndices, vint &innerQubitIndices, int L)
             }
         }
     }
+    allQubitIndices = innerQubitIndices;
+    allQubitIndices.insert(allQubitIndices.end(), outerQubitIndices.begin(), outerQubitIndices.end()); 
+    std::sort(allQubitIndices.begin(), allQubitIndices.end());
 }
 
 void buildXSyndIndices(vint &xSyndIndices, int L)
@@ -311,7 +314,7 @@ void buildLattice(Lattice &lattice)
     buildCellToFaces(lattice.cellToFaces, lattice.L);
     buildFaceToCells(lattice.faceToCells, lattice.L);
     buildFaceToVertices(lattice.faceToVertices, lattice.L);
-    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.L);
+    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.allQubitIndices, lattice.L);
     buildXSyndIndices(lattice.xSyndIndices, lattice.L);
     buildZSyndIndices(lattice.zSyndIndices, lattice.L);
     buildDefectIndices(lattice.defectIndices, lattice.L);

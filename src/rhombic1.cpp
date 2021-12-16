@@ -174,7 +174,7 @@ void buildCellToFaces(vvint &cellToFaces, vvint &vertexToFaces, vvint &faceToVer
     }
 }
 
-void buildQubitIndices(vint &outerQubitIndices, vint&innerQubitIndices, int L)
+void buildQubitIndices(vint &outerQubitIndices, vint&innerQubitIndices, vint &allQubitIndices, int L)
 {
     for (int f = 0; f < 3 * L * L * L; f++)
     {
@@ -208,6 +208,9 @@ void buildQubitIndices(vint &outerQubitIndices, vint&innerQubitIndices, int L)
                               && cd.xi[2] < (L-3)) innerQubitIndices.push_back(f);
         }
     }
+    allQubitIndices = innerQubitIndices;
+    allQubitIndices.insert(allQubitIndices.end(), outerQubitIndices.begin(), outerQubitIndices.end()); 
+    std::sort(allQubitIndices.begin(), allQubitIndices.end());
 }
 
 //X boundary stabilisers on +z and -z boundaries
@@ -319,7 +322,7 @@ void buildLattice(Lattice &lattice)
     buildVertexToEdges(lattice.vertexToEdges, lattice.L);
     buildEdgeToVertices(lattice.edgeToVertices, lattice.L);
     buildCellToFaces(lattice.cellToFaces, lattice.vertexToFaces, lattice.faceToVertices, lattice.L);
-    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.L);
+    buildQubitIndices(lattice.outerQubitIndices, lattice.innerQubitIndices, lattice.allQubitIndices, lattice.L);
     buildXSyndIndices(lattice.xSyndIndices, lattice.L);
     buildZSyndIndices(lattice.zSyndIndices, lattice.L);
     buildDefectIndices(lattice.defectIndices, lattice.L);
