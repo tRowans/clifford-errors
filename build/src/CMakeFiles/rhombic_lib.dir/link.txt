@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc librhombic_lib.a CMakeFiles/rhombic_lib.dir/decoderRhombic1.cpp.o CMakeFiles/rhombic_lib.dir/decoderRhombic2.cpp.o CMakeFiles/rhombic_lib.dir/rhombic1.cpp.o CMakeFiles/rhombic_lib.dir/rhombic2.cpp.o CMakeFiles/rhombic_lib.dir/rhombicGeneric.cpp.o CMakeFiles/rhombic_lib.dir/lattice.cpp.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib librhombic_lib.a

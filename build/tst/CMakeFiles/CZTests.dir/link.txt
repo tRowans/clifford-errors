@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/c++ -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/CZTests.dir/czErrorGen-test.cpp.o -o CZTests  ../src/libcz_lib.a ../lib/libgtest_maind.a ../lib/blossom5/libPerfectMatching.a ../lib/libgtestd.a 

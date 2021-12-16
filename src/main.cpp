@@ -3,10 +3,21 @@
 #include "decoderRhombic2.h"
 #include "czErrorGen.h"
 #include "vis.h"
+#include "saveHz.h"
+
+void saveCodes()
+{
+    vint Ls;
+    int Lstart = 6;
+    int Lmax = 12;
+    int Lstep = 2;
+    for (int i = Lstart; i <= Lmax; i += Lstep) Ls.push_back(i);
+    saveHzLs(Ls);
+}
 
 int main(int argc, char *argv[])
 {
-    if (argc != 8)
+    if (argc != 11)
     {
         std::cout << "Invalid number of arguments." << '\n';
         return 1;
@@ -19,6 +30,9 @@ int main(int argc, char *argv[])
     int linking = std::atoi(argv[5]);
     int debug = std::atoi(argv[6]);
     int vis = std::atoi(argv[7]);
+    int maxIter = std::atoi(argv[8]); // In the past I used 50
+    int osdOrder = std::atoi(argv[9]); // In the past I used 10
+    int osdMethod = std::atoi(argv[10]); // In the past I used 0
     
     std::vector<Lattice> lattices(3,L);
     Lattice &latCubic = lattices[0];
@@ -38,6 +52,38 @@ int main(int argc, char *argv[])
     }
 
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
+
+    // Setup BP-OSD
+    std::string fileS = "/home/mvasmer/dev/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
+    char *file = new char[fileS.length() + 1]();
+    for (int i = 0; i < fileS.length(); ++i) {
+        file[i] = fileS[i];
+    }
+    file[fileS.length()] = '\0';
+    mod2sparse *hzC;
+    hzC = load_alist(file);
+    delete[] file;
+    bp_osd decoderHzC(hzC, p, maxIter, osdOrder, osdMethod);
+    fileS = "/home/mvasmer/dev/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
+    file = new char[fileS.length() + 1]();
+    for (int i = 0; i < fileS.length(); ++i) {
+        file[i] = fileS[i];
+    }
+    file[fileS.length()] = '\0';
+    mod2sparse *hzR1;
+    hzR1 = load_alist(file);
+    bp_osd decoderHzR1(hzR1, p, maxIter, osdOrder, osdMethod);
+    delete[] file;
+    fileS = "/home/mvasmer/dev/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
+    file = new char[fileS.length() + 1]();
+    for (int i = 0; i < fileS.length(); ++i) {
+        file[i] = fileS[i];
+    }
+    file[fileS.length()] = '\0';
+    mod2sparse *hzR2;
+    hzR2 = load_alist(file);
+    bp_osd decoderHzR2(hzR2, p, maxIter, osdOrder, osdMethod);
+    delete[] file;
 
     vint cFailures = {0,0};
     vint r1Failures = {0,0};
@@ -87,9 +133,9 @@ int main(int argc, char *argv[])
         if (vis == 1) out.writeErrorInfo(lattices);
 
         //Fix X errors (decoder for this not done yet)
-        //cubic::xErrorDecoder(...);
-        //rhombic::r1::xErrorDecoder(...);
-        //rhombic::r2::xErrorDecoder(...);
+        cubic::xErrorDecoder(decoderHzC, hzC, latCubic);
+        rhombic::r1::xErrorDecoder(decoderHzR1, hzR1, latRhombic1);
+        rhombic::r2::xErrorDecoder(decoderHzR2, hzR2, latRhombic2);
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
@@ -224,9 +270,21 @@ int main(int argc, char *argv[])
         r2Failures[1] += latRhombic2.checkLogicalError('z');
     }
     
+    // BP-OSD cleanup
+    mod2sparse_free(hzC);
+    mod2sparse_free(hzR1);
+    mod2sparse_free(hzR2);
+    free(hzC);
+    free(hzR1);
+    free(hzR1);
+
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
 
+    // saveCodes();
+
     return 0;
 }
+
+
