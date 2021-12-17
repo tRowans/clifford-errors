@@ -8,7 +8,7 @@ from bpy.app import handlers
 
 #------------------------------#
 #----------!SET THESE!----------#
-path = "/Users/tom/Documents/clifford-errors/vis/l6_csv/"
+path = "path/to/csv"
 L = 6
 vis_c = 1
 vis_r1 = 1
@@ -99,7 +99,7 @@ def face_to_vertex_coords(face,lattice):
 def edge_to_vertex_coords(edge,lattice):
     if lattice == "c":
         direction = edge % 3
-        vertices = [index_to_coord(edge//3, L) for i in range(2)]
+        vertices = [index_to_coord(edge//3, lattice) for i in range(2)]
         if (direction == 0):
             vertices[1][0] += 1
         elif (direction == 1):
@@ -108,7 +108,7 @@ def edge_to_vertex_coords(edge,lattice):
             vertices[1][2] += 1
     else:
         direction = edge % 4
-        vertices = np.array([index_to_coord(edge//4) for i in range(2)])
+        vertices = np.array([index_to_coord(edge//4, lattice) for i in range(2)])
         if direction == 0:
             vertices[1] += [0.5,0.5,-0.5]
         elif direction == 1:
@@ -181,7 +181,7 @@ def build_xSyndrome(bm, xSyndrome, lattice):
             cell = index_to_coord(stab,lattice)
         translation = mathutils.Matrix.Translation(cell)
         bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, 
-                                    diameter=0.1, matrix=translation)
+                                    radius=0.1, matrix=translation)
 
 def build_zSyndrome(bm, zSyndrome, lattice):
     for stab in zSyndrome:
@@ -213,13 +213,13 @@ def build_zSyndrome(bm, zSyndrome, lattice):
         translation = mathutils.Matrix.Translation(vertex1 + direction/2)
         transform = translation @ rotation
         bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, 
-                                    diameter1=0.05, diameter2=0.05, depth=1, matrix=transform)
+                                    radius1=0.05, radius2=0.05, depth=0.866, matrix=transform)
 
 def build_defects(bm, defects, lattice):
     for defect in defects:
         translation = mathutils.Matrix.Translation(index_to_coord(defect,lattice))
         bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, 
-                                    diameter=0.1, matrix=translation)
+                                    radius=0.1, matrix=translation)
 
 def build_model(step, lattice_data, lattice, i):
    
@@ -238,7 +238,7 @@ def build_model(step, lattice_data, lattice, i):
     bm.to_mesh(mesh)
     bm.free()
 
-    xSynd = new_object("xSynd")
+    xSynd = new_object("xSynd_{}".format(model_name))
     mat = bpy.data.materials.get("Black")
     xSynd.data.materials.append(mat)
     bm = bmesh.new()
@@ -247,7 +247,7 @@ def build_model(step, lattice_data, lattice, i):
     bm.to_mesh(xSynd.data)
     bm.free()
     
-    zSynd = new_object("zSynd")
+    zSynd = new_object("zSynd_{}".format(model_name))
     mat = bpy.data.materials.get("White")
     zSynd.data.materials.append(mat)
     bm = bmesh.new()
@@ -258,14 +258,11 @@ def build_model(step, lattice_data, lattice, i):
     bm.free()
     
     bpy.data.objects[model_name].select_set(True)
-    bpy.data.objects["xSynd"].select_set(True)
-    bpy.data.objects["zSynd"].select_set(True)
+    bpy.data.objects["xSynd_{}".format(model_name)].select_set(True)
+    bpy.data.objects["zSynd_{}".format(model_name)].select_set(True)
     bpy.context.view_layer.objects.active = bpy.data.objects[model_name]
     bpy.ops.object.join()
     
-    bpy.data.meshes.remove(bpy.data.meshes["xSynd_mesh"])
-    bpy.data.meshes.remove(bpy.data.meshes["zSynd_mesh"])
-
     if model_name != "1.Empty_c":
         model.hide_set(True)
 
@@ -320,12 +317,9 @@ if vis_r2:
 
 
 for i in range(len(steps)):
-    try:
-        if vis_c:
-            build_model(steps[i], data_c, "c", i)
-        if vis_r1:
-            build_model(steps[i], data_r1, "r1", i)
-        if vis_r2:
-            build_model(steps[i], data_r2, "r2", i)
-    except:
-        pass
+    if vis_c:
+        build_model(steps[i], data_c, "c", i)
+    if vis_r1:
+        build_model(steps[i], data_r1, "r1", i)
+    if vis_r2:
+        build_model(steps[i], data_r2, "r2", i)

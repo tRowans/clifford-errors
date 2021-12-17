@@ -433,13 +433,23 @@ void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices)
 {
     //This is a similar idea to the cubic 2D X decoder so check that for more explanation
     //main difference here is edge -> face conversion method after finding path
-    vint x0Vertices;
+    vint xSyndrome2D;
     for (int v : syndromeVertices)
     {
         coord cd = indexToCoord(v, lattice.L);
-        if (cd.xi[0] == 0 && cd.xi[3] == 0) x0Vertices.push_back(v);
+        if (cd.xi[0] == 0 && cd.xi[3] == 0)
+        {
+            vint edges = lattice.vertexToEdges[v];
+            int count = 0;
+            for (int e : edges)
+            {
+                if (lattice.syndromeZ[e] == 1) count += 1;
+            }
+
+            if (count % 2 == 1) xSyndrome2D.push_back(v);
+        }
     }
-    vpint defectPairs = mwpm(x0Vertices, lattice.L, 0, 1);
+    vpint defectPairs = mwpm(xSyndrome2D, lattice.L, 0, 1);
     for (auto &pair : defectPairs)
     {
         vint path;
@@ -464,7 +474,8 @@ void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices)
         {
             pint vs1 = lattice.edgeToVertices[path[i]];
             pint vs2 = lattice.edgeToVertices[path[i+1]];
-            int f = findFace({vs1.first,vs2.first}, lattice.vertexToFaces, lattice.faceToVertices);
+            int f = findFace({vs1.first,vs2.first}, 
+                                lattice.vertexToFaces, lattice.faceToVertices);
             lattice.qubitsX[f] = (lattice.qubitsX[f] + 1) % 2;
         }
     }

@@ -63,19 +63,19 @@ void Outbox::prepErrorFiles()
     {
         std::string latticeName = latticeNames[i];
 
-        file.open("xErrors_" + latticeName + ".csv", std::ios::app);
+        file.open("xErrors_" + latticeName + ".csv");
         file.close();
 
-        file.open("zErrors_" + latticeName + ".csv", std::ios::app);
+        file.open("zErrors_" + latticeName + ".csv");
         file.close();
         
-        file.open("xSyndrome_" + latticeName + ".csv", std::ios::app);
+        file.open("xSyndrome_" + latticeName + ".csv");
         file.close();
         
-        file.open("zSyndrome_" + latticeName + ".csv", std::ios::app);
+        file.open("zSyndrome_" + latticeName + ".csv");
         file.close();
         
-        file.open("defects_" + latticeName + ".csv", std::ios::app);
+        file.open("defects_" + latticeName + ".csv");
         file.close();
     }
 }
