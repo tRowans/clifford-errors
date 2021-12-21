@@ -421,12 +421,6 @@ TEST(rhombicJumpCorrectionTest, CorrectOutputR1)
     std::uniform_real_distribution<double> dist(0,1);
 
     lattice.zStabPattern(engine, dist);     //tested separately
-    std::cout << "Initial stab pattern: " << '\n';
-    for (int i = 0; i < 3*6*6*6; i++)
-    {
-        if (lattice.qubitsZ[i] == 1) std::cout << i << ',';
-    }
-    std::cout << '\n';
     rhombic::jumpCorrection(lattice, engine, dist, 1);
     vint zErrors;
     vint zErrorsExpected = {};

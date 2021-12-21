@@ -258,7 +258,7 @@ int Lattice::checkLogicalError(char pauli)
     int parity = 0;
     if (pauli == 'x' || pauli == 'X')
     {
-        for (int i : zLogical)
+        for (int i : zLogicals[0])
         {
             if (qubitsX[i] == 1) parity = (parity + 1) % 2;
         }
@@ -272,6 +272,23 @@ int Lattice::checkLogicalError(char pauli)
     }
     else throw std::invalid_argument("Invalid Pauli given for checkLogicalError");
     return parity;
+}
+
+int Lattice::checkAllZReps()
+{
+    int sumOfOutcomes = 0;
+    for (vint rep : zLogicals)
+    {
+        int parity = 0;
+        for (int i : rep)
+        {
+            if (qubitsX[i] == 1) parity = (parity + 1) % 2;
+        }
+        sumOfOutcomes += parity;
+    }
+    if (static_cast<float>(zLogicals.size())/2 
+            > static_cast<float>(sumOfOutcomes)) return 0;
+    else return 1;
 }
 
 void Lattice::wipe()

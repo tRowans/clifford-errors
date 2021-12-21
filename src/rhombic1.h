@@ -25,7 +25,9 @@ void buildZSyndIndices(vint &zSyndIndices, int L);
 
 void buildDefectIndices(vint &defectIndices, int L);
 
-void buildLogicals(Lattice &lattice);
+void buildXLogical(Lattice &lattice);
+
+void buildZLogicals(Lattice &lattice);
 
 void buildLattice(Lattice &lattice);
 

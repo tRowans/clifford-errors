@@ -298,10 +298,8 @@ void buildDefectIndices(vint &defectIndices, int L)
     std::sort(defectIndices.begin(), defectIndices.end());
 } 
 
-
-void buildLogicals(Lattice &lattice)
+void buildXLogical(Lattice &lattice)
 {
-    //Do these together because the loops are the same 
     for (const vint &qubitIndices : {lattice.outerQubitIndices, lattice.innerQubitIndices})
     {
         for (int q : qubitIndices)
@@ -310,8 +308,39 @@ void buildLogicals(Lattice &lattice)
             coord cd1 = indexToCoord(vertices[0], lattice.L);
             coord cd2 = indexToCoord(vertices[1], lattice.L);
             if (cd1.xi[1] == 0 || cd2.xi[1] == 0) lattice.xLogical.push_back(q);
-            if (cd1.xi[0] == 0 && cd1.xi[2] == 0
-                && cd2.xi[0] == 0 && cd2.xi[2] == 1) lattice.zLogical.push_back(q);
+        }
+    }
+}
+
+void buildZLogicals(Lattice &lattice)
+{
+    for (int i = 0; i < (lattice.L-3)*(lattice.L-3); i++)
+    {
+        vint rep;
+        lattice.zLogicals.push_back(rep);
+    }
+    for (int y = 0; y < (lattice.L-3); y++)
+    {
+        for (int z = 0; z < (lattice.L-3); z++)
+        {
+            for (int x = 0; x < (lattice.L-3); x++)
+            {
+                int repNumber = x + z*(lattice.L-3);
+                int v1, v2;
+                if ((x + y + z) % 2 == 0)
+                {
+                    v1 = x + y*lattice.L + z*lattice.L*lattice.L;
+                    v2 = x + (y+1)*lattice.L + (z+1)*lattice.L*lattice.L;
+                }
+                else 
+                {
+                    v1 = x + (y+1)*lattice.L + z*lattice.L*lattice.L;
+                    v2 = x + y*lattice.L + (z+1)*lattice.L*lattice.L;
+                }
+                int face = findFace({v1,v2}, 
+                        lattice.vertexToFaces, lattice.faceToVertices);
+                lattice.zLogicals[repNumber].push_back(face);
+            }
         }
     }
 }
@@ -326,7 +355,8 @@ void buildLattice(Lattice &lattice)
     buildXSyndIndices(lattice.xSyndIndices, lattice.L);
     buildZSyndIndices(lattice.zSyndIndices, lattice.L);
     buildDefectIndices(lattice.defectIndices, lattice.L);
-    buildLogicals(lattice);  //this needs to come after index building functions
+    buildXLogical(lattice);  //this needs to come after index building functions
+    buildZLogicals(lattice);
                  
 }
 

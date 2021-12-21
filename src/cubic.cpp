@@ -296,12 +296,20 @@ void buildXLogical(vint &xLogical, int L)
     }
 }
 
-void buildZLogical(vint &zLogical, int L)
+void buildZLogicals(vvint &zLogicals, int L)
 {
-    for (int x = 0; x < (L-3); x++)
+    for (int z = 0; z < (L-3); z++)
     {
-        int f = 3*x + 2;
-        zLogical.push_back(f);
+        for (int y = 0; y < (L-3); y++)
+        {
+            vint logicalRep;
+            for (int x = 0; x < (L-3); x++)
+            {
+                int f = 3*(x + y*L + z*L*L) + 2;
+                logicalRep.push_back(f);
+            }
+            zLogicals.push_back(logicalRep);
+        }
     }
 }
 
@@ -319,7 +327,7 @@ void buildLattice(Lattice &lattice)
     buildZSyndIndices(lattice.zSyndIndices, lattice.L);
     buildDefectIndices(lattice.defectIndices, lattice.L);
     buildXLogical(lattice.xLogical, lattice.L);
-    buildZLogical(lattice.zLogical, lattice.L);
+    buildZLogicals(lattice.zLogicals, lattice.L);
 }
 
 }

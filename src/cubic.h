@@ -44,7 +44,7 @@ void buildDefectIndices(vint &defectIndices, int L);
 
 void buildXLogical(vint &xLogical, int L);
 
-void buildZLogical(vint &zLogical, int L);
+void buildZLogicals(vvint &zLogicals, int L);
 
 void buildLattice(Lattice &lattice);
 

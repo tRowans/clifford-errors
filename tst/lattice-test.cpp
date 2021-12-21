@@ -488,4 +488,47 @@ TEST(checkLogicalErrorTest, LogicalZError)
     EXPECT_EQ(lattice.checkLogicalError('z'), 1);
 }
 
+//------------------------------------------------------------
 
+TEST(checkAllZRepsTest, NoErrorsNoLogical)
+{
+    lattice.wipe();
+    EXPECT_EQ(lattice.checkAllZReps(), 0);
+}
+TEST(checkAllZRepsTest, NoErrorsLogical)
+{
+    lattice.wipe();
+    lattice.qubitsX[2] = 1;
+    lattice.qubitsX[20] = 1;
+    lattice.qubitsX[38] = 1;
+    lattice.qubitsX[110] = 1;
+    lattice.qubitsX[128] = 1;
+    lattice.qubitsX[146] = 1;
+    lattice.qubitsX[218] = 1;
+    lattice.qubitsX[236] = 1;
+    lattice.qubitsX[254] = 1;
+    EXPECT_EQ(lattice.checkAllZReps(), 1);
+}
+TEST(checkAllZRepsTest, ErrorsNoLogical)
+{
+    lattice.wipe();
+    lattice.qubitsX[2] = 1;
+    lattice.qubitsX[20] = 1;
+    lattice.qubitsX[38] = 1;
+    lattice.qubitsX[41] = 1;
+    EXPECT_EQ(lattice.checkAllZReps(), 0);
+}
+TEST(checkAllZRepsTest, ErrorsLogical)
+{
+    lattice.wipe();
+    lattice.qubitsX[2] = 1;
+    lattice.qubitsX[20] = 1;
+    lattice.qubitsX[38] = 1;
+    lattice.qubitsX[110] = 1;
+    lattice.qubitsX[128] = 1;
+    lattice.qubitsX[146] = 1;
+    lattice.qubitsX[218] = 1;
+    lattice.qubitsX[236] = 1;
+    lattice.qubitsX[239] = 1;
+    EXPECT_EQ(lattice.checkAllZReps(), 1);
+}

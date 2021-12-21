@@ -225,8 +225,16 @@ TEST(buildXLogicalTest, CorrectOutput)
 
 TEST(buildZLogicalTest, CorrectOutput)
 {
-    vint zLogicalExpected = {2,5,8};
-    vint zLogical;
-    cubic::buildZLogical(zLogical, 6);
-    EXPECT_EQ(zLogical, zLogicalExpected);
+    vvint zLogicalsExpected = {{2,5,8},
+                              {20,23,26},
+                              {38,41,44},
+                              {110,113,116},
+                              {128,131,134},
+                              {146,149,152},
+                              {218,221,224},
+                              {236,239,242},
+                              {254,257,260}};
+    vvint zLogicals;
+    cubic::buildZLogicals(zLogicals, 6);
+    EXPECT_EQ(zLogicals, zLogicalsExpected);
 }

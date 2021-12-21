@@ -37,7 +37,7 @@ class Lattice
         vint zSyndIndices;
         vint defectIndices;
         vint xLogical;
-        vint zLogical; 
+        vvint zLogicals; 
 
         vint qubitsX;
         vint qubitsZ;
@@ -72,6 +72,7 @@ class Lattice
         void checkInCodespace(char pauli, int useOuter, int useInner);
         void checkJumpCorrection();
         int checkLogicalError(char pauli);
+        int checkAllZReps();
         void wipe(); //clears error and syndrome info
 };
 

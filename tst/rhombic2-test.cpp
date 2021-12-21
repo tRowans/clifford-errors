@@ -158,7 +158,7 @@ TEST(buildDefectIndicesTestR2, CorrectOutput)
 
 //------------------------------------------------------------
 
-TEST(buildLogicalsTestR2, CorrectOutput)
+TEST(buildXLogicalTestR2, CorrectOutput)
 {
     Lattice lattice(6);
     rhombic::r2::buildFaces(lattice);
@@ -166,10 +166,30 @@ TEST(buildLogicalsTestR2, CorrectOutput)
                                    lattice.innerQubitIndices,
                                    lattice.allQubitIndices,
                                    lattice.L);
-    rhombic::r2::buildLogicals(lattice);
+    rhombic::r2::buildXLogical(lattice);
 
     vint xLogicalExpected = {18,111,147,0,19,24,36,37,117,129,130,148,153};
-    vint zLogicalExpected = {108,111,327};
     EXPECT_EQ(lattice.xLogical, xLogicalExpected);
-    EXPECT_EQ(lattice.zLogical, zLogicalExpected);
 }
+
+//------------------------------------------------------------
+
+TEST(buildZLogicalTestR2, CorrectOutput)
+{
+    Lattice lattice(6);
+    rhombic::r2::buildFaces(lattice);
+    rhombic::r2::buildZLogicals(lattice);
+
+    vvint zLogicalsExpected = {{111,108,327},
+                             {0,219,216},
+                             {117,114,333},
+                             {18,237,234},
+                             {129,126,345},
+                             {24,243,240},
+                             {147,144,363},
+                             {36,255,252},
+                             {153,150,369}};
+    EXPECT_EQ(lattice.zLogicals, zLogicalsExpected);
+}
+
+
