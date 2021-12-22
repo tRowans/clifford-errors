@@ -42,3 +42,6 @@ build/
 
 # Visual studio code
 .vscode/
+
+# Visualizer files
+*.csv

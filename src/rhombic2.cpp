@@ -328,13 +328,13 @@ void buildZLogicals(Lattice &lattice)
                 int v1, v2;
                 if ((x + y + z) % 2 == 1)
                 {
-                    int v1 = x + y*lattice.L + z*lattice.L*lattice.L;
-                    int v2 = x + (y+1)*lattice.L + (z+1)*lattice.L*lattice.L;
+                    v1 = x + y*lattice.L + z*lattice.L*lattice.L;
+                    v2 = x + (y+1)*lattice.L + (z+1)*lattice.L*lattice.L;
                 }
                 else 
                 {
-                    int v1 = x + (y+1)*lattice.L + z*lattice.L*lattice.L;
-                    int v2 = x + y*lattice.L + (z+1)*lattice.L*lattice.L;
+                    v1 = x + (y+1)*lattice.L + z*lattice.L*lattice.L;
+                    v2 = x + y*lattice.L + (z+1)*lattice.L*lattice.L;
                 }
                 int face = findFace({v1,v2}, 
                         lattice.vertexToFaces, lattice.faceToVertices);
