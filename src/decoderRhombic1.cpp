@@ -314,7 +314,7 @@ void xErrorDecoder(bp_osd &decoderHz, mod2sparse *hz, Lattice &lattice)
 {
     int m = mod2sparse_rows(hz);
     int n = mod2sparse_cols(hz);
-    char *synd = new char[m]();
+    char *synd;
     char *corr;
 
     synd = convertSyndrome(lattice.syndromeZ, lattice.zSyndIndices); // Convert syndrome into BP-OSD format
@@ -329,7 +329,6 @@ void xErrorDecoder(bp_osd &decoderHz, mod2sparse *hz, Lattice &lattice)
 
     // Cleanup
     delete[] synd;
-    delete[] corr;
 }
 
 vpint mwpm(vint &defects, int L, int dual, int twoD)
