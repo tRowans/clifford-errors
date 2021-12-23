@@ -147,7 +147,6 @@ int main(int argc, char *argv[])
             latRhombic2.checkInBounds();
         }
     
-        /*
         //Need to check if there should be a logical here or not
         vint expectXLogical = {0,0,0};
         latCubic.calcSynd('z',1,1);
@@ -180,7 +179,6 @@ int main(int argc, char *argv[])
                 expectXLogical[j] = redecodeAnswer; //temporary
             }
         }
-        */
     
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
@@ -188,6 +186,7 @@ int main(int argc, char *argv[])
       
         //Need perfect syndromes for CZ error calculation
         //This doesn't correspond to an actual stabiliser measurement 
+        /*
         latCubic.calcSynd('z',1,1);
         latRhombic1.calcSynd('z',1,1);
         latRhombic2.calcSynd('z',1,1); 
@@ -304,6 +303,7 @@ int main(int argc, char *argv[])
         cFailures[1] += latCubic.checkLogicalError('z');
         r1Failures[1] += latRhombic1.checkLogicalError('z');
         r2Failures[1] += latRhombic2.checkLogicalError('z');
+        */
     }
     
     // BP-OSD cleanup
@@ -314,10 +314,12 @@ int main(int argc, char *argv[])
     free(hzR1);
     free(hzR2);
 
+    /*
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
-    std::cout << "Disagreements: " << disagreements[0] << disagreements[1] << disagreements[2] << '\n';
+    */
+    std::cout << "Disagreements: " << disagreements[0] << ',' << disagreements[1] << ',' << disagreements[2] << '\n';
 
     // saveCodes();
 
