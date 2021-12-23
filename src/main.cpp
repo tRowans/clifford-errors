@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
 
     // Setup BP-OSD
-    std::string fileS = "/Users/tom/Documents/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
+    std::string fileS = "/path/to/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
     char *file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     hzC = load_alist(file);
     delete[] file;
     bp_osd decoderHzC(hzC, p, maxIter, osdOrder, osdMethod);
-    fileS = "/Users/tom/Documents/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
+    fileS = "/path/to/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     hzR1 = load_alist(file);
     bp_osd decoderHzR1(hzR1, p, maxIter, osdOrder, osdMethod);
     delete[] file;
-    fileS = "/Users/tom/Documents/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
+    fileS = "/path/to/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
             latRhombic1.checkInBounds();
             latRhombic2.checkInBounds();
         }
-    
+   
         //Need to check if there should be a logical here or not
         vint expectXLogical = {0,0,0};
         latCubic.calcSynd('z',1,1);
@@ -170,7 +170,8 @@ int main(int argc, char *argv[])
                 int allRepsAnswer;
                 //Check commutation with all Z logical reps and take majority vote
                 allRepsAnswer = lattices[j].checkAllZReps();
-                //Decode a copy and calculate logical (not doing copy here for this check)
+                //Redecode and calculate logical error as normal
+                //(would use a copy here for the real thing)
                 if (j == 0) cubic::xErrorDecoder(decoderHzC, hzC, latCubic);
                 else if (j == 1) rhombic::r1::xErrorDecoder(decoderHzR1, hzR1, latRhombic1);
                 else if (j == 2) rhombic::r2::xErrorDecoder(decoderHzR2, hzR2, latRhombic2);
@@ -179,14 +180,14 @@ int main(int argc, char *argv[])
                 expectXLogical[j] = redecodeAnswer; //temporary
             }
         }
-    
+   
+        /* 
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
         //so equivalently could do a biased error with prob 2*p/3
       
         //Need perfect syndromes for CZ error calculation
         //This doesn't correspond to an actual stabiliser measurement 
-        /*
         latCubic.calcSynd('z',1,1);
         latRhombic1.calcSynd('z',1,1);
         latRhombic2.calcSynd('z',1,1); 
