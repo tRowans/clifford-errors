@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
 
     // Setup BP-OSD
-    std::string fileS = "/path/to/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
+    std::string fileS = "/Users/tom/Documents/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
     char *file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     hzC = load_alist(file);
     delete[] file;
     bp_osd decoderHzC(hzC, p, maxIter, osdOrder, osdMethod);
-    fileS = "/path/to/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
+    fileS = "/Users/tom/Documents/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     hzR1 = load_alist(file);
     bp_osd decoderHzR1(hzR1, p, maxIter, osdOrder, osdMethod);
     delete[] file;
-    fileS = "/path/to/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
+    fileS = "/Users/tom/Documents/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -93,15 +93,16 @@ int main(int argc, char *argv[])
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
 
+    vint disagreements = {0,0,0};
+
     for (int i = 0; i < runs; i++)
     {
         //reset error info
         latCubic.wipe();
         latRhombic1.wipe();
         latRhombic2.wipe();
-        
-        if (vis == 1) out.writeErrorInfo(lattices);
 
+        if (vis == 1) out.writeErrorInfo(lattices);
         
         //qubits start in |+> --> measure Z stabilisers = random X error distribution
         latCubic.biasedError(0.5, engine, dist, 'x', 0);
@@ -132,7 +133,7 @@ int main(int argc, char *argv[])
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
-        //Fix X errors (decoder for this not done yet)
+        //Fix X errors 
         cubic::xErrorDecoder(decoderHzC, hzC, latCubic);
         rhombic::r1::xErrorDecoder(decoderHzR1, hzR1, latRhombic1);
         rhombic::r2::xErrorDecoder(decoderHzR2, hzR2, latRhombic2);
@@ -145,7 +146,42 @@ int main(int argc, char *argv[])
             latRhombic1.checkInBounds();
             latRhombic2.checkInBounds();
         }
-
+    
+        /*
+        //Need to check if there should be a logical here or not
+        vint expectXLogical = {0,0,0};
+        latCubic.calcSynd('z',1,1);
+        latRhombic1.calcSynd('z',1,1);
+        latRhombic2.calcSynd('z',1,1); 
+        for (int j = 0; j < 3; j++)
+        {
+            //First check if in codespace or not
+            int inCodespace = 1;
+            try {lattices[j].checkInCodespace('x',1,1);}
+            catch (std::runtime_error) {inCodespace = 0;}
+            //If in codespace can easily check presence/absence of logical
+            if (inCodespace == 1) 
+            {
+                expectXLogical[j] = lattices[j].checkLogicalError('x');
+            }
+            //Otherwise there are two ways to check. Want to see how often these agree
+            else
+            {
+                int redecodeAnswer;
+                int allRepsAnswer;
+                //Check commutation with all Z logical reps and take majority vote
+                allRepsAnswer = lattices[j].checkAllZReps();
+                //Decode a copy and calculate logical (not doing copy here for this check)
+                if (j == 0) cubic::xErrorDecoder(decoderHzC, hzC, latCubic);
+                else if (j == 1) rhombic::r1::xErrorDecoder(decoderHzR1, hzR1, latRhombic1);
+                else if (j == 2) rhombic::r2::xErrorDecoder(decoderHzR2, hzR2, latRhombic2);
+                redecodeAnswer = lattices[j].checkLogicalError('x');
+                if (allRepsAnswer != redecodeAnswer) disagreements[j] += 1;
+                expectXLogical[j] = redecodeAnswer; //temporary
+            }
+        }
+        */
+    
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
         //so equivalently could do a biased error with prob 2*p/3
@@ -281,6 +317,7 @@ int main(int argc, char *argv[])
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
+    std::cout << "Disagreements: " << disagreements[0] << disagreements[1] << disagreements[2] << '\n';
 
     // saveCodes();
 

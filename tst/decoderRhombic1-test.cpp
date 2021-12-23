@@ -302,9 +302,18 @@ TEST(xErrorDecoder2DTestR1, matchPair)
 
     latRhombic1.wipe();
     latRhombic1.qubitsX[126] = 1;
+    latRhombic1.syndromeZ[171] = 1;
+    latRhombic1.syndromeZ[1034] = 1;
     vint syndromeVertices = {42, 84, 258};
 
     rhombic::r1::xErrorDecoder2D(latRhombic1, syndromeVertices);
+    std::cout << "non-zero qubits: ";
+    for (int i = 0; i < latRhombic1.qubitsX.size(); i++)
+    {
+        if (latRhombic1.qubitsX[i] == 1) std::cout << i << ',';
+    }
+    std::cout << '\n';
+
     EXPECT_EQ(latRhombic1.qubitsX, qubitsExpected);
 }
 //Not enough space for matching two pairs in the bulk
@@ -315,6 +324,8 @@ TEST(xErrorDecoder2DTestR1, matchTwoToBoundary)
     latRhombic1.wipe();
     latRhombic1.qubitsX[36] = 1;
     latRhombic1.qubitsX[216] = 1;
+    latRhombic1.syndromeZ[914] = 1;
+    latRhombic1.syndromeZ[291] = 1;
     vint syndromeVertices = {54, 72, 228, 288};
 
     rhombic::r1::xErrorDecoder2D(latRhombic1, syndromeVertices);
