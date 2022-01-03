@@ -220,7 +220,7 @@ float magnitude(std::vector<float> diff)
     return mag;
 }
 
-vint shortestPath(int v1, int v2, Lattice &lattice)
+vint shortestPath(int v1, int v2, Lattice &lattice, int twoD)
 {
     int originalVertex = v1;
     coord c1 = indexToCoord(v1, lattice.L);
@@ -244,8 +244,25 @@ vint shortestPath(int v1, int v2, Lattice &lattice)
             int sign;
             if (edge/4 == v1) sign = 1;
             else sign = -1;
-            if (std::find(lattice.zSyndIndices.begin(), lattice.zSyndIndices.end(), edge) 
-                    != lattice.zSyndIndices.end())
+            int valid3DEdge = 0;
+            int valid2DEdge = 0;
+            if (std::find(lattice.zSyndIndices.begin(), 
+                        lattice.zSyndIndices.end(), edge) 
+                    != lattice.zSyndIndices.end()) valid3DEdge = 1;
+            if (twoD == 1 && valid3DEdge == 1) 
+            {
+                vint faces = lattice.edgeToFaces[edge];
+                for (int face : faces)
+                {
+                    if (std::find(lattice.outerQubitIndices.begin(),
+                                  lattice.outerQubitIndices.end(), face)
+                            != lattice.outerQubitIndices.end()) valid2DEdge = 1;
+                }
+            }
+            int validEdge = 0;
+            if (valid3DEdge == 1 && twoD == 0) validEdge = 1;
+            else if (valid2DEdge == 1 && twoD == 1) validEdge = 1;
+            if (validEdge)
             {
                 products.push_back({scalarProduct(diff, dir, sign), edge});
             }
@@ -387,7 +404,8 @@ void checkIn2DCodespace(Lattice &lattice)
             }
             if (count % 2 == 1) 
             {
-                throw std::runtime_error("Out of 2D codespace (bad X correction)");
+                throw std::runtime_error("Out of 2D codespace (vertex "
+                                             + std::to_string(v) + ")");
             }
         }
     }

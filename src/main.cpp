@@ -45,16 +45,12 @@ int main(int argc, char *argv[])
 
     Outbox out;
 
-    if (vis == 1)
-    {
-        out.writeLatticeInfo(lattices);
-        out.prepErrorFiles();
-    }
+    if (vis == 1) out.writeLatticeInfo(lattices);
 
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
 
     // Setup BP-OSD
-    std::string fileS = "/path/to/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
+    std::string fileS = "/mnt/HDDL/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
     char *file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -64,7 +60,7 @@ int main(int argc, char *argv[])
     hzC = load_alist(file);
     delete[] file;
     bp_osd decoderHzC(hzC, p, maxIter, osdOrder, osdMethod);
-    fileS = "/path/to/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
+    fileS = "/mnt/HDDL/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -74,7 +70,7 @@ int main(int argc, char *argv[])
     hzR1 = load_alist(file);
     bp_osd decoderHzR1(hzR1, p, maxIter, osdOrder, osdMethod);
     delete[] file;
-    fileS = "/path/to/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
+    fileS = "/mnt/HDDL/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -102,7 +98,11 @@ int main(int argc, char *argv[])
         latRhombic1.wipe();
         latRhombic2.wipe();
 
-        if (vis == 1) out.writeErrorInfo(lattices);
+        if (vis == 1) 
+        {
+            out.prepErrorFiles();
+            out.writeErrorInfo(lattices);
+        }
         
         //qubits start in |+> --> measure Z stabilisers = random X error distribution
         latCubic.biasedError(0.5, engine, dist, 'x', 0);
@@ -142,9 +142,27 @@ int main(int argc, char *argv[])
 
         if (debug == 1)
         {
-            latCubic.checkInBounds();
-            latRhombic1.checkInBounds();
-            latRhombic2.checkInBounds();
+            try {latCubic.checkInBounds();}
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Cubic error after 3D X decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try {latRhombic1.checkInBounds();}
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic1 error after 3D X decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try {latRhombic2.checkInBounds();}
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic2 error after 3D X decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
         }
    
         //Need to check if there should be a logical here or not
@@ -163,25 +181,13 @@ int main(int argc, char *argv[])
             {
                 expectXLogical[j] = lattices[j].checkLogicalError('x');
             }
-            //Otherwise there are two ways to check. Want to see how often these agree
+            //Otherwise check commutation with all disjoint logical Z reps and take majority vote
             else
             {
-                int redecodeAnswer;
-                int allRepsAnswer;
-                //Check commutation with all Z logical reps and take majority vote
-                allRepsAnswer = lattices[j].checkAllZReps();
-                //Redecode and calculate logical error as normal
-                //(would use a copy here for the real thing)
-                if (j == 0) cubic::xErrorDecoder(decoderHzC, hzC, latCubic);
-                else if (j == 1) rhombic::r1::xErrorDecoder(decoderHzR1, hzR1, latRhombic1);
-                else if (j == 2) rhombic::r2::xErrorDecoder(decoderHzR2, hzR2, latRhombic2);
-                redecodeAnswer = lattices[j].checkLogicalError('x');
-                if (allRepsAnswer != redecodeAnswer) disagreements[j] += 1;
-                expectXLogical[j] = redecodeAnswer; //temporary
+                expectXLogical[j] = lattices[j].checkAllZReps();
             }
         }
    
-        /* 
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
         //so equivalently could do a biased error with prob 2*p/3
@@ -229,9 +235,27 @@ int main(int argc, char *argv[])
 
         if (debug == 1)
         {
-            latCubic.checkInBounds();
-            latRhombic1.checkInBounds();
-            latRhombic2.checkInBounds();
+            try {latCubic.checkInBounds();}
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Cubic error after 3D Z decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try {latRhombic1.checkInBounds();}
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic1 error after 3D Z decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try {latRhombic2.checkInBounds();}
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic2 error after 3D Z decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
         }
 
         //Find dimension jump corrections for 2D codes 
@@ -243,12 +267,39 @@ int main(int argc, char *argv[])
 
         if (debug == 1)
         {
-            latCubic.checkInBounds();
-            latCubic.checkJumpCorrection();
-            latRhombic1.checkInBounds();
-            latRhombic1.checkJumpCorrection();
-            latRhombic2.checkInBounds();
-            latRhombic2.checkJumpCorrection();
+            try
+            {
+                latCubic.checkInBounds();
+                latCubic.checkJumpCorrection();
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Cubic error after jump: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try 
+            {
+                latRhombic1.checkInBounds();
+                latRhombic1.checkJumpCorrection();
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic1 error after jump: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try 
+            {
+                latRhombic2.checkInBounds();
+                latRhombic2.checkJumpCorrection();
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic2 error after jump: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
         }
         
         //We do not expect the 2D code to be error free even if we make no mistakes
@@ -267,18 +318,54 @@ int main(int argc, char *argv[])
 
         if (debug == 1)
         {
-            latCubic.checkInBounds();
-            cubic::checkIn2DCodespace(latCubic);
-            latRhombic1.checkInBounds();
-            rhombic::checkIn2DCodespace(latRhombic1);
-            latRhombic2.checkInBounds();
-            rhombic::checkIn2DCodespace(latRhombic2);
+            try
+            {
+                latCubic.checkInBounds();
+                cubic::checkIn2DCodespace(latCubic);
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Cubic error after perfect X decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try
+            {
+                latRhombic1.checkInBounds();
+                rhombic::checkIn2DCodespace(latRhombic1);
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic1 error after perfect X decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try
+            {
+                latRhombic2.checkInBounds();
+                rhombic::checkIn2DCodespace(latRhombic2);
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic2 error after perfect X decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
         }
         
         //Check X logical errors
-        cFailures[0] += latCubic.checkLogicalError('x');
-        r1Failures[0] += latRhombic1.checkLogicalError('x');
-        r2Failures[0] += latRhombic2.checkLogicalError('x');
+        if (latCubic.checkLogicalError('x') != expectXLogical[0])
+        {
+            cFailures[0] += 1;
+        }
+        if (latRhombic1.checkLogicalError('x') != expectXLogical[1])
+        {
+            r1Failures[0] += 1;
+        }
+        if (latRhombic2.checkLogicalError('x') != expectXLogical[2])
+        {
+            r2Failures[0] += 1;
+        }
 
         //Can use the same decoder as for 3D here but restricted to outer qubits
         latCubic.calcSynd('x', 1, 0); 
@@ -292,19 +379,46 @@ int main(int argc, char *argv[])
 
         if (debug == 1)
         {
-            latCubic.checkInBounds();
-            latCubic.checkInCodespace('z', 1, 0);
-            latRhombic1.checkInBounds();
-            latRhombic1.checkInCodespace('z', 1, 0);
-            latRhombic2.checkInBounds();
-            latRhombic2.checkInCodespace('z', 1, 0);
+            try
+            {
+                latCubic.checkInBounds();
+                latCubic.checkInCodespace('z', 1, 0);
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Cubic error after perfect Z decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try 
+            {
+                latRhombic1.checkInBounds();
+                latRhombic1.checkInCodespace('z', 1, 0);
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic1 error after perfect Z decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
+            try
+            {
+                latRhombic2.checkInBounds();
+                latRhombic2.checkInCodespace('z', 1, 0);
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << "Rhombic2 error after perfect Z decoding: " << e.what() << '\n';
+                std::cout << "Exiting\n";
+                return 1;
+            }
         }
         
         //Check Z logical errors 
         cFailures[1] += latCubic.checkLogicalError('z');
         r1Failures[1] += latRhombic1.checkLogicalError('z');
         r2Failures[1] += latRhombic2.checkLogicalError('z');
-        */
+        
     }
     
     // BP-OSD cleanup
@@ -315,13 +429,11 @@ int main(int argc, char *argv[])
     free(hzR1);
     free(hzR2);
 
-    /*
+    
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
-    */
-    std::cout << "Disagreements: " << disagreements[0] << ',' << disagreements[1] << ',' << disagreements[2] << '\n';
-
+    
     // saveCodes();
 
     return 0;

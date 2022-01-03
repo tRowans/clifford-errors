@@ -1,9 +1,9 @@
 #include "vis.h"
 
-vint Outbox::getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector)
+vint Outbox::getNonZeroElements(std::vector<int> &elements)
 {
     std::vector<int> nonZeroElements = {};
-    for (int i : indexVector)
+    for (int i = 0; i < elements.size(); i++)
     {
         if (elements[i] == 1)
         {
@@ -88,15 +88,11 @@ void Outbox::writeErrorInfo(std::vector<Lattice> &lattices)
         Lattice &lattice = lattices[i];
         std::string latticeName = latticeNames[i];
 
-        vint xErrors = getNonZeroElements(lattice.qubitsX, lattice.outerQubitIndices);
-        vint innerErrors = getNonZeroElements(lattice.qubitsX, lattice.innerQubitIndices);
-        xErrors.insert(xErrors.end(), innerErrors.begin(), innerErrors.end());
-        vint zErrors = getNonZeroElements(lattice.qubitsZ, lattice.outerQubitIndices);
-        innerErrors = getNonZeroElements(lattice.qubitsZ, lattice.innerQubitIndices);
-        zErrors.insert(zErrors.end(), innerErrors.begin(), innerErrors.end());
+        vint xErrors = getNonZeroElements(lattice.qubitsX);
+        vint zErrors = getNonZeroElements(lattice.qubitsZ);
 
-        vint xSyndrome = getNonZeroElements(lattice.syndromeX, lattice.xSyndIndices);
-        vint zSyndrome = getNonZeroElements(lattice.syndromeZ, lattice.zSyndIndices);
+        vint xSyndrome = getNonZeroElements(lattice.syndromeX);
+        vint zSyndrome = getNonZeroElements(lattice.syndromeZ);
 
         file.open("xErrors_" + latticeName + ".csv", std::ios::app);
         writeCSV(xErrors);

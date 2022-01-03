@@ -99,7 +99,7 @@ void Lattice::calcSynd(char pauli, int useOuter, int useInner)
     else if (pauli == 'z' || pauli == 'Z')
     {
         std::fill(syndromeZ.begin(), syndromeZ.end(), 0);
-         for (const vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
+        for (const vint &qubitIndices : {outerQubitIndices, innerQubitIndices})
         {
             if (whichQubits[j] == 1)
             {
@@ -179,7 +179,7 @@ void Lattice::checkInBounds()
                         == xSyndIndices.end())
                 {
                     throw std::runtime_error("stabiliser out of bounds (syndromeX[" 
-                                                    + std::to_string(i) + "]\n");
+                                                    + std::to_string(i) + "])\n");
 
                 }
             }
@@ -190,7 +190,7 @@ void Lattice::checkInBounds()
                     == innerQubitIndices.end())
             {
                 throw std::runtime_error("qubit out of bounds (qubitsX[" 
-                                                + std::to_string(i) + "]\n");
+                                                + std::to_string(i) + "])\n");
             }
             if (qubitsZ[i] == 1 &&
                     std::find(outerQubitIndices.begin(), outerQubitIndices.end(), i) 
@@ -199,14 +199,14 @@ void Lattice::checkInBounds()
                     == innerQubitIndices.end())
             {
                 throw std::runtime_error("qubit out of bounds (qubitsZ["
-                                                + std::to_string(i) + "]\n");
+                                                + std::to_string(i) + "])\n");
             }
         }
         if (syndromeZ[i] == 1 &&
                 std::find(zSyndIndices.begin(), zSyndIndices.end(), i) == zSyndIndices.end())
         {
             throw std::runtime_error("stabiliser out of bounds (syndromeZ["
-                                            + std::to_string(i) + "]\n");
+                                            + std::to_string(i) + "])\n");
         }
     }
     for (int i : defects)

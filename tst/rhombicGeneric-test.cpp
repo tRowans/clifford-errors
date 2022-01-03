@@ -270,9 +270,9 @@ TEST(shortestPathTest, CorrectOutputNoBuild)
     lattice.edgeToVertices[865] = {37, 216};
     lattice.edgeToVertices[148] = {37, 217};
 
-    EXPECT_EQ(rhombic::shortestPath(0, 216, lattice), path1);
-    EXPECT_EQ(rhombic::shortestPath(0, 37, lattice), path2);
-    EXPECT_EQ(rhombic::shortestPath(0, 217, lattice), path3);
+    EXPECT_EQ(rhombic::shortestPath(0, 216, lattice, 0), path1);
+    EXPECT_EQ(rhombic::shortestPath(0, 37, lattice, 0), path2);
+    EXPECT_EQ(rhombic::shortestPath(0, 217, lattice, 0), path3);
 }
 TEST(shortestPathTest, CorrectOutputBuild)
 {
@@ -287,16 +287,16 @@ TEST(shortestPathTest, CorrectOutputBuild)
     Lattice lattice(6);
     rhombic::r1::buildLattice(lattice);
 
-    EXPECT_EQ(rhombic::shortestPath(42, 258, lattice), path1);
-    EXPECT_EQ(rhombic::shortestPath(42, 79, lattice), path2);
-    EXPECT_EQ(rhombic::shortestPath(42, 259, lattice), path3);
+    EXPECT_EQ(rhombic::shortestPath(42, 258, lattice, 0), path1);
+    EXPECT_EQ(rhombic::shortestPath(42, 79, lattice, 0), path2);
+    EXPECT_EQ(rhombic::shortestPath(42, 259, lattice, 0), path3);
 
     //boundary paths
     vint path4 = {865};
     vint path5 = {865, 148};
    
-    EXPECT_EQ(rhombic::shortestPath(216, 37, lattice), path4);
-    EXPECT_EQ(rhombic::shortestPath(216, 217, lattice), path5);
+    EXPECT_EQ(rhombic::shortestPath(216, 37, lattice, 0), path4);
+    EXPECT_EQ(rhombic::shortestPath(216, 217, lattice, 0), path5);
 }
 
 //------------------------------------------------------------

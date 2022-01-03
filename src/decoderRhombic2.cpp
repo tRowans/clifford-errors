@@ -89,10 +89,11 @@ std::vector<int> distanceToClosestXBoundary(int v, int L, int twoD)
 
 std::vector<int> shortestPathToXBoundary(int v, int L, int twoD)   
 {
-    std::vector<int> distInfo = distanceToClosestXBoundary(v, L, twoD);
+    vint distInfo = distanceToClosestXBoundary(v, L, twoD);
     int &dir = distInfo[0];
     int &sign = distInfo[1];
     int &dist = distInfo[2];
+    if (twoD == 1) dist = 2*(dist - 1) + 1;
     vint path;
     coord cd = indexToCoord(v,L);
 
@@ -121,7 +122,7 @@ std::vector<int> shortestPathToXBoundary(int v, int L, int twoD)
 
         int zigzag = 0;
         if (cd.xi[2] ==0 && sign == 1) zigzag = 1;
-        else if (cd.xi[2] == L-4 && sign == -1) zigzag = 1;
+        else if (cd.xi[2] == L-3 && sign == -1) zigzag = 1;
         while (dist > 0)
         {
             if (zigzag == 0)
@@ -205,8 +206,8 @@ std::vector<int> shortestPathToXBoundary(int v, int L, int twoD)
                 }
                 else 
                 {
-                    moveDir1 = {xz,1};
-                    moveDir2 = {xyz,-1};
+                    moveDir1 = {xyz,-1};
+                    moveDir2 = {xz,1};
                 }
             }
 
@@ -353,7 +354,7 @@ vpint mwpm(vint &defects, int L, int dual, int twoD)
         // Add edge to boundary node
         edges.push_back(i);
         edges.push_back(nodeNum + i);
-        if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L, twoD)[1]);
+        if (dual == 0) weights.push_back(distanceToClosestXBoundary(defects[i], L, twoD)[2]);
         else weights.push_back(distanceToClosestZBoundary(defects[i], L)[1]);
     }
     int edgeNum = edges.size() / 2;
@@ -394,7 +395,7 @@ void joinPair(int v1, int v2, Lattice &lattice)
     vint path;
     //If matched to boundary
     if (v2 == -1) path = shortestPathToXBoundary(v1, lattice.L, 0);
-    else path = shortestPath(v1, v2, lattice);
+    else path = shortestPath(v1, v2, lattice, 0);
     for (int i : path) lattice.syndromeZ[i] = (lattice.syndromeZ[i] + 1) % 2;
 }
 
@@ -431,7 +432,7 @@ void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices)
 {
     //This is a similar idea to the cubic 2D X decoder so check that for more explanation
     //main difference here is edge -> face conversion method after finding path
-    vint xSyndrome2D;
+    vint zSyndrome2D;
     for (int v : syndromeVertices)
     {
         coord cd = indexToCoord(v, lattice.L);
@@ -444,10 +445,10 @@ void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices)
                 if (lattice.syndromeZ[e] == 1) count += 1;
             }
 
-            if (count % 2 == 1) xSyndrome2D.push_back(v);
+            if (count % 2 == 1) zSyndrome2D.push_back(v);
         }
     }
-    vpint defectPairs = mwpm(xSyndrome2D, lattice.L, 0, 1);
+    vpint defectPairs = mwpm(zSyndrome2D, lattice.L, 0, 1);
     for (auto &pair : defectPairs)
     {
         vint path;
@@ -467,7 +468,7 @@ void xErrorDecoder2D(Lattice &lattice, vint &syndromeVertices)
             }
             path.pop_back();
         }
-        else path = shortestPath(pair.first, pair.second, lattice);
+        else path = shortestPath(pair.first, pair.second, lattice, 1);
         for (int i = 0; i < path.size(); i+=2)
         {
             pint vs1 = lattice.edgeToVertices[path[i]];

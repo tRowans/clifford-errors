@@ -9,7 +9,7 @@ class Outbox
     private:
         std::ofstream file;
         
-        vint getNonZeroElements(std::vector<int> &elements, std::vector<int> &indexVector);
+        vint getNonZeroElements(std::vector<int> &elements);
         
         void writeCSV(std::vector<int> &indices);
 

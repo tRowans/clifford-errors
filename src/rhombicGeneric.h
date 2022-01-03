@@ -34,7 +34,7 @@ std::vector<float> differenceVector(coord c1, coord c2);
 
 float magnitude(std::vector<float> diff);
 
-vint shortestPath(int v1, int v2, Lattice &lattice);
+vint shortestPath(int v1, int v2, Lattice &lattice, int twoD);
 
 vint shortestDualPath(int cell1, int cell2, Lattice &lattice, int decode2D);
 
