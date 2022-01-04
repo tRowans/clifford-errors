@@ -40,6 +40,9 @@ vis/csv/
 # Build
 build/
 
+# Data
+data/
+
 # Visual studio code
 .vscode/
 
