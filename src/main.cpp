@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
             }
         }
    
-        //Need to check if there should be a logical here or not
+        //Need to check if there should be a logical X or not
         vint expectXLogical = {0,0,0};
         latCubic.calcSynd('z',1,1);
         latRhombic1.calcSynd('z',1,1);
@@ -186,6 +186,15 @@ int main(int argc, char *argv[])
             {
                 expectXLogical[j] = lattices[j].checkAllZReps();
             }
+        }
+        //If two codes should have a logical X then the third one should have a logical Z
+        //If we have link turned on, so check for this also
+        vint expectZLogical = {0,0,0};
+        if (linking == 1)
+        {
+            if (expectXLogical[1] == 1 && expectXLogical[2] == 1) expectZLogical[0] = 1;
+            if (expectXLogical[0] == 1 && expectXLogical[2] == 1) expectZLogical[1] = 1;
+            if (expectXLogical[0] == 1 && expectXLogical[1] == 1) expectZLogical[2] = 1;
         }
    
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
@@ -415,10 +424,18 @@ int main(int argc, char *argv[])
         }
         
         //Check Z logical errors 
-        cFailures[1] += latCubic.checkLogicalError('z');
-        r1Failures[1] += latRhombic1.checkLogicalError('z');
-        r2Failures[1] += latRhombic2.checkLogicalError('z');
-        
+        if (latCubic.checkLogicalError('z') != expectZLogical[0])
+        {
+            cFailures[1] += 1;
+        }
+        if (latRhombic1.checkLogicalError('z') != expectZLogical[1])
+        {
+            r1Failures[1] += 1;
+        }
+        if (latRhombic2.checkLogicalError('z') != expectZLogical[2])
+        {
+            r2Failures[1] += 1;
+        }
     }
     
     // BP-OSD cleanup
