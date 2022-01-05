@@ -45,7 +45,6 @@ data/
 
 # Visual studio code
 .vscode/
-<<<<<<< HEAD
 
 # Visualizer files
 *.csv
