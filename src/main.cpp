@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
 
     // Setup BP-OSD
-    std::string fileS = "/mnt/HDDL/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
+    std::string fileS = "/home/mvasmer/src/clifford-errors/alist/cubic_L=" + std::to_string(L) + ".alist";
     char *file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     hzC = load_alist(file);
     delete[] file;
     bp_osd decoderHzC(hzC, p, maxIter, osdOrder, osdMethod);
-    fileS = "/mnt/HDDL/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
+    fileS = "/home/mvasmer/src/clifford-errors/alist/rhombic1_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     hzR1 = load_alist(file);
     bp_osd decoderHzR1(hzR1, p, maxIter, osdOrder, osdMethod);
     delete[] file;
-    fileS = "/mnt/HDDL/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
+    fileS = "/home/mvasmer/src/clifford-errors/alist/rhombic2_L=" + std::to_string(L) + ".alist";
     file = new char[fileS.length() + 1]();
     for (int i = 0; i < fileS.length(); ++i) {
         file[i] = fileS[i];
