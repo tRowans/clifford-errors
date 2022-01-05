@@ -4,10 +4,17 @@ import numpy as np
 from datetime import datetime
 
 Lmin = 6
+<<<<<<< HEAD
 Lmax = 12
 Ls = range(Lmin, Lmax + 1, 2)
 ps = np.linspace(0.005, 0.014, 10)
 runs = int(1e4)
+=======
+Lmax = 10
+Ls = range(Lmin, Lmax + 1, 2)
+ps = np.linspace(0.05, 1.05, 10)
+runs = int(1e2)
+>>>>>>> Script and input for compute canada
 job = 0
 git_hash = subprocess.check_output(['git', 'rev-parse',  'HEAD']).strip()
 link = 1
@@ -22,4 +29,8 @@ with open(f'{today}.csv', 'w') as csv_file:
     for L in Ls:
         for p in ps:
             writer.writerow([L, p, p, runs, link, max_iter, osd_order, osd_method, job, git_hash])
+<<<<<<< HEAD
             job += 1
+=======
+            job += 1
+>>>>>>> Script and input for compute canada
