@@ -81,15 +81,13 @@ int main(int argc, char *argv[])
     bp_osd decoderHzR2(hzR2, p, maxIter, osdOrder, osdMethod);
     delete[] file;
 
-    vint cFailures = {0,0};
-    vint r1Failures = {0,0};
-    vint r2Failures = {0,0};
+    vint cFailures = {0,0,0};
+    vint r1Failures = {0,0,0};
+    vint r2Failures = {0,0,0};
 
     std::random_device rd{};
     std::mt19937 engine{rd()};
     std::uniform_real_distribution<double> dist(0,1);
-
-    vint disagreements = {0,0,0};
 
     for (int i = 0; i < runs; i++)
     {
@@ -363,17 +361,20 @@ int main(int argc, char *argv[])
         }
         
         //Check X logical errors
+        int cXFail = 0;
+        int r1XFail = 0;
+        int r2XFail = 0;
         if (latCubic.checkLogicalError('x') != expectXLogical[0])
         {
-            cFailures[0] += 1;
+            cXFail = 1;
         }
         if (latRhombic1.checkLogicalError('x') != expectXLogical[1])
         {
-            r1Failures[0] += 1;
+            r1XFail = 1;
         }
         if (latRhombic2.checkLogicalError('x') != expectXLogical[2])
         {
-            r2Failures[0] += 1;
+            r2XFail = 1;
         }
 
         //Can use the same decoder as for 3D here but restricted to outer qubits
@@ -424,18 +425,34 @@ int main(int argc, char *argv[])
         }
         
         //Check Z logical errors 
+        int cZFail = 0;
+        int r1ZFail = 0;
+        int r2ZFail = 0;
         if (latCubic.checkLogicalError('z') != expectZLogical[0])
         {
-            cFailures[1] += 1;
+            cZFail = 1;
         }
         if (latRhombic1.checkLogicalError('z') != expectZLogical[1])
         {
-            r1Failures[1] += 1;
+            r1ZFail = 1;
         }
         if (latRhombic2.checkLogicalError('z') != expectZLogical[2])
         {
-            r2Failures[1] += 1;
+            r2ZFail = 1;
         }
+
+        //Update total counts
+        if (cXFail == 1) cFailures[0] += 1;
+        if (cZFail == 1) cFailures[1] += 1;
+        if (cXFail == 1 || cZFail == 1) cFailures[2] += 1;
+        
+        if (r1XFail == 1) r1Failures[0] += 1;
+        if (r1ZFail == 1) r1Failures[1] += 1;
+        if (r1XFail == 1 || r1ZFail == 1) r1Failures[2] += 1;
+        
+        if (r2XFail == 1) r2Failures[0] += 1;
+        if (r2ZFail == 1) r2Failures[1] += 1;
+        if (r2XFail == 1 || r2ZFail == 1) r2Failures[2] += 1;
     }
     
     // BP-OSD cleanup
@@ -450,6 +467,7 @@ int main(int argc, char *argv[])
     std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
+    std::cout << cFailures[2] << ',' << r1Failures[2] << ',' << r2Failures[2] << '\n';
     
     // saveCodes();
 
