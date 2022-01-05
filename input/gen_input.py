@@ -4,10 +4,10 @@ import numpy as np
 from datetime import datetime
 
 Lmin = 6
-Lmax = 12
+Lmax = 10
 Ls = range(Lmin, Lmax + 1, 2)
-ps = np.linspace(0.005, 0.014, 10)
-runs = int(1e4)
+ps = np.linspace(0.05, 1.05, 10)
+runs = int(1e2)
 job = 0
 git_hash = subprocess.check_output(['git', 'rev-parse',  'HEAD']).strip()
 link = 1
