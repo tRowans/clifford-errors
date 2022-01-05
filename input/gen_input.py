@@ -4,20 +4,19 @@ import numpy as np
 from datetime import datetime
 
 Lmin = 6
-Lmax = 12
+Lmax = 10
 Ls = range(Lmin, Lmax + 1, 2)
-# ps = np.concatenate((np.linspace(0.001, 0.004, 4), np.linspace(0.015, 0.024, 10)), axis=None)
-ps = np.linspace(0.001, 0.035, 18)
-runs = int(1e4)
+ps = np.linspace(0.05, 1.05, 10)
+runs = int(1e2)
 job = 0
 git_hash = subprocess.check_output(['git', 'rev-parse',  'HEAD']).strip()
-link = 2
+link = 1
 today = datetime.today().strftime('%Y-%m-%d')
-max_iter = 50
-osd_order = 10
+max_iter = 10
+osd_order = 6
 osd_method = 'osd_cs'
 
-with open(f'{today}b.csv', 'w') as csv_file:
+with open(f'{today}.csv', 'w') as csv_file:
     writer = csv.writer(csv_file, delimiter=',')
     writer.writerow(['L', 'p', 'q', 'runs', 'linking', 'max_iter', 'osd_order', 'osd_method', 'job_number', 'git hash (metadata)'])
     for L in Ls:
