@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     double p = std::atof(argv[2]);
     double q = std::atof(argv[3]);
     int runs = std::atoi(argv[4]);
-    int linking = std::atoi(argv[5]);
+    int ccz = std::atoi(argv[5]);   //0 = off, 1 = on (no linking), 2 = on (linking)
     int debug = std::atoi(argv[6]);
     int vis = std::atoi(argv[7]);
     int maxIter = std::atoi(argv[8]); // In the past I used 50
@@ -187,9 +187,9 @@ int main(int argc, char *argv[])
             }
         }
         //If two codes should have a logical X then the third one should have a logical Z
-        //If we have link turned on, so check for this also
+        //if we have link turned on, so check for this also
         vint expectZLogical = {0,0,0};
-        if (linking == 1)
+        if (ccz == 2)
         {
             if (expectXLogical[1] == 1 && expectXLogical[2] == 1) expectZLogical[0] = 1;
             if (expectXLogical[0] == 1 && expectXLogical[2] == 1) expectZLogical[1] = 1;
@@ -202,11 +202,14 @@ int main(int argc, char *argv[])
       
         //Need perfect syndromes for CZ error calculation
         //This doesn't correspond to an actual stabiliser measurement 
-        latCubic.calcSynd('z',1,1);
-        latRhombic1.calcSynd('z',1,1);
-        latRhombic2.calcSynd('z',1,1); 
-        applyCCZ(lattices, overlappingFaces, engine, dist, linking);
-        
+        if (ccz != 0)
+        {
+            latCubic.calcSynd('z',1,1);
+            latRhombic1.calcSynd('z',1,1);
+            latRhombic2.calcSynd('z',1,1); 
+            applyCCZ(lattices, overlappingFaces, engine, dist, ccz-1);
+        }
+
         if (vis == 1) out.writeErrorInfo(lattices);
 
         latCubic.depolarisingError(p, engine, dist);
@@ -465,7 +468,7 @@ int main(int argc, char *argv[])
     free(hzR2);
 
     
-    std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << linking << '\n';
+    std::cout << L << ',' << p << ',' << q << ',' << runs << ',' << ccz << '\n';
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
     std::cout << cFailures[2] << ',' << r1Failures[2] << ',' << r2Failures[2] << '\n';
