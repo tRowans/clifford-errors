@@ -8,8 +8,8 @@
 void saveCodes()
 {
     vint Ls;
-    int Lstart = 6;
-    int Lmax = 12;
+    int Lstart = 18;
+    int Lmax = 20;
     int Lstep = 2;
     for (int i = Lstart; i <= Lmax; i += Lstep) Ls.push_back(i);
     saveHzLs(Ls);
@@ -17,6 +17,7 @@ void saveCodes()
 
 int main(int argc, char *argv[])
 {
+    
     if (argc != 11)
     {
         std::cout << "Invalid number of arguments." << '\n';
@@ -468,8 +469,8 @@ int main(int argc, char *argv[])
     std::cout << cFailures[0] << ',' << r1Failures[0] << ',' << r2Failures[0] << '\n';
     std::cout << cFailures[1] << ',' << r1Failures[1] << ',' << r2Failures[1] << '\n';
     std::cout << cFailures[2] << ',' << r1Failures[2] << ',' << r2Failures[2] << '\n';
-    
-    // saveCodes();
+        
+    //saveCodes();
 
     return 0;
 }
