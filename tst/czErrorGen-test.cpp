@@ -95,6 +95,8 @@ TEST(getSyndromeVerticesTest, correctOutput)
 
 //------------------------------------------------------------
 
+/*
+ * Not in use
 TEST(latticeWhereCellTest, CorrectOutput)
 {
     EXPECT_EQ(latticeWhereCell(0, 0, 6), 2);
@@ -104,9 +106,13 @@ TEST(latticeWhereCellTest, CorrectOutput)
     EXPECT_EQ(latticeWhereCell(1, 2, 6), 1);
     EXPECT_EQ(latticeWhereCell(216, 2, 6), 0);
 }
+*/
 
 //------------------------------------------------------------
 
+/*
+ * Simple version doesn't need all these
+ *
 TEST(applyCCZTest, singleCubicXError)
 {
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
@@ -376,6 +382,7 @@ TEST(applyCCZTest, membraneR2)
     EXPECT_EQ(cWrongQubits, emptySet);
     EXPECT_EQ(r1WrongQubits, emptySet);
 }
+*/
 TEST(applyCCZTest, link)
 {
     std::map<pint,ppint> overlappingFaces = buildOverlappingFaces(lattices);
@@ -388,13 +395,7 @@ TEST(applyCCZTest, link)
     latRhombic1.qubitsX[0] = 1;
     latRhombic2.qubitsX[111] = 1;
 
-    applyCCZ(lattices, overlappingFaces, engine, dist, 0);
-
-    EXPECT_EQ(latCubic.qubitsZ[2], 0);
-    EXPECT_EQ(latRhombic1.qubitsZ[0], 0);
-    EXPECT_EQ(latRhombic2.qubitsZ[111], 0);
-
-    applyCCZ(lattices, overlappingFaces, engine, dist, 1);
+    applyCCZ(lattices, overlappingFaces);
 
     EXPECT_EQ(latCubic.qubitsZ[2], 1);
     EXPECT_EQ(latRhombic1.qubitsZ[0], 1);
