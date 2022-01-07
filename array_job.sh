@@ -1,18 +1,18 @@
 #!/bin/bash
 #SBATCH --account=def-raymond
-#SBATCH --time=4:00:00
-#SBATCH --mem=4G
+#SBATCH --time=1:00:00
+#SBATCH --mem=1G
 #SBATCH --job-name=clifford-errors-L6
 #SBATCH --output=data/%x-%j.out
 #SBATCH --mail-user=mvasmer@pitp.ca
 #SBATCH --mail-type=ALL
-#SBATCH --array=1-10
+#SBATCH --array=1-18
 
 pwd 
 echo "SLURM_JOB_ID=$SLURM_JOB_ID"
 date
 
-file=/home/mvasmer/src/clifford-errors/input/2022-01-05.csv
+file=/home/mvasmer/src/clifford-errors/input/2022-01-06b.csv
 line=$(sed -n "1p" "$file")
 echo $line
 id=$SLURM_ARRAY_TASK_ID
