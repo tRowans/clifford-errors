@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     double p = std::atof(argv[2]);
     double q = std::atof(argv[3]);
     int runs = std::atoi(argv[4]);
-    int ccz = std::atoi(argv[5]);   //0 = off, 1 = on (no linking), 2 = on (linking)
+    int ccz = std::atoi(argv[5]);   
     int debug = std::atoi(argv[6]);
     int vis = std::atoi(argv[7]);
     int maxIter = std::atoi(argv[8]); // In the past I used 50
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
         //If two codes should have a logical X then the third one should have a logical Z
         //if we have link turned on, so check for this also
         vint expectZLogical = {0,0,0};
-        if (ccz == 2)
+        if (ccz == 1)
         {
             if (expectXLogical[1] == 1 && expectXLogical[2] == 1) expectZLogical[0] = 1;
             if (expectXLogical[0] == 1 && expectXLogical[2] == 1) expectZLogical[1] = 1;
@@ -199,16 +199,7 @@ int main(int argc, char *argv[])
         //Apply CCZ --> Clifford errors + a post-gate depolarising error
         //Although in practise only Z errors matter after this point
         //so equivalently could do a biased error with prob 2*p/3
-      
-        //Need perfect syndromes for CZ error calculation
-        //This doesn't correspond to an actual stabiliser measurement 
-        if (ccz != 0)
-        {
-            latCubic.calcSynd('z',1,1);
-            latRhombic1.calcSynd('z',1,1);
-            latRhombic2.calcSynd('z',1,1); 
-            applyCCZ(lattices, overlappingFaces, engine, dist, ccz-1);
-        }
+        if (ccz == 1) applyCCZ(lattices, overlappingFaces);
 
         if (vis == 1) out.writeErrorInfo(lattices);
 

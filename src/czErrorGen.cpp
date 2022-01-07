@@ -57,6 +57,8 @@ vvint getSyndromeVertices(std::vector<Lattice> &lattices)
     return syndromeVertices;
 }
 
+/*
+ * Not in use
 int latticeWhereCell(int v, int latticeA, int L)
 {
     //Each vertex of lattice A is also a vertex of lattice B but a cell of lattice C
@@ -78,69 +80,26 @@ int latticeWhereCell(int v, int latticeA, int L)
     }
     return latticeC;
 }
+*/
 
-void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingFaces, std::mt19937 &engine, std::uniform_real_distribution<double> &dist, int link)
+void applyCCZ(std::vector<Lattice> &lattices, std::map<pint,ppint> &overlappingFaces)
 {
-    //membrane boundary errors
-    vvint syndromeVertices = getSyndromeVertices(lattices);
-    for (int i = 0; i < 3; i++)
+    for (int fC = 0; fC < 3*lattices[0].L*lattices[0].L*lattices[0].L; fC++)
     {
-        for (int v : syndromeVertices[i])
+        auto overlap = overlappingFaces[{0,fC}];
+        int fR1 = overlap.first.second;
+        int fR2 = overlap.second.second;
+        if (lattices[0].qubitsX[fC] == 1 && lattices[1].qubitsX[fR1] == 1)
         {
-            int cellIndex = v;
-            if (v >= lattices[i].L*lattices[i].L*lattices[i].L)
-            {
-                cellIndex -= lattices[i].L*lattices[i].L*lattices[i].L;
-            }
-            pint cell = {latticeWhereCell(v,i,lattices[i].L), cellIndex};
-            if (dist(engine) < 0.5)
-            {
-                vint faces = lattices[cell.first].cellToFaces[cell.second];
-                for (int face : faces)
-                {
-                    auto overlap = overlappingFaces[{cell.first,face}];
-                    pint xFace;
-                    pint zFace;
-                    if (overlap.first.first == i)
-                    {
-                        xFace = overlap.first;
-                        zFace = overlap.second;
-                    }
-                    else 
-                    {
-                        xFace = overlap.second;
-                        zFace = overlap.first;
-                    }
-
-                    if (lattices[xFace.first].qubitsX[xFace.second] == 1)
-                    {
-                        lattices[zFace.first].qubitsZ[zFace.second] = (
-                                lattices[zFace.first].qubitsZ[zFace.second] + 1) % 2;
-                    }
-                }
-            }
+            lattices[2].qubitsZ[fR2] = (lattices[2].qubitsZ[fR2] + 1) % 2;
         }
-    }
-    //linking charge
-    if (link)
-    {
-        for (int fC = 0; fC < 3*lattices[0].L*lattices[0].L*lattices[0].L; fC++)
+        if (lattices[0].qubitsX[fC] == 1 && lattices[2].qubitsX[fR2] == 1)
         {
-            auto overlap = overlappingFaces[{0,fC}];
-            int fR1 = overlap.first.second;
-            int fR2 = overlap.second.second;
-            if (lattices[0].qubitsX[fC] == 1 && lattices[1].qubitsX[fR1] == 1)
-            {
-                lattices[2].qubitsZ[fR2] = (lattices[2].qubitsZ[fR2] + 1) % 2;
-            }
-            if (lattices[0].qubitsX[fC] == 1 && lattices[2].qubitsX[fR2] == 1)
-            {
-                lattices[1].qubitsZ[fR1] = (lattices[1].qubitsZ[fR1] + 1) % 2;
-            }
-            if (lattices[1].qubitsX[fR1] == 1 && lattices[2].qubitsX[fR2] == 1)
-            {
-                lattices[0].qubitsZ[fC] = (lattices[0].qubitsZ[fC] + 1) % 2;
-            }
+            lattices[1].qubitsZ[fR1] = (lattices[1].qubitsZ[fR1] + 1) % 2;
+        }
+        if (lattices[1].qubitsX[fR1] == 1 && lattices[2].qubitsX[fR2] == 1)
+        {
+            lattices[0].qubitsZ[fC] = (lattices[0].qubitsZ[fC] + 1) % 2;
         }
     }
 }
