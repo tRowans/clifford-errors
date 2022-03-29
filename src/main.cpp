@@ -195,20 +195,19 @@ int main(int argc, char *argv[])
             if (expectXLogical[0] == 1 && expectXLogical[2] == 1) expectZLogical[1] = 1;
             if (expectXLogical[0] == 1 && expectXLogical[1] == 1) expectZLogical[2] = 1;
         }
-   
-        //Apply CCZ --> Clifford errors + a post-gate depolarising error
-        //Although in practise only Z errors matter after this point
-        //so equivalently could do a biased error with prob 2*p/3
-        if (ccz == 1) applyCCZ(lattices, overlappingFaces);
-
-        if (vis == 1) out.writeErrorInfo(lattices);
-
+  
+        //Pre-gate depolarising error 
         latCubic.depolarisingError(p, engine, dist);
         latRhombic1.depolarisingError(p, engine, dist);
         latRhombic2.depolarisingError(p, engine, dist);
         
         if (vis == 1) out.writeErrorInfo(lattices);
 
+        //Apply CCZ --> Clifford errors 
+        if (ccz == 1) applyCCZ(lattices, overlappingFaces);
+
+        if (vis == 1) out.writeErrorInfo(lattices);
+        
         //Project to stabiliser distribution + random bit flips from measurement error
         latCubic.zStabPattern(engine, dist);
         latRhombic1.zStabPattern(engine, dist);
